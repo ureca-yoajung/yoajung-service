@@ -16,3 +16,11 @@ spring:
         format_sql: true
 
     open-in-view: false
+
+  ai:
+    openai:
+      api-key: "${OPENAI_API_KEY}"
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.4
