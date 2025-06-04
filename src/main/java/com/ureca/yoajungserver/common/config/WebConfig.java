@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.common.config;
 
 import com.ureca.yoajungserver.chatbot.interceptor.GptBadWordInterceptor;
+import com.ureca.yoajungserver.chatbot.interceptor.LocalBadWordInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.openai.OpenAiModerationModel;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,11 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new GptBadWordInterceptor(moderationModel))
                 .order(1)
+                .addPathPatterns("/test")
+                .excludePathPatterns("/css/**", "/*.ico", "/error");
+
+        registry.addInterceptor(new LocalBadWordInterceptor())
+                .order(2)
                 .addPathPatterns("/test")
                 .excludePathPatterns("/css/**", "/*.ico", "/error");
     }
