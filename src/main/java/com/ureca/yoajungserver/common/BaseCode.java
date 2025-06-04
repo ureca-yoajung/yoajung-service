@@ -29,7 +29,8 @@ public enum BaseCode {
     USER_NOT_FOUND("NOT_FOUND_USER_404", HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
 
     // Chat
-    CHAT_SAVE_SUCCESS("SAVE_CHAT_201", HttpStatus.CREATED, "채팅 저장에 성공했습니다.");
+    CHAT_SAVE_SUCCESS("SAVE_CHAT_201", HttpStatus.CREATED, "채팅 저장에 성공했습니다."),
+    CHAT_BAD_WORD_DETECTED("BAD_WORD_CHAT_400", HttpStatus.BAD_REQUEST, "상담원에게 폭언이나 욕설을 하시면 안 됩니다.");
 
     private final String code;
     private final HttpStatus status;
