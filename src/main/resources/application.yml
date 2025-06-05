@@ -16,11 +16,17 @@ spring:
         format_sql: true
 
     open-in-view: false
-    show-sql: true
 
-  logging:
-    level:
-      root: DEBUG
-      org.hibernate.SQL: DEBUG
-      org.hibernate.orm.jdbc.bind: TRACE
-      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  ai:
+    openai:
+      api-key: "${OPENAI_API_KEY}"
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.4
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+            platform: mariadb
