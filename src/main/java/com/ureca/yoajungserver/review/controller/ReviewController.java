@@ -43,4 +43,20 @@ public class ReviewController {
         return ResponseEntity.status(REVIEW_DELETE_SUCCESS.getStatus())
                 .body(ApiResponse.of(REVIEW_DELETE_SUCCESS, response));
     }
+
+    // 리뷰 좋아요 기능
+    @PostMapping("/like/{reviewId}")
+    public ResponseEntity<ApiResponse<?>> insertReview(@PathVariable Long reviewId) {
+        ReviewLikeResponse response = reviewService.reviewLike(reviewId);
+
+        // 좋아요 취소
+        if(response.isDeleted()){
+            return ResponseEntity.status(REVIEW_LIKE_CANCELED.getStatus())
+                .body(ApiResponse.ok(REVIEW_LIKE_CANCELED));
+        }
+
+        // 좋아요 등록
+        return ResponseEntity.status(REVIEW_LIKE_SUCCESS.getStatus())
+                .body(ApiResponse.ok(REVIEW_LIKE_SUCCESS));
+    }
 }

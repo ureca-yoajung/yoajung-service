@@ -44,4 +44,10 @@ public class ReviewControllerAdvice {
         return ResponseEntity.status(e.getBaseCode().getStatus())
                 .body(ApiResponse.of(e.getBaseCode(), null));
     }
+
+    @ExceptionHandler(DuplicatedReviewLikeException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicatedReviewLikeException(DuplicatedReviewLikeException e) {
+        return ResponseEntity.status(e.getBaseCode().getStatus())
+                .body(ApiResponse.of(e.getBaseCode(), null));
+    }
 }

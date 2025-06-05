@@ -3,14 +3,21 @@ package com.ureca.yoajungserver.review.service;
 import com.ureca.yoajungserver.plan.entity.Plan;
 import com.ureca.yoajungserver.review.dto.*;
 import com.ureca.yoajungserver.review.entity.Review;
+import com.ureca.yoajungserver.review.entity.ReviewLike;
 import com.ureca.yoajungserver.review.exception.*;
 import com.ureca.yoajungserver.review.repository.PlanRepository;
+import com.ureca.yoajungserver.review.repository.ReviewLikeRepository;
 import com.ureca.yoajungserver.review.repository.UserRepository;
 import com.ureca.yoajungserver.user.entity.User;
 import com.ureca.yoajungserver.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 import static com.ureca.yoajungserver.common.BaseCode.*;
 /**
@@ -20,6 +27,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
 
@@ -108,4 +116,52 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewId(review.getId())
                 .build();
     }
+
+    // 리뷰 좋아요 기능
+    @Override
+    @Transactional
+    public ReviewLikeResponse reviewLike(Long reviewId) {
+
+        // 로그인한 유저 (더미데이터)
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+
+        // 리뷰 존재여부 확인
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(()->new ReviewNotFoundException(REVIEW_NOT_FOUND));
+        if(review.isDeleted()){
+            throw new ReviewNotFoundException(REVIEW_NOT_FOUND);
+        }
+
+        // 좋아요 존재 여부 확인
+        Optional<ReviewLike> reviewLikeOptional = reviewLikeRepository.findByUserIdAndReviewId(user.getId(), reviewId);
+
+        // 좋아요 취소
+        if(reviewLikeOptional.isPresent()) {
+            reviewLikeRepository.delete(reviewLikeOptional.get());
+            return ReviewLikeResponse.builder()
+                    .reviewLikeId(reviewLikeOptional.get().getId())
+                    .isDeleted(true)
+                    .build();
+        }
+
+        // 좋아요 등록
+        ReviewLike reviewLike = ReviewLike.builder()
+                .user(user)
+                .review(review)
+                .build();
+
+        // 동시성 예외처리
+        try {
+            reviewLikeRepository.save(reviewLike);
+        } catch(DataIntegrityViolationException e){
+            throw new DuplicatedReviewLikeException(REVIEW_LIKE_DUPLICATED);
+        }
+
+        return ReviewLikeResponse.builder()
+                .reviewLikeId(reviewLike.getId())
+                .build();
+    }
+
+
 }
