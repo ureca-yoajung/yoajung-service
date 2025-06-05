@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: yoajung-server
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+    open-in-view: false
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      database: 0
+      timeout: 2000ms
+
+  session:
+    store-type: redis
+    timeout: 30m
+    redis:
+      namespace: spring:session
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          timeout: 5000
+          write timeout: 5000
+  email-code-expiration-millis: 1800000
+
+  ai:
+    openai:
+      api-key: "${OPENAI_API_KEY}"
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.4
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+            platform: mariadb
+server:
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID_USER
+        http-only: true
