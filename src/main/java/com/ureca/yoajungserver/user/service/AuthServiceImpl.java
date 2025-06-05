@@ -1,7 +1,7 @@
 package com.ureca.yoajungserver.user.service;
 
-import com.ureca.yoajungserver.user.dto.SendCodeRequest;
-import com.ureca.yoajungserver.user.dto.VerifyCodeRequest;
+import com.ureca.yoajungserver.user.dto.reqeust.SendCodeRequest;
+import com.ureca.yoajungserver.user.dto.reqeust.VerifyCodeRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,8 +31,13 @@ public class AuthServiceImpl implements AuthService {
         String code = String.format("%06d", new Random().nextInt(1_000_000));
         String redisKey = CODE_KEY_PREFIX + email;
         redisTemplate.opsForValue().set(redisKey, code, Duration.ofMillis(codeExpiration));
+        // 레디스에 이메일, 인증코드, 만료시간 저장
+
         httpSession.setAttribute(PENDING_EMAIL, email);
+        // 세션키 저장 스프링이 알아서 이메일 저장
+        
         emailService.sendVerificationCode(email, code);
+        // 이메일로 발송
     }
 
     @Override
@@ -45,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         String email = pending.toString();
         String redisKey = CODE_KEY_PREFIX + email;
         String correctCode = redisTemplate.opsForValue().get(redisKey);
-
+        // 레디스에서 가져와서 점검
         if (correctCode == null) {
             throw new IllegalArgumentException("코드 만료");
         }
@@ -54,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("코드 불일치");
         }
         httpSession.setAttribute(VERIFIED_EMAIL, email);
+        // 인증 요청한 이메일은 인증으로 세션에 저장
         httpSession.removeAttribute(PENDING_EMAIL);
         redisTemplate.delete(redisKey);
     }

@@ -1,7 +1,7 @@
 package com.ureca.yoajungserver.user.service;
 
-import com.ureca.yoajungserver.user.dto.SendCodeRequest;
-import com.ureca.yoajungserver.user.dto.VerifyCodeRequest;
+import com.ureca.yoajungserver.user.dto.reqeust.SendCodeRequest;
+import com.ureca.yoajungserver.user.dto.reqeust.VerifyCodeRequest;
 import jakarta.servlet.http.HttpSession;
 
 public interface AuthService {
