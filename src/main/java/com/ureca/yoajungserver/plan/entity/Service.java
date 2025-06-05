@@ -2,13 +2,7 @@ package com.ureca.yoajungserver.plan.entity;
 
 import com.ureca.yoajungserver.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 
 @Getter
 @Entity
@@ -27,18 +21,20 @@ public class Service extends BaseTimeEntity {
     private ServiceType serviceType;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ServiceCategory serviceCategory;
+
+    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
     private String serviceImage;
 
-    @OneToMany(mappedBy = "service")
-    private List<PlanService> planServices = new ArrayList<>();
-
     @Builder
-    private Service(ServiceType serviceType, String name, String description, String serviceImage) {
-        this.serviceType = serviceType;
+    private Service(String name, ServiceType serviceType, ServiceCategory serviceCategory, String description, String serviceImage) {
         this.name = name;
+        this.serviceType = serviceType;
+        this.serviceCategory = serviceCategory;
         this.description = description;
         this.serviceImage = serviceImage;
     }

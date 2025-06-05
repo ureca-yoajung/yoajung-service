@@ -3,6 +3,7 @@ package com.ureca.yoajungserver.plan.entity;
 import com.ureca.yoajungserver.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

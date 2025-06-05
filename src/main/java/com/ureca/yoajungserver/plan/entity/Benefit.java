@@ -7,9 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,17 +26,11 @@ public class Benefit extends BaseTimeEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private Integer voiceLimit;
 
-    @Column(nullable = false)
     private Integer smsLimit;
 
-    @Column(nullable = false)
     private Integer discountAmount;
-
-    @OneToMany(mappedBy = "benefit")
-    private List<PlanBenefit> planBenefits = new ArrayList<>();
 
     @Builder
     private Benefit(BenefitType benefitType, String name, String description, Integer voiceLimit, Integer smsLimit, Integer discountAmount) {
