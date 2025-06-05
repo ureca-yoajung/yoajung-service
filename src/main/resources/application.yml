@@ -24,3 +24,9 @@ spring:
         options:
           model: gpt-4o
           temperature: 0.4
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+            platform: mariadb
