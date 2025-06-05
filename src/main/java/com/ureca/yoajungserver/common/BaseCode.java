@@ -22,7 +22,14 @@ public enum BaseCode {
     REVIEW_CREATE_SUCCESS("CREATE_REVIEW_201", HttpStatus.CREATED, "리뷰 생성에 성공했습니다."),
     REVIEW_UPDATE_SUCCESS("UPDATE_REVIEW_200", HttpStatus.OK, "리뷰 수정에 성공했습니다."),
     REVIEW_DELETE_SUCCESS("DELETE_REVIEW_200", HttpStatus.OK, "리뷰 삭제에 성공했습니다."),
+    REVIEW_LIKE_SUCCESS("CREATE_REVIEW_LIKE_200", HttpStatus.OK, "리뷰 좋아요 등록에 성공했습니다."),
+    REVIEW_LIKE_CANCELED("CANCELED_REVIEW_LIKE_200", HttpStatus.OK, "리뷰 좋아요 취소에 성공했습니다."),
+    REVIEW_LIKE_DUPLICATED("DUPLICATED_REVIEW_LIKE_409", HttpStatus.CONFLICT, "중복된 리뷰 좋아요 요청입니다."),
     REVIEW_NOT_FOUND("NOT_FOUND_REVIEW_404", HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
+    REVIEW_ALREADY_EXIST("ALREADY_EXIST_REVIEW_409", HttpStatus.CONFLICT, "이미 리뷰를 작성했습니다."),
+    NOT_REVIEW_AUTHOR("NOT_REVIEW_AUTHOR_409", HttpStatus.CONFLICT, "리뷰 작성자만 접근 가능합니다."),
+    REVIEW_NOT_ALLOWED("REVIEW_NOT_ALLOWED_409", HttpStatus.CONFLICT, "리뷰 작성 권한이 없습니다."),
+
 
     // User
     USER_SIGNUP_SUCCESS("SIGNUP_USER_201", HttpStatus.CREATED, "회원가입에 성공했습니다."),
