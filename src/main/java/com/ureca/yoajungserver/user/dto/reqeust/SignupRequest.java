@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.user.dto;
+package com.ureca.yoajungserver.user.dto.reqeust;
 
 import com.ureca.yoajungserver.user.entity.AgeGroup;
 import com.ureca.yoajungserver.user.entity.Gender;
