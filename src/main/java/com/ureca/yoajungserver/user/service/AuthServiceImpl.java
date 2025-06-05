@@ -1,5 +1,7 @@
 package com.ureca.yoajungserver.user.service;
 
+import com.ureca.yoajungserver.common.BaseCode;
+import com.ureca.yoajungserver.common.exception.BusinessException;
 import com.ureca.yoajungserver.user.dto.reqeust.SendCodeRequest;
 import com.ureca.yoajungserver.user.dto.reqeust.VerifyCodeRequest;
 import jakarta.servlet.http.HttpSession;
@@ -35,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
         httpSession.setAttribute(PENDING_EMAIL, email);
         // 세션키 저장 스프링이 알아서 이메일 저장
-        
+
         emailService.sendVerificationCode(email, code);
         // 이메일로 발송
     }
@@ -44,20 +46,21 @@ public class AuthServiceImpl implements AuthService {
     public void verifyCode(VerifyCodeRequest request, HttpSession httpSession) {
         Object pending = httpSession.getAttribute(PENDING_EMAIL);
         if (pending == null) {
-            throw new IllegalStateException("인증 요청 필요");
+            throw new BusinessException(BaseCode.INVALID_REQUEST);
         }
 
         String email = pending.toString();
         String redisKey = CODE_KEY_PREFIX + email;
         String correctCode = redisTemplate.opsForValue().get(redisKey);
-        // 레디스에서 가져와서 점검
+
         if (correctCode == null) {
-            throw new IllegalArgumentException("코드 만료");
-        }
+            throw new BusinessException(BaseCode.EMAIL_CODE_EXPIRED);
+        }// 레디스에서 가져와서 점검 하는데 만료
 
         if (!correctCode.equals(request.getCode())) {
-            throw new IllegalArgumentException("코드 불일치");
-        }
+            throw new BusinessException(BaseCode.EMAIL_CODE_MISMATCH);
+        }// 코드 불 일치
+
         httpSession.setAttribute(VERIFIED_EMAIL, email);
         // 인증 요청한 이메일은 인증으로 세션에 저장
         httpSession.removeAttribute(PENDING_EMAIL);

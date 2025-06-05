@@ -23,6 +23,6 @@ public class UserController {
     @PostMapping("/api/user/signup")
     public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request, HttpSession session) {
         userService.signup(request, session);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(BaseCode.STATUS_SIGNUP_SUCCESS));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(BaseCode.USER_SIGNUP_SUCCESS));
     }
 }
