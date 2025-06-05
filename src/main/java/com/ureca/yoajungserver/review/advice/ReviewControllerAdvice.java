@@ -7,47 +7,46 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(assignableTypes = {ReviewController.class})
 public class ReviewControllerAdvice {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 
     @ExceptionHandler(PlanNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handlePlanNotFoundException(PlanNotFoundException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 
     @ExceptionHandler(ReviewAlreadyExistException.class)
     public ResponseEntity<ApiResponse<?>> handleReviewAlreadyExistException(ReviewAlreadyExistException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 
     @ExceptionHandler(ReviewNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleReviewNotFoundException(ReviewNotFoundException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 
     @ExceptionHandler(NotReviewAuthorException.class)
     public ResponseEntity<ApiResponse<?>> handleNotReviewAuthorException(NotReviewAuthorException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 
     @ExceptionHandler(ReviewNotAllowedException.class)
     public ResponseEntity<ApiResponse<?>> handleReviewNotAllowedException(ReviewNotAllowedException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 
     @ExceptionHandler(DuplicatedReviewLikeException.class)
     public ResponseEntity<ApiResponse<?>> handleDuplicatedReviewLikeException(DuplicatedReviewLikeException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
-                .body(ApiResponse.of(e.getBaseCode(), null));
+                .body(ApiResponse.ok(e.getBaseCode()));
     }
 }
