@@ -8,15 +8,19 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum BaseCode {
     // common
-    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR_500",HttpStatus.INTERNAL_SERVER_ERROR,"예기치 못한 오류가 발생했습니다"),
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR_500", HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 오류가 발생했습니다"),
     STATUS_OK("STATUS_OK_200", HttpStatus.OK, "서버가 정상적으로 동작 중입니다."),
     STATUS_AUTHENTICATED("STATUS_AUTHENTICATED_200", HttpStatus.OK, "로그인된 사용자입니다."),
+    STATUS_SIGNUP_SUCCESS("STATUS_AUTHENTICATED_200", HttpStatus.CREATED, "회원가입 됐습니다"),
     STATUS_UNAUTHORIZED("STATUS_UNAUTHORIZED_401", HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
 
     // Plan
     PLAN_DETAIL_SUCCESS("FIND_PLAN_DETAIL_200", HttpStatus.OK, "요금제 상세 조회에 성공했습니다."),
     PLAN_LIST_SUCCESS("READ_PLAN_LIST_200", HttpStatus.OK, "요금제 목록 조회에 성공했습니다."),
     PLAN_NOT_FOUND("NOT_FOUND_PLAN_404", HttpStatus.NOT_FOUND, "해당 요금제를 찾을 수 없습니다."),
+
+    EMAIL_CODE_SENT("STATUS_OK_200", HttpStatus.OK, "코드 발송에 성공했습니다."),
+    EMAIL_VERIFICATION_SUCCESS("STATUS_OK_200", HttpStatus.OK, "인증 코드 검증에 성공했습니다."),
 
     // Review
     REVIEW_CREATE_SUCCESS("CREATE_REVIEW_201", HttpStatus.CREATED, "리뷰 생성에 성공했습니다."),

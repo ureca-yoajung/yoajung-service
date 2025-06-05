@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.user.dto;
+package com.ureca.yoajungserver.user.dto.reqeust;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
