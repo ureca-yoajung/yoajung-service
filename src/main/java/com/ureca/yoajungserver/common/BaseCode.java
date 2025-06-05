@@ -8,10 +8,26 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum BaseCode {
     // common
-    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR_500",HttpStatus.INTERNAL_SERVER_ERROR,"예기치 못한 오류가 발생했습니다"),
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR_500", HttpStatus.INTERNAL_SERVER_ERROR, "예기치 못한 오류가 발생했습니다"),
+    INVALID_REQUEST("INVALID_REQUEST_400", HttpStatus.BAD_REQUEST, "요청값이 잘못됐습니다"),
     STATUS_OK("STATUS_OK_200", HttpStatus.OK, "서버가 정상적으로 동작 중입니다."),
-    STATUS_AUTHENTICATED("STATUS_AUTHENTICATED_200", HttpStatus.OK, "로그인된 사용자입니다."),
+    STATUS_CREATED("STATUS_CREATED_201", HttpStatus.CREATED, "정삭적으로 생성됐습니다"),
     STATUS_UNAUTHORIZED("STATUS_UNAUTHORIZED_401", HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
+    STATUS_FORBIDDEN("STATUS_FORBIDDEN_403", HttpStatus.FORBIDDEN, "권한이 없니다."),
+
+    // user/singup
+    USER_SIGNUP_SUCCESS("USER_SIGNUP_SUCCESS_201", HttpStatus.CREATED, "회원가입 됐습니다"),
+    USER_NOT_FOUND("NOT_FOUND_USER_404", HttpStatus.NOT_FOUND, "유저가 없습니다"),
+    USER_DUPLICATED_EMAIL("USER_DUPLICATED_EMAIL_409", HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
+    USER_DUPLICATED_PHONE_NUMBER("USER_DUPLICATED_PHONE_NUMBER_409", HttpStatus.CONFLICT, "이미 가입된 전화번호입니다"),
+
+    // auth
+    EMAIL_CODE_SENT("EMAIL_CODE_SENT_200", HttpStatus.OK, "인증 코드 발송에 성공했습니다."),
+    EMAIL_CODE_EXPIRED("EMAIL_CODE_EXPIRED_400", HttpStatus.BAD_REQUEST, "인증 코드가 만료되었습니다."),
+    EMAIL_CODE_MISMATCH("EMAIL_CODE_MISMATCH_400", HttpStatus.BAD_REQUEST, "인증 코드가 일치하지 않습니다."),
+    EMAIL_ALREADY_VERIFIED("EMAIL_ALREADY_VERIFIED_409", HttpStatus.CONFLICT, "이미 인증된 이메일입니다."),
+
+    EMAIL_VERIFICATION_SUCCESS("EMAIL_VERIFICATION_SUCCESS_200", HttpStatus.OK, "이메일 인증에 성공했습니다."),
 
     // Plan
     PLAN_DETAIL_SUCCESS("FIND_PLAN_DETAIL_200", HttpStatus.OK, "요금제 상세 조회에 성공했습니다."),
@@ -30,10 +46,6 @@ public enum BaseCode {
     NOT_REVIEW_AUTHOR("NOT_REVIEW_AUTHOR_409", HttpStatus.CONFLICT, "리뷰 작성자만 접근 가능합니다."),
     REVIEW_NOT_ALLOWED("REVIEW_NOT_ALLOWED_409", HttpStatus.CONFLICT, "리뷰 작성 권한이 없습니다."),
 
-
-    // User
-    USER_SIGNUP_SUCCESS("SIGNUP_USER_201", HttpStatus.CREATED, "회원가입에 성공했습니다."),
-    USER_NOT_FOUND("NOT_FOUND_USER_404", HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
 
     // Chat
     CHAT_SAVE_SUCCESS("SAVE_CHAT_201", HttpStatus.CREATED, "채팅 저장에 성공했습니다."),
