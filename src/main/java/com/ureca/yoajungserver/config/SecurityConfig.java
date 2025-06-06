@@ -15,13 +15,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/**",
-                                "/api/auth/**",
-                                "/api/user/signup"
-                        ).permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+        // 세션관리
+        // 예외처리
+        ;
         return http.build();
     }
 

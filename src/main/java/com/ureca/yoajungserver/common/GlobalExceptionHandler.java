@@ -3,6 +3,7 @@ package com.ureca.yoajungserver.common;
 import com.ureca.yoajungserver.common.exception.BusinessException;
 import jakarta.transaction.SystemException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,18 +29,26 @@ public class GlobalExceptionHandler {
     }// 서버 예외
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<String>> handleValidationException(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
+    public ResponseEntity<ApiResponse<String>> handleValidationException(MethodArgumentNotValidException exception) {
+        String message = exception.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
+
         return ResponseEntity
                 .badRequest()
                 .body(ApiResponse.of(BaseCode.INVALID_REQUEST, message));
     }// 검증 예외
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUsernameNotFound(UsernameNotFoundException exception) {
+        return ResponseEntity
+                .status(BaseCode.USER_NOT_FOUND.getStatus())
+                .body(ApiResponse.ok(BaseCode.USER_NOT_FOUND));
+    }
+
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception exception) {
         return ResponseEntity
                 .internalServerError()
                 .body(ApiResponse.ok(BaseCode.INTERNAL_SERVER_ERROR));
