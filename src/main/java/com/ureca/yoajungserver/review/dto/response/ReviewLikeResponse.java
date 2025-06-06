@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.review.dto;
+package com.ureca.yoajungserver.review.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReviewCreateRequest {
-    private Long planId;
-    private String content;
-    private int star;
+public class ReviewLikeResponse {
+    Long reviewLikeId;
+    boolean isDeleted;
 }

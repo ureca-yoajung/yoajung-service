@@ -1,13 +1,15 @@
 package com.ureca.yoajungserver.review.advice;
 
 import com.ureca.yoajungserver.common.ApiResponse;
-import com.ureca.yoajungserver.review.controller.ReviewController;
 import com.ureca.yoajungserver.review.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
+@RestControllerAdvice
 public class ReviewControllerAdvice {
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())

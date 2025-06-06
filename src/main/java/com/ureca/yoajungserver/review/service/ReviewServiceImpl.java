@@ -1,7 +1,9 @@
 package com.ureca.yoajungserver.review.service;
 
 import com.ureca.yoajungserver.plan.entity.Plan;
-import com.ureca.yoajungserver.review.dto.*;
+import com.ureca.yoajungserver.review.dto.request.ReviewCreateRequest;
+import com.ureca.yoajungserver.review.dto.request.ReviewUpdateRequest;
+import com.ureca.yoajungserver.review.dto.response.*;
 import com.ureca.yoajungserver.review.entity.Review;
 import com.ureca.yoajungserver.review.entity.ReviewLike;
 import com.ureca.yoajungserver.review.exception.*;
@@ -20,9 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import static com.ureca.yoajungserver.common.BaseCode.*;
-/**
- * build.gradle 시큐리티 설정 부분 일단 주석처리해놓음.
- */
+
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -31,18 +31,27 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
 
-
-
-    // 리뷰 등록
+    // 리뷰 조회
     @Override
-    @Transactional
-    public ReviewCreateResponse insertReview(ReviewCreateRequest request) {
+    public Page<ReviewListResponse> reviewList(Long planId, Pageable pageable) {
 
         // 로그인한 유저 (더미데이터)
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
-        Plan plan = planRepository.findById(request.getPlanId())
+        return reviewRepository.findReviewList(user.getId(), planId, pageable);
+    }
+
+    // 리뷰 등록
+    @Override
+    @Transactional
+    public ReviewCreateResponse insertReview(Long planId, ReviewCreateRequest request) {
+
+        // 로그인한 유저 (더미데이터)
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
 
         // 이용중인 요금젱에만 리뷰 작성 가능
@@ -162,6 +171,5 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewLikeId(reviewLike.getId())
                 .build();
     }
-
 
 }
