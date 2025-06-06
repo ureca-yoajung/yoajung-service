@@ -1,11 +1,9 @@
 package com.ureca.yoajungserver.review.controller;
 
-import com.ureca.yoajungserver.chatbot.exception.BadWordDetectedException;
 import com.ureca.yoajungserver.common.ApiResponse;
-import com.ureca.yoajungserver.review.dto.*;
-import com.ureca.yoajungserver.review.exception.NotReviewAuthorException;
-import com.ureca.yoajungserver.review.exception.PlanNotFoundException;
-import com.ureca.yoajungserver.review.exception.ReviewNotFoundException;
+import com.ureca.yoajungserver.review.dto.request.ReviewCreateRequest;
+import com.ureca.yoajungserver.review.dto.request.ReviewUpdateRequest;
+import com.ureca.yoajungserver.review.dto.response.*;
 import com.ureca.yoajungserver.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +33,10 @@ public class ReviewController {
     }
 
     // 리뷰 등록
-    @PostMapping
-    public ResponseEntity<ApiResponse<?>> insertReview(@RequestBody ReviewCreateRequest request) {
-        ReviewCreateResponse response = reviewService.insertReview(request);
+    @PostMapping("/{planId}")
+    public ResponseEntity<ApiResponse<?>> insertReview(@PathVariable Long planId,
+                                                       @RequestBody ReviewCreateRequest request) {
+        ReviewCreateResponse response = reviewService.insertReview(planId, request);
 
         return ResponseEntity.status(REVIEW_CREATE_SUCCESS.getStatus())
                 .body(ApiResponse.of(REVIEW_CREATE_SUCCESS, response));

@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.review.dto;
+package com.ureca.yoajungserver.review.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

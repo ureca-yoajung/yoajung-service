@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.review.dto;
+package com.ureca.yoajungserver.review.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReviewCreateResponse {
+public class ReviewUpdateResponse {
     Long reviewId;
 }

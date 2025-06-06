@@ -1,10 +1,9 @@
 package com.ureca.yoajungserver.review.repository.custom;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ureca.yoajungserver.review.dto.ReviewListResponse;
+import com.ureca.yoajungserver.review.dto.response.ReviewListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,7 +1,9 @@
 package com.ureca.yoajungserver.review.service;
 
 import com.ureca.yoajungserver.plan.entity.Plan;
-import com.ureca.yoajungserver.review.dto.*;
+import com.ureca.yoajungserver.review.dto.request.ReviewCreateRequest;
+import com.ureca.yoajungserver.review.dto.request.ReviewUpdateRequest;
+import com.ureca.yoajungserver.review.dto.response.*;
 import com.ureca.yoajungserver.review.entity.Review;
 import com.ureca.yoajungserver.review.entity.ReviewLike;
 import com.ureca.yoajungserver.review.exception.*;
@@ -43,13 +45,13 @@ public class ReviewServiceImpl implements ReviewService {
     // 리뷰 등록
     @Override
     @Transactional
-    public ReviewCreateResponse insertReview(ReviewCreateRequest request) {
+    public ReviewCreateResponse insertReview(Long planId, ReviewCreateRequest request) {
 
         // 로그인한 유저 (더미데이터)
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
-        Plan plan = planRepository.findById(request.getPlanId())
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
 
         // 이용중인 요금젱에만 리뷰 작성 가능
