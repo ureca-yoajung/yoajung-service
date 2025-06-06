@@ -3,9 +3,14 @@ package com.ureca.yoajungserver.chatbot.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -13,12 +18,18 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+    private final ResourceLoader resourceLoader;
 
     @Override
     public PlanKeywordResponse keywordMapper(String input) throws IOException {
-        String inlineTemplate = """
-                
-                """;
+        Resource promptResource = resourceLoader.getResource("classpath:prompt/prompt.txt");
+
+        String inlineTemplate;
+        try (InputStream is = promptResource.getInputStream()) {
+            inlineTemplate = StreamUtils.copyToString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IOException("프롬프트 파일을 읽어오는 도중 에러가 발생했습니다.", e);
+        }
 
         // ChatClient에 Prompt 전달 → LLM 호출 → ChatResponse 획득
         var chatResponse = chatClient.prompt()
