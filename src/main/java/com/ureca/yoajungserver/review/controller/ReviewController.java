@@ -23,7 +23,7 @@ public class ReviewController {
 
     // 리뷰 조회
     @GetMapping("/{planId}")
-    public ResponseEntity<ApiResponse<?>> insertReview(@PathVariable Long planId, Pageable pageable) {
+    public ResponseEntity<ApiResponse<ReviewPageResponse>> insertReview(@PathVariable Long planId, Pageable pageable) {
         Page<ReviewListResponse> pageResponse = reviewService.reviewList(planId, pageable);
 
         ReviewPageResponse response = new ReviewPageResponse(pageResponse); // Page객체 감싼 dto로 응답
@@ -34,8 +34,8 @@ public class ReviewController {
 
     // 리뷰 등록
     @PostMapping("/{planId}")
-    public ResponseEntity<ApiResponse<?>> insertReview(@PathVariable Long planId,
-                                                       @RequestBody ReviewCreateRequest request) {
+    public ResponseEntity<ApiResponse<ReviewCreateResponse>> insertReview(@PathVariable Long planId,
+                                                                          @RequestBody ReviewCreateRequest request) {
         ReviewCreateResponse response = reviewService.insertReview(planId, request);
 
         return ResponseEntity.status(REVIEW_CREATE_SUCCESS.getStatus())
@@ -44,7 +44,8 @@ public class ReviewController {
 
     // 리뷰 수정
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse<?>> updateReview(@PathVariable Long reviewId, @RequestBody ReviewUpdateRequest request) {
+    public ResponseEntity<ApiResponse<ReviewUpdateResponse>> updateReview(@PathVariable Long reviewId,
+                                                                          @RequestBody ReviewUpdateRequest request) {
         ReviewUpdateResponse response = reviewService.updateReview(reviewId, request);
 
         return ResponseEntity.status(REVIEW_UPDATE_SUCCESS.getStatus())
@@ -53,7 +54,7 @@ public class ReviewController {
 
     // 리뷰 삭제
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse<?>> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<ApiResponse<ReviewDeleteResponse>> deleteReview(@PathVariable Long reviewId) {
         ReviewDeleteResponse response = reviewService.deleteReview(reviewId);
 
         return ResponseEntity.status(REVIEW_DELETE_SUCCESS.getStatus())
@@ -62,7 +63,7 @@ public class ReviewController {
 
     // 리뷰 좋아요 기능
     @PostMapping("/like/{reviewId}")
-    public ResponseEntity<ApiResponse<?>> insertReview(@PathVariable Long reviewId) {
+    public ResponseEntity<ApiResponse<ReviewLikeResponse>> insertReview(@PathVariable Long reviewId) {
         ReviewLikeResponse response = reviewService.reviewLike(reviewId);
 
         // 좋아요 취소
