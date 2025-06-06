@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class ReviewListResponse {
     private Long reviewId;
     private Long userId;
+    private String userName;
     private String content;
     private int star;
     private Long likeCnt;

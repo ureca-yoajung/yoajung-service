@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="review.css" rel="stylesheet">
+  <title>Review</title>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>리뷰</h1>
+  </div>
+
+  <!-- 리뷰 작성 버튼 -->
+  <div class="review-write-container" style="text-align: right; margin-bottom: 5px;">
+    <button id="review-write-btn" style="display: none;">리뷰 작성</button>
+  </div>
+
+  <!-- 모달 배경 -->
+  <div id="review-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>리뷰 작성</h2>
+
+      <div class="star-rating" id="star-rating">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </div>
+
+      <textarea id="review-insert-content" placeholder="리뷰 내용을 입력하세요" rows="5"></textarea>
+
+      <div class="modal-buttons">
+        <button id="submit-review">등록</button>
+        <button id="cancel-review">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="review-stats">
+    <div class="total-reviews">전체 리뷰 <span id="total-review"></span>개</div>
+    <div class="total-reviews">평점 <span id="avg-stars"></span> 점</div>
+  </div>
+
+  <div class="reviews-container" id="reviews-container"></div> <!-- 여기에 JS로 리뷰들을 삽입 -->
+
+  <template id="review-template">
+    <div class="review-item">
+      <div class="review-header">
+        <div class="user-info">
+          <span class="username"></span> <!--이름. 마스킹하기-->
+        </div>
+        <div class="review-date"></div> <!--작성일-->
+      </div>
+
+      <div class="rating-with-actions">
+        <div class="rating">
+          <div class="stars"></div>
+          <span class="rating-text"></span>
+        </div>
+        <div class="action-buttons" style="display: none;">
+          <button class="edit-btn">수정</button>
+          <button class="delete-btn">삭제</button>
+        </div>
+      </div>
+
+      <div class="review-content"> <!--리뷰내용-->
+        </div>
+      <div class="review-footer">
+        <div class="review-content collapsed" id="review-content"></div>
+        <button class="expand-btn" style="display: none;">펼치기 ⌄</button>
+        <div class="like-section">
+          <button class="like-btn">❤️ <span class="like-count">0</span></button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+
+  <div class="pagination" id="pagination-buttons">
+    <!-- 페이지 번호 버튼이 JS로 삽입됨 -->
+  </div>
+
+
+</div>
+
+<script>
+
+  const planId = 1; // 실제로는 서버에서 주입하거나 URL에서 추출
+  let currentPage = 0;
+  const pageSize = 5;
+
+
+  const modal = document.getElementById("review-modal");
+  const openBtn = document.getElementById("review-write-btn");
+  const closeBtn = document.querySelector(".close");
+  const cancelBtn = document.getElementById("cancel-review");
+  const stars = document.querySelectorAll(".star-rating .star");
+
+  let selectedRating = 3;
+
+  // 모달 열기
+  openBtn.onclick = () => {
+    modal.style.display = "flex";
+    highlightStars(selectedRating);
+  };
+
+  // 모달 닫기
+  closeBtn.onclick = cancelBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  // 별점 클릭
+  stars.forEach(star => {
+    star.addEventListener("click", () => {
+      selectedRating = parseInt(star.dataset.value);
+      highlightStars(selectedRating);
+    });
+  });
+
+  // 별점 강조 표시
+  function highlightStars(rating) {
+    stars.forEach(star => {
+      star.classList.toggle("selected", parseInt(star.dataset.value) <= rating);
+    });
+  }
+
+  // 등록 클릭
+  document.getElementById("submit-review").onclick = () => {
+    const content = document.getElementById("review-content").value;
+    console.log("작성한 리뷰:", content, "별점:", selectedRating);
+
+    // 서버로 POST 요청 보내는 부분 추가 예정
+    modal.style.display = "none";
+  };
+
+
+  // 리뷰 조회
+  async function loadReviews(page = 0) {
+
+    try {
+      const res = await fetch(`/review/${planId}?page=${page}&size=${pageSize}`);
+      const data = await res.json();
+      const reviews = data.data.content;
+
+      const container = document.getElementById('reviews-container');
+      const template = document.getElementById('review-template');
+
+      const totalReviewElement = document.getElementById('total-review');
+      totalReviewElement.textContent = data.data.totalElements; // 전체 개수
+      const avgReviewStar = document.getElementById('avg-stars');
+      avgReviewStar.textContent = Number(data.data.avgStar).toFixed(1); // 리뷰 평점
+
+      const reviewWriteBtn = document.getElementById('review-write-btn');
+      const isPlanUser = data.data.isPlanUser;
+      if (isPlanUser) {
+        reviewWriteBtn.style.display = 'inline-block'; // 혹은 'block'
+      }
+
+
+      container.innerHTML = '';
+      reviews.forEach(review => {
+        const clone = template.content.cloneNode(true);
+
+        clone.querySelector('.username').textContent = maskName(review.userName);
+        clone.querySelector('.review-date').textContent = new Date(review.createDate).toLocaleDateString();
+
+        const filled = '<span class="star">★</span>'.repeat(review.star);
+        const empty = '<span class="star empty">☆</span>'.repeat(5 - review.star);
+        clone.querySelector('.stars').innerHTML = filled + empty;
+        clone.querySelector('.rating-text').textContent = `${review.star}점`;
+        clone.querySelector('.like-count').textContent = review.likeCnt;
+        const contentElement = clone.querySelector('.review-content');
+        const expandBtn = clone.querySelector('.expand-btn');
+        contentElement.textContent = review.content;
+
+      // 100자 이상이면 펼치기 버튼 표시
+        if (review.content.length > 100) {
+          expandBtn.style.display = 'inline'; // 버튼 보이기
+          contentElement.classList.add('collapsed');
+
+          expandBtn.addEventListener('click', () => {
+            const isCollapsed = contentElement.classList.toggle('collapsed');
+            expandBtn.textContent = isCollapsed ? '펼치기 ⌄' : '접기 ⌃';
+          });
+        }
+
+        if (review.author) {
+          const actionBtns = clone.querySelector('.action-buttons');
+          actionBtns.style.display = 'flex'; // 작성자일 경우만 표시
+        }
+
+        container.appendChild(clone);
+      });
+
+      // 페이지 정보 갱신
+      currentPage = data.data.page;
+      totalPages = data.data.totalPages;
+
+      renderPaginationButtons(totalPages, currentPage);
+    } catch (error) {
+      console.error('리뷰 로딩 실패:', error);
+    }
+  }
+
+  function maskName(name) {
+    if (name.length <= 2) return name[0] + '*';
+    return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
+  }
+
+
+  function renderPaginationButtons(totalPages, currentPage) {
+    const paginationContainer = document.getElementById('pagination-buttons');
+    paginationContainer.innerHTML = '';
+
+    for (let i = 0; i < totalPages; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i + 1;
+      btn.classList.add('page-btn'); // ✅ 이 부분이 중요
+      if (i === currentPage) btn.classList.add('active');
+
+      btn.disabled = i === currentPage;
+      btn.addEventListener('click', () => loadReviews(i));
+      paginationContainer.appendChild(btn);
+    }
+  }
+
+  loadReviews();
+
+
+</script>
+</body>
+</html>

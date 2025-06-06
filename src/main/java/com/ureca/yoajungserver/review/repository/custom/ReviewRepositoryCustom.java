@@ -6,4 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface ReviewRepositoryCustom {
     Page<ReviewListResponse> findReviewList(Long userId, Long planId, Pageable pageable);
+    Double avgStar(Long planId);
+    Boolean isPlanUser(Long userId, Long planId);
 }

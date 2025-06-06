@@ -31,6 +31,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .select(Projections.constructor(ReviewListResponse.class,
                         review.id,
                         review.user.id,
+                        review.user.name,
                         review.content,
                         review.star,
                         reviewLike.id.count(),
@@ -56,6 +57,27 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                         .and(review.isDeleted.eq(false)));
 
         return PageableExecutionUtils.getPage(reviewList, pageable, count::fetchOne);
+    }
+
+    // 별점 평균
+    @Override
+    public Double avgStar(Long planId) {
+        return jpaQueryFactory
+                .select(review.star.avg())
+                .from(review)
+                .where(review.plan.id.eq(planId))
+                .fetchOne();
+    }
+
+    // 요금제 사용자 여부
+    @Override
+    public Boolean isPlanUser(Long userId, Long planId) {
+        return jpaQueryFactory
+                .selectOne()
+                .from(user)
+                .where(user.id.eq(userId)
+                        .and(user.plan.id.eq(planId)))
+                .fetchOne() != null;
     }
 
 }
