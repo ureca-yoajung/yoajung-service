@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import static com.ureca.yoajungserver.common.BaseCode.*;
-/**
- * build.gradle 시큐리티 설정 부분 일단 주석처리해놓음.
- */
+
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -31,7 +29,16 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
 
+    // 리뷰 조회
+    @Override
+    public Page<ReviewListResponse> reviewList(Long planId, Pageable pageable) {
 
+        // 로그인한 유저 (더미데이터)
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+
+        return reviewRepository.findReviewList(user.getId(), planId, pageable);
+    }
 
     // 리뷰 등록
     @Override
@@ -162,6 +169,5 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewLikeId(reviewLike.getId())
                 .build();
     }
-
 
 }

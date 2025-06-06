@@ -1,10 +1,16 @@
 package com.ureca.yoajungserver.review.controller;
 
+import com.ureca.yoajungserver.chatbot.exception.BadWordDetectedException;
 import com.ureca.yoajungserver.common.ApiResponse;
 import com.ureca.yoajungserver.review.dto.*;
+import com.ureca.yoajungserver.review.exception.NotReviewAuthorException;
+import com.ureca.yoajungserver.review.exception.PlanNotFoundException;
+import com.ureca.yoajungserver.review.exception.ReviewNotFoundException;
 import com.ureca.yoajungserver.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +22,17 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RequestMapping("/review")
 public class ReviewController {
     private final ReviewService reviewService;
+
+    // 리뷰 조회
+    @GetMapping("/{planId}")
+    public ResponseEntity<ApiResponse<?>> insertReview(@PathVariable Long planId, Pageable pageable) {
+        Page<ReviewListResponse> pageResponse = reviewService.reviewList(planId, pageable);
+
+        ReviewPageResponse response = new ReviewPageResponse(pageResponse); // Page객체 감싼 dto로 응답
+
+        return ResponseEntity.status(STATUS_OK.getStatus())
+                .body(ApiResponse.of(STATUS_OK, response));
+    }
 
     // 리뷰 등록
     @PostMapping
