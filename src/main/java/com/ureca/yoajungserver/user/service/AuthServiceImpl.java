@@ -48,10 +48,12 @@ public class AuthServiceImpl implements AuthService {
         if (pending == null) {
             throw new BusinessException(BaseCode.INVALID_REQUEST);
         }
+        // 세션에서 보류중인 이메일을 꺼낸다. 없으면 에러
 
         String email = pending.toString();
         String redisKey = CODE_KEY_PREFIX + email;
         String correctCode = redisTemplate.opsForValue().get(redisKey);
+        // 레디스에서 키값을 조회
 
         if (correctCode == null) {
             throw new BusinessException(BaseCode.EMAIL_CODE_EXPIRED);
