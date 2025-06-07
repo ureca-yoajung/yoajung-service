@@ -2,6 +2,9 @@ package com.ureca.yoajungserver.common;
 
 import com.ureca.yoajungserver.common.exception.BusinessException;
 import jakarta.transaction.SystemException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,9 +49,21 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.ok(BaseCode.USER_NOT_FOUND));
     }
 
+    @ExceptionHandler(RedisConnectionFailureException.class)
+    public ResponseEntity<ApiResponse<Void>> handlerRedisFaulrue(RedisConnectionFailureException exception) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.ok(BaseCode.REDIS_UNAVAILABLE));
+    }
+
+    @ExceptionHandler(DataAccessResourceFailureException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataAccessFaileure(DataAccessResourceFailureException exception) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiResponse.ok(BaseCode.REDIS_UNAVAILABLE));
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception exception) {
+
         return ResponseEntity
                 .internalServerError()
                 .body(ApiResponse.ok(BaseCode.INTERNAL_SERVER_ERROR));

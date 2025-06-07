@@ -21,6 +21,12 @@ public enum BaseCode {
     USER_DUPLICATED_EMAIL("USER_DUPLICATED_EMAIL_409", HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     USER_DUPLICATED_PHONE_NUMBER("USER_DUPLICATED_PHONE_NUMBER_409", HttpStatus.CONFLICT, "이미 가입된 전화번호입니다"),
 
+    // login
+    USER_LOGIN_SUCCESS("USER_LOGIN_SUCCESS_200", HttpStatus.OK, "로그인에 성공했습니다."),
+    USER_LOGIN_FAIL("USER_LOGIN_FAIL_401", HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
+    USER_LOGOUT_SUCCESS("USER_LOGOUT_SUCCESS_200", HttpStatus.OK, "로그아웃에 성공했습니다."),
+    USER_SESSION_EXPIRED("USER_SESSION_EXPIRED_401", HttpStatus.UNAUTHORIZED, "세션이 만료됐습니다. 다시 로그인해주세요."),
+
     // auth
     EMAIL_CODE_SENT("EMAIL_CODE_SENT_200", HttpStatus.OK, "인증 코드 발송에 성공했습니다."),
     EMAIL_CODE_EXPIRED("EMAIL_CODE_EXPIRED_400", HttpStatus.BAD_REQUEST, "인증 코드가 만료되었습니다."),
@@ -51,8 +57,9 @@ public enum BaseCode {
     CHAT_SAVE_SUCCESS("SAVE_CHAT_201", HttpStatus.CREATED, "채팅 저장에 성공했습니다."),
     KEYWORD_MAPPING_SUCCESS("MAPPING_KEYWORD_200", HttpStatus.OK, "키워드 맵핑에 성공했습니다."),
     KEYWORD_MAPPING_FAIL("MAPPING_KEYWORD_400", HttpStatus.BAD_REQUEST, "키워드 맵핑에 실패했습니다."),
-    CHAT_BAD_WORD_DETECTED("BAD_WORD_CHAT_400", HttpStatus.BAD_REQUEST, "상담원에게 폭언이나 욕설을 하시면 안 됩니다.");
+    CHAT_BAD_WORD_DETECTED("BAD_WORD_CHAT_400", HttpStatus.BAD_REQUEST, "상담원에게 폭언이나 욕설을 하시면 안 됩니다."),
 
+    REDIS_UNAVAILABLE("REDIS_UNAVAILABLE_503", HttpStatus.SERVICE_UNAVAILABLE, "세션 저장소 레디스 이용 불가 ");
     private final String code;
     private final HttpStatus status;
     private final String message;
