@@ -20,4 +20,5 @@ public class ReviewListResponse {
     private Long likeCnt;
     private LocalDateTime createDate;
     private boolean isAuthor;
+    private boolean isLiked;
 }
