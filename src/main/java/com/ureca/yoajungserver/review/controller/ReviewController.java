@@ -23,10 +23,9 @@ public class ReviewController {
 
     // 리뷰 조회
     @GetMapping("/{planId}")
-    public ResponseEntity<ApiResponse<ReviewPageResponse>> insertReview(@PathVariable Long planId, Pageable pageable) {
-        Page<ReviewListResponse> pageResponse = reviewService.reviewList(planId, pageable);
+    public ResponseEntity<ApiResponse<ReviewPageResponse>> listReview(@PathVariable Long planId, Pageable pageable) {
 
-        ReviewPageResponse response = new ReviewPageResponse(pageResponse); // Page객체 감싼 dto로 응답
+        ReviewPageResponse response = reviewService.reviewList(planId, pageable);
 
         return ResponseEntity.status(STATUS_OK.getStatus())
                 .body(ApiResponse.of(STATUS_OK, response));
@@ -63,7 +62,7 @@ public class ReviewController {
 
     // 리뷰 좋아요 기능
     @PostMapping("/like/{reviewId}")
-    public ResponseEntity<ApiResponse<ReviewLikeResponse>> insertReview(@PathVariable Long reviewId) {
+    public ResponseEntity<ApiResponse<ReviewLikeResponse>> toggleReviewLike(@PathVariable Long reviewId) {
         ReviewLikeResponse response = reviewService.reviewLike(reviewId);
 
         // 좋아요 취소

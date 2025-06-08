@@ -33,13 +33,21 @@ public class ReviewServiceImpl implements ReviewService {
 
     // 리뷰 조회
     @Override
-    public Page<ReviewListResponse> reviewList(Long planId, Pageable pageable) {
+    public ReviewPageResponse reviewList(Long planId, Pageable pageable) {
 
         // 로그인한 유저 (더미데이터)
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
-        return reviewRepository.findReviewList(user.getId(), planId, pageable);
+        Page<ReviewListResponse> reviewList = reviewRepository.findReviewList(user.getId(), planId, pageable);
+        Double avgStar = reviewRepository.avgStar(planId);
+        Boolean isPlanUser = reviewRepository.isPlanUser(user.getId(), planId);
+
+        if(avgStar == null){
+            avgStar = 0.0;
+        }
+
+        return new ReviewPageResponse(reviewList, avgStar, isPlanUser);
     }
 
     // 리뷰 등록
