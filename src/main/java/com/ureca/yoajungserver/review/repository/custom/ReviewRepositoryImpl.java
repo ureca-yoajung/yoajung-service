@@ -1,6 +1,8 @@
 package com.ureca.yoajungserver.review.repository.custom;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.yoajungserver.review.dto.response.ReviewListResponse;
@@ -25,24 +27,30 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     // 리뷰 조회
     @Override
     public Page<ReviewListResponse> findReviewList(Long userId, Long planId, Pageable pageable) {
-
         // 조회 (페이징)
         List<ReviewListResponse> reviewList = jpaQueryFactory
                 .select(Projections.constructor(ReviewListResponse.class,
                         review.id,
                         review.user.id,
+                        review.user.name,
                         review.content,
                         review.star,
                         reviewLike.id.count(),
                         review.createDate,
-                        review.user.id.eq(userId)
+                        review.user.id.eq(userId),
+                        JPAExpressions
+                                .selectOne()
+                                .from(reviewLike)
+                                .where(reviewLike.user.id.eq(userId)
+                                        .and(reviewLike.review.id.eq(review.id)))
+                                .exists()
                 ))
                 .from(review)
-                .join(user).on(review.user.id.eq(user.id))
+                .join(review.user, user)
                 .leftJoin(reviewLike).on(reviewLike.review.id.eq(review.id))
                 .where(review.plan.id.eq(planId)
-                        .and(review.isDeleted.eq(false)))
-                .groupBy(review.id, review.user.id, review.content, review.star, review.createDate)
+                        .and(review.isDeleted.isFalse()))
+                .groupBy(review.id, review.user.id, review.user.name, review.content, review.star, review.createDate)
                 .orderBy(review.createDate.desc())
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
@@ -53,9 +61,30 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .select(review.count())
                 .from(review)
                 .where(review.plan.id.eq(planId)
-                        .and(review.isDeleted.eq(false)));
+                        .and(review.isDeleted.isFalse()));
 
         return PageableExecutionUtils.getPage(reviewList, pageable, count::fetchOne);
+    }
+
+    // 별점 평균
+    @Override
+    public Double avgStar(Long planId) {
+        return jpaQueryFactory
+                .select(review.star.avg())
+                .from(review)
+                .where(review.plan.id.eq(planId))
+                .fetchOne();
+    }
+
+    // 요금제 사용자 여부
+    @Override
+    public Boolean isPlanUser(Long userId, Long planId) {
+        return jpaQueryFactory
+                .selectOne()
+                .from(user)
+                .where(user.id.eq(userId)
+                        .and(user.plan.id.eq(planId)))
+                .fetchOne() != null;
     }
 
 }

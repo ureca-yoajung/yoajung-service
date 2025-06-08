@@ -18,12 +18,16 @@ public class ReviewPageResponse {
     private int size;
     private long totalElements;
     private int totalPages;
+    private Double avgStar;
+    private Boolean isPlanUser;
 
-    public ReviewPageResponse(Page<ReviewListResponse> pageData) {
+    public ReviewPageResponse(Page<ReviewListResponse> pageData, Double avgStar, Boolean isPlanUser) {
         this.content = pageData.getContent();
         this.page = pageData.getNumber();
         this.size = pageData.getSize();
         this.totalElements = pageData.getTotalElements();
         this.totalPages = pageData.getTotalPages();
+        this.avgStar = avgStar;
+        this.isPlanUser = isPlanUser;
     }
 }
