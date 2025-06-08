@@ -6,12 +6,15 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
+
+import static com.ureca.yoajungserver.common.BaseCode.USER_LOGIN_FAIL;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,6 +50,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(BaseCode.USER_NOT_FOUND.getStatus())
                 .body(ApiResponse.ok(BaseCode.USER_NOT_FOUND));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.ok(USER_LOGIN_FAIL));
     }
 
     @ExceptionHandler(RedisConnectionFailureException.class)
