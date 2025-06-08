@@ -3,157 +3,68 @@ const planId = 1; // 실제로는 서버에서 주입하거나 URL에서 추출
 let currentPage = 0;
 const pageSize = 5;
 
-
 const modal = document.getElementById("review-modal");
 const openBtn = document.getElementById("review-write-btn");
 const closeBtn = document.querySelector(".close");
 const cancelBtn = document.getElementById("cancel-review");
-const stars = document.querySelectorAll(".star-rating .star");
 
 let selectedRating = 5; // 기본값
 
 
-// 모달 열기
-openBtn.onclick = () => {
-    modal.style.display = "flex";
-    highlightStars(selectedRating);
-};
+document.addEventListener("DOMContentLoaded", () => {
+    openBtn.onclick = () => {
+        toggleModal(modal, true);
+        selectedRating = 5; //
+        renderStars("star-rating", selectedRating, (val) => {
+            selectedRating = val;
+            renderStars("star-rating", val);
+            updateRatingText("insert-selected-rating-text", val);
+        });
+        updateRatingText("insert-selected-rating-text", selectedRating);
+    };
 
-// 모달 닫기
-closeBtn.onclick = cancelBtn.onclick = () => {
-    modal.style.display = "none";
-};
+    closeBtn.onclick = cancelBtn.onclick = () => toggleModal(modal, false);
+    document.getElementById("submit-review").addEventListener("click", insertReview);
 
-// 별점 클릭
-stars.forEach(star => {
-    star.addEventListener("click", () => {
-        selectedRating = parseInt(star.dataset.value);
-        highlightStars(selectedRating);
-    });
+    loadReviews();
 });
 
-function highlightStars(rating) {
-    const stars = document.querySelectorAll("#star-rating .star");
-    stars.forEach(star => {
-        const value = parseInt(star.getAttribute("data-value"));
-        if (value <= rating) {
-            star.classList.add("selected");
-        } else {
-            star.classList.remove("selected");
-        }
-    });
 
-    // 숫자 텍스트 표시
-    const insertRatingText = document.getElementById("insert-selected-rating-text");
-
-    if (insertRatingText) {
-        insertRatingText.textContent = `${rating}`;
-    }
-}
-
-function setEditStars(rating) {
-    const editStars = document.querySelectorAll('#edit-star-rating .star');
-    editStars.forEach(star => {
-        const val = parseInt(star.getAttribute('data-value'));
-        if (val <= rating) {
-            star.classList.add('selected');
-        } else {
-            star.classList.remove('selected');
-        }
-    });
-
-    const updateRatingText = document.getElementById("edit-selected-rating-text");
-    if (updateRatingText) {
-        updateRatingText.textContent = `${rating}`;
-    }
-
-    // 별 클릭 시 갱신
-    editStars.forEach(star => {
-        star.onclick = () => {
-            setEditStars(parseInt(star.getAttribute('data-value')));
-        };
-    });
-}
-
-// 클릭 이벤트 바인딩
-document.querySelectorAll("#star-rating .star").forEach(star => {
-    star.addEventListener("click", () => {
-        selectedRating = parseInt(star.getAttribute("data-value"));
-        highlightStars(selectedRating);
-    });
-});
-
-// 초기 렌더링 시 하이라이트
-highlightStars(selectedRating);
-
-document.getElementById("submit-review").addEventListener("click", insertReview);
-
-
-function openEditModal(review) {
-    document.getElementById('edit-modal').style.display = 'flex';
-    document.getElementById('edit-review-content').value = review.content;
-    document.getElementById('edit-modal').setAttribute('data-review-id', review.reviewId);
-    setEditStars(review.star); // 기존 별점 표시
-}
-
-
-
-
-// 리뷰 삭제
-async function deleteReview(reviewId) {
-    try {
-        const response = await fetch(`/review/${reviewId}`, {
-            method: 'DELETE'
-        });
-
-        if (!response.ok) {
-            throw new Error("삭제 실패");
-        }
-
-        alert("리뷰가 삭제되었습니다.");
-        loadReviews();
-    } catch (error) {
-        console.error("리뷰 삭제 오류:", error);
-        alert("리뷰 삭제에 실패했습니다.");
-    }
-}
-
-// 리뷰 수정
-async function submitEditReview() {
-    const reviewId = document.getElementById('edit-modal').getAttribute('data-review-id');
-    const content = document.getElementById('edit-review-content').value;
-    const stars = document.querySelectorAll('#edit-star-rating .star.selected').length;
-
-    if (!content.trim()) {
-        alert("수정할 내용을 입력해주세요.");
-        return;
-    }
+// 리뷰 조회
+async function loadReviews(page = 0) {
 
     try {
-        const response = await fetch(`/review/${reviewId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content, star: stars })
-        });
+        const res = await fetch(`/review/${planId}?page=${page}&size=${pageSize}`);
+        const data = await res.json();
+        const reviews = data.data.content;
 
-        if (!response.ok) {
-            throw new Error("수정 실패");
+        const container = document.getElementById('reviews-container');
+        const template = document.getElementById('review-template');
+
+        const totalReviewElement = document.getElementById('total-review');
+        totalReviewElement.textContent = data.data.totalElements; // 전체 개수
+        const avgReviewStar = document.getElementById('avg-stars');
+        avgReviewStar.textContent = Number(data.data.avgStar).toFixed(1); // 리뷰 평점
+
+        const reviewWriteBtn = document.getElementById('review-write-btn');
+        const isPlanUser = data.data.isPlanUser;
+        if (isPlanUser) {
+            reviewWriteBtn.style.display = 'inline-block';
         }
 
-        alert("리뷰가 수정되었습니다.");
-        closeEditModal();
-        loadReviews();
+        container.innerHTML = '';
+        reviews.forEach(review => {
+            renderReview(review, template, container);
+        });
 
+        // 페이지 정보 갱신
+        currentPage = data.data.page;
+        totalPages = data.data.totalPages;
+
+        renderPaginationButtons(totalPages, currentPage);
     } catch (error) {
-        console.error("수정 중 오류:", error);
-        alert("리뷰 수정에 실패했습니다.");
+        console.error('리뷰 로딩 실패:', error);
     }
-}
-
-function closeEditModal() {
-    document.getElementById('edit-modal').style.display = 'none';
 }
 
 
@@ -178,9 +89,9 @@ async function insertReview() {
             })
         });
 
-        const result = await response.json();
 
         if (!response.ok) {
+            const result = await response.json().catch(() => ({})); // JSON 파싱 실패 방지
             // 서버에서 내려준 커스텀 예외 메시지를 alert로 출력
             alert(result.message || "리뷰 등록 실패");
             return;
@@ -190,7 +101,13 @@ async function insertReview() {
         modal.style.display = "none";
         document.getElementById("review-insert-content").value = "";
         selectedRating = 5;
-        highlightStars(selectedRating);
+
+        renderStars("star-rating", selectedRating, (val) => {
+            selectedRating = val;
+            updateRatingText("insert-selected-rating-text", val);
+        });
+
+
         loadReviews(); // 등록 후 리뷰 새로고침
 
     } catch (error) {
@@ -200,68 +117,87 @@ async function insertReview() {
 }
 
 
-// 리뷰 조회
-async function loadReviews(page = 0) {
+// 리뷰 수정
+async function submitEditReview() {
+    const reviewId = document.getElementById('edit-modal').getAttribute('data-review-id');
+    const content = document.getElementById('edit-review-content').value;
+    const stars = document.querySelectorAll('#edit-star-rating .star.selected').length;
+
+    if (!content.trim()) {
+        alert("수정할 내용을 입력해주세요.");
+        return;
+    }
 
     try {
-        const res = await fetch(`/review/${planId}?page=${page}&size=${pageSize}`);
-        const data = await res.json();
-        const reviews = data.data.content;
-
-        const container = document.getElementById('reviews-container');
-        const template = document.getElementById('review-template');
-
-        const totalReviewElement = document.getElementById('total-review');
-        totalReviewElement.textContent = data.data.totalElements; // 전체 개수
-        const avgReviewStar = document.getElementById('avg-stars');
-        avgReviewStar.textContent = Number(data.data.avgStar).toFixed(1); // 리뷰 평점
-
-        const reviewWriteBtn = document.getElementById('review-write-btn');
-        const isPlanUser = data.data.isPlanUser;
-        if (isPlanUser) {
-            reviewWriteBtn.style.display = 'inline-block'; // 혹은 'block'
-        }
-
-
-        container.innerHTML = '';
-        reviews.forEach(review => {
-            renderReview(review, template, container);
+        const response = await fetch(`/review/${reviewId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content, star: stars })
         });
 
-        // 페이지 정보 갱신
-        currentPage = data.data.page;
-        totalPages = data.data.totalPages;
+        if (!response.ok) {
+            const result = await response.json().catch(() => ({})); // JSON 파싱 실패 방지
+            // 서버에서 내려준 커스텀 예외 메시지를 alert로 출력
+            alert(result.message || "리뷰 수정 실패");
+            return;
+        }
 
-        renderPaginationButtons(totalPages, currentPage);
+        alert("리뷰가 수정되었습니다.");
+        closeEditModal();
+        loadReviews();
+
     } catch (error) {
-        console.error('리뷰 로딩 실패:', error);
+        console.error("수정 중 오류:", error);
+        alert("리뷰 수정에 실패했습니다.");
     }
 }
 
-// 이름 masking
-function maskName(name) {
-    if (name.length <= 2) return name[0] + '*';
-    return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
-}
+// 리뷰 삭제
+async function deleteReview(reviewId) {
+    try {
+        const response = await fetch(`/review/${reviewId}`, {
+            method: 'DELETE'
+        });
 
+        if (!response.ok) {
+            const result = await response.json().catch(() => ({})); // JSON 파싱 실패 방지
+            // 서버에서 내려준 커스텀 예외 메시지를 alert로 출력
+            alert(result.message || "리뷰 삭제 실패");
+            return;
+        }
 
-// 페이지네이션
-function renderPaginationButtons(totalPages, currentPage) {
-    const paginationContainer = document.getElementById('pagination-buttons');
-    paginationContainer.innerHTML = '';
+        alert("리뷰가 삭제되었습니다.");
+        loadReviews();
 
-    for (let i = 0; i < totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i + 1;
-        btn.classList.add('page-btn'); // ✅ 이 부분이 중요
-        if (i === currentPage) btn.classList.add('active');
-
-        btn.disabled = i === currentPage;
-        btn.addEventListener('click', () => loadReviews(i));
-        paginationContainer.appendChild(btn);
+    } catch (error) {
+        console.error("리뷰 삭제 오류:", error);
+        alert("리뷰 삭제에 실패했습니다.");
     }
 }
 
+
+// 좋아요 등록/취소
+function handleLikeClick(reviewId, likeBtn, likeCountSpan) {
+    const liked = likeBtn.classList.contains('liked');
+
+    fetch(`/review/like/${reviewId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (!response.ok) throw new Error('Failed to update like');
+
+        // 성공 시 UI 업데이트
+        likeBtn.classList.toggle('liked');
+        let count = parseInt(likeCountSpan.textContent);
+        likeCountSpan.textContent = liked ? count - 1 : count + 1;
+    }).catch(error => {
+        console.error('좋아요 처리 실패:', error);
+    });
+}
 
 // 리뷰 item
 function renderReview(review, template, container) {
@@ -322,25 +258,65 @@ function renderReview(review, template, container) {
     container.appendChild(clone);
 }
 
-// 좋아요 등록/취소
-function handleLikeClick(reviewId, likeBtn, likeCountSpan) {
-    const liked = likeBtn.classList.contains('liked');
+function closeEditModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+}
 
-    fetch(`/review/like/${reviewId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+function renderStars(containerId, rating, onClickCallback) {
+    const stars = document.querySelectorAll(`#${containerId} .star`);
+    stars.forEach(star => {
+        const value = parseInt(star.dataset.value);
+        star.classList.toggle("selected", value <= rating);
+
+        if (onClickCallback) {
+            star.onclick = () => {
+                onClickCallback(value);
+            };
         }
-    }).then(response => {
-        if (!response.ok) throw new Error('Failed to update like');
-
-        // 성공 시 UI 업데이트
-        likeBtn.classList.toggle('liked');
-        let count = parseInt(likeCountSpan.textContent);
-        likeCountSpan.textContent = liked ? count - 1 : count + 1;
-    }).catch(error => {
-        console.error('좋아요 처리 실패:', error);
     });
 }
 
-loadReviews();
+function updateRatingText(elementId, rating) {
+    const el = document.getElementById(elementId);
+    if (el) el.textContent = `${rating}`;
+}
+
+function toggleModal(modalElement, show = true) {
+    modalElement.style.display = show ? "flex" : "none";
+}
+
+function openEditModal(review) {
+    toggleModal(document.getElementById('edit-modal'), true);
+    document.getElementById('edit-review-content').value = review.content;
+    document.getElementById('edit-modal').setAttribute('data-review-id', review.reviewId);
+
+    renderStars("edit-star-rating", review.star, (val) => {
+        renderStars("edit-star-rating", val);
+        updateRatingText("edit-selected-rating-text", val);
+    });
+    updateRatingText("edit-selected-rating-text", review.star);
+}
+
+// 이름 masking
+function maskName(name) {
+    if (name.length <= 2) return name[0] + '*';
+    return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
+}
+
+
+// 페이지네이션
+function renderPaginationButtons(totalPages, currentPage) {
+    const paginationContainer = document.getElementById('pagination-buttons');
+    paginationContainer.innerHTML = '';
+
+    for (let i = 0; i < totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1;
+        btn.classList.add('page-btn');
+        if (i === currentPage) btn.classList.add('active');
+
+        btn.disabled = i === currentPage;
+        btn.addEventListener('click', () => loadReviews(i));
+        paginationContainer.appendChild(btn);
+    }
+}
