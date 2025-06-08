@@ -3,31 +3,41 @@ package com.ureca.yoajungserver.user.security;
 
 import com.ureca.yoajungserver.user.entity.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 @Getter
-@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
-    private final User user;
+    private final Long id;
+    private final String email;
+    private final String password;
+    private final String name;
+    private final String role;
+
+    public CustomUserDetails(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.role = user.getRole().name();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> user.getRole().name());
+        return Collections.singletonList(() -> role);
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return email;
     }
 
     @Override
