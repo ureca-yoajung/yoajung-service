@@ -23,7 +23,7 @@ public class ReviewController {
 
     // 리뷰 조회
     @GetMapping("/{planId}")
-    public ResponseEntity<ApiResponse<ReviewPageResponse>> insertReview(@PathVariable Long planId, Pageable pageable) {
+    public ResponseEntity<ApiResponse<ReviewPageResponse>> listReview(@PathVariable Long planId, Pageable pageable) {
 
         ReviewPageResponse response = reviewService.reviewList(planId, pageable);
 
@@ -62,7 +62,7 @@ public class ReviewController {
 
     // 리뷰 좋아요 기능
     @PostMapping("/like/{reviewId}")
-    public ResponseEntity<ApiResponse<ReviewLikeResponse>> insertReview(@PathVariable Long reviewId) {
+    public ResponseEntity<ApiResponse<ReviewLikeResponse>> toggleReviewLike(@PathVariable Long reviewId) {
         ReviewLikeResponse response = reviewService.reviewLike(reviewId);
 
         // 좋아요 취소
