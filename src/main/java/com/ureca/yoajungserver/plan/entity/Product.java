@@ -28,14 +28,14 @@ public class Product extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
-    private String serviceImage;
+    private String productImage;
 
     @Builder
-    private Product(String name, ProductType productType, ProductCategory productCategory, String description, String serviceImage) {
+    private Product(String name, ProductType productType, ProductCategory productCategory, String description, String productImage) {
         this.name = name;
         this.productType = productType;
         this.productCategory = productCategory;
         this.description = description;
-        this.serviceImage = serviceImage;
+        this.productImage = productImage;
     }
 }

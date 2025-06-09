@@ -8,14 +8,14 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ListServiceDto {
+public class ListProductDto {
     private String name;
-    private String serviceImage;
+    private String productImage;
 
-    public static ListServiceDto fromService(Product service) {
-        return ListServiceDto.builder()
-                .name(service.getName())
-                .serviceImage(service.getServiceImage())
+    public static ListProductDto fromService(Product product) {
+        return ListProductDto.builder()
+                .name(product.getName())
+                .productImage(product.getProductImage())
                 .build();
     }
 }

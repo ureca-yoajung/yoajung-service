@@ -31,6 +31,8 @@ public enum BaseCode {
 
     // Plan
     PLAN_DETAIL_SUCCESS("FIND_PLAN_DETAIL_200", HttpStatus.OK, "요금제 상세 조회에 성공했습니다."),
+    PLAN_BENEFIT_SUCCESS("FIND_PLAN_BENEFIT_200", HttpStatus.OK, "요금제 혜택 조회에 성공했습니다."),
+    PLAN_PRODUCT_SUCCESS("FIND_PLAN_PRODUCT_200", HttpStatus.OK, "요금제 상품 조회에 성공했습니다."),
     PLAN_LIST_SUCCESS("READ_PLAN_LIST_200", HttpStatus.OK, "요금제 목록 조회에 성공했습니다."),
     PLAN_NOT_FOUND("NOT_FOUND_PLAN_404", HttpStatus.NOT_FOUND, "해당 요금제를 찾을 수 없습니다."),
 

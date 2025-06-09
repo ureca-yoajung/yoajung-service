@@ -1,15 +1,12 @@
 package com.ureca.yoajungserver.plan.dto.response;
 
 import com.ureca.yoajungserver.plan.entity.Plan;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 @Builder
-public class ListPlanResponse {
+public class DetailPlanResponse {
     private Long planId;
     private String networkType;
     private Integer basePrice;
@@ -17,11 +14,9 @@ public class ListPlanResponse {
     private Integer tetheringSharingAllowance;
     private Integer speedAfterLimit;
     private String description;
-    private List<ListProductDto> products;
-    private List<ListBenefitDto> benefits;
 
-    public static ListPlanResponse fromPlan(Plan plan, List<ListProductDto> products, List<ListBenefitDto> benefits) {
-        return ListPlanResponse.builder()
+    public static DetailPlanResponse fromPlan(Plan plan) {
+        return DetailPlanResponse.builder()
                 .planId(plan.getId())
                 .networkType(plan.getNetworkType().name())
                 .basePrice(plan.getBasePrice())
@@ -29,8 +24,6 @@ public class ListPlanResponse {
                 .tetheringSharingAllowance(plan.getTetheringSharingAllowance())
                 .speedAfterLimit(plan.getSpeedAfterLimit())
                 .description(plan.getDescription())
-                .products(products)
-                .benefits(benefits)
                 .build();
     }
 }
