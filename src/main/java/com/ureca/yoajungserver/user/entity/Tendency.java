@@ -42,7 +42,7 @@ public class Tendency extends BaseTimeEntity {
     }
 
     public void updateTendency(TendencyRequest request) {
-        this.avgMonthlyDataGB = request.getAvgMonthLyDataGB();
+        this.avgMonthlyDataGB = request.getAvgMonthlyDataGB();
         this.avgMonthlyVoiceMin = request.getAvgMonthlyVoiceMin();
         this.comment = request.getComment();
         this.preferencePrice = request.getPreferencePrice();

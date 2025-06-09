@@ -17,7 +17,7 @@ public class TendencyResponse {
     public static TendencyResponse fromEntity(Tendency tendency) {
         return TendencyResponse.builder()
                 .avgMonthlyDataGB(tendency.getAvgMonthlyDataGB())
-                .avgMonthlyDataGB(tendency.getAvgMonthlyVoiceMin())
+                .avgMonthlyVoiceMin(tendency.getAvgMonthlyVoiceMin())
                 .comment(tendency.getComment())
                 .preferencePrice(tendency.getPreferencePrice())
                 .build();

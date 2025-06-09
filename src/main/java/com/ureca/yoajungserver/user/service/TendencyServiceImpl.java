@@ -41,7 +41,7 @@ public class TendencyServiceImpl implements TendencyService {
 
         Tendency tendency = Tendency.builder()
                 .user(user)
-                .avgMonthlyDataGB(request.getAvgMonthLyDataGB())
+                .avgMonthlyDataGB(request.getAvgMonthlyDataGB())
                 .avgMonthlyVoiceMin(request.getAvgMonthlyVoiceMin())
                 .comment(request.getComment())
                 .preferencePrice(request.getPreferencePrice())

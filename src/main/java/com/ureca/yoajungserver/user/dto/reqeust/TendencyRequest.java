@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TendencyRequest {
     @Min(value = 0, message = "0 이상")
-    private Integer avgMonthLyDataGB;
+    private Integer avgMonthlyDataGB;
     @Min(value = 0, message = "0 이상")
     private Integer avgMonthlyVoiceMin;
 
