@@ -58,7 +58,7 @@ spring:
       memory:
         repository:
           jdbc:
-            initialize-schema: always
+            initialize-schema: never
             platform: mariadb
 server:
   servlet:
