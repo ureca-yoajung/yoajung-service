@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import static com.ureca.yoajungserver.common.BaseCode.PLAN_NOT_FOUND;
 
-@Repository
+@Service
 @RequiredArgsConstructor
 public class PlanServiceImpl implements PlanService {
 
@@ -54,15 +54,30 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<DetailProductDto> getListPlanProducts(Long planId) {
+    public DetailPlanProductResponse getDetailPlanProducts(Long planId) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
 
-        List<PlanProduct> planProducts = planProductRepository.findByPlanId(plan.getId());
+        List<PlanProduct> planProducts = planProductRepository.findByPlanIdWithProduct(planId);
 
-        return planProducts.stream()
-                .map(product -> DetailProductDto.fromProduct(product.getProduct()))
-                .collect(Collectors.toList());
+        List<Product> products = planProducts.stream()
+                .map(PlanProduct::getProduct)
+                .toList();
+
+        List<DetailProductDto> media = products.stream()
+                .filter(p -> p.getProductCategory() == ProductCategory.MEDIA)
+                .map(DetailProductDto::fromProduct)
+                .toList();
+
+        List<DetailProductDto> premium = products.stream()
+                .filter(p -> p.getProductCategory() == ProductCategory.PREMIUM)
+                .map(DetailProductDto::fromProduct)
+                .toList();
+
+        return DetailPlanProductResponse.builder()
+                .media(media)
+                .premium(premium)
+                .build();
     }
 
     @Override
@@ -70,7 +85,7 @@ public class PlanServiceImpl implements PlanService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
 
-        List<PlanBenefit> planBenefits = planBenefitRepository.findByPlanId(plan.getId());
+        List<PlanBenefit> planBenefits = planBenefitRepository.findByPlanIdWithBenefit(planId);
 
         Map<BenefitType, Benefit> benefitMap = planBenefits.stream()
                 .map(PlanBenefit::getBenefit)

@@ -2,6 +2,7 @@ package com.ureca.yoajungserver.plan.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
 import com.ureca.yoajungserver.plan.dto.response.DetailPlanBenefitResponse;
+import com.ureca.yoajungserver.plan.dto.response.DetailPlanProductResponse;
 import com.ureca.yoajungserver.plan.dto.response.DetailProductDto;
 import com.ureca.yoajungserver.plan.dto.response.ListPlanResponse;
 import com.ureca.yoajungserver.plan.service.PlanService;
@@ -29,9 +30,17 @@ public class PlanController {
                 .body(ApiResponse.of(PLAN_LIST_SUCCESS, responses));
     }
 
+    @GetMapping("/{planId}")
+    public ResponseEntity<ApiResponse<?>> getDetailPlan(@PathVariable(value = "planId") Long planId) {
+        DetailPlanProductResponse responses = planService.getDetailPlanProducts(planId);
+        return ResponseEntity
+                .status(PLAN_DETAIL_SUCCESS.getStatus())
+                .body(ApiResponse.of(PLAN_DETAIL_SUCCESS, responses));
+    }
+
     @GetMapping("/products/{planId}")
-    public ResponseEntity<ApiResponse<?>> getListPlanProduct(@PathVariable(value = "planId") Long planId) {
-        List<DetailProductDto> responses = planService.getListPlanProducts(planId);
+    public ResponseEntity<ApiResponse<?>> getDetailPlanProduct(@PathVariable(value = "planId") Long planId) {
+        DetailPlanProductResponse responses = planService.getDetailPlanProducts(planId);
         return ResponseEntity
                 .status(PLAN_PRODUCT_SUCCESS.getStatus())
                 .body(ApiResponse.of(PLAN_PRODUCT_SUCCESS, responses));
