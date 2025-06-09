@@ -3,7 +3,6 @@ package com.ureca.yoajungserver.chatbot.interceptor;
 import com.ureca.yoajungserver.chatbot.exception.BadWordDetectedException;
 import com.ureca.yoajungserver.common.BaseCode;
 import com.ureca.yoajungserver.common.component.LocalBadWordComponent;
-import com.vane.badwordfiltering.BadWordFiltering;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +23,9 @@ public class LocalBadWordInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        BadWordFiltering badWordFiltering = new BadWordFiltering();
-
-        boolean badWordCheck = badWordFiltering.check(question);
-
-        if (badWordCheck) {
+        if(!localBadWordComponent.validate(question)) {
             throw new BadWordDetectedException(BaseCode.CHAT_BAD_WORD_DETECTED);
         }
-
-        return localBadWordComponent.validate(question);
+        return true;
     }
 }

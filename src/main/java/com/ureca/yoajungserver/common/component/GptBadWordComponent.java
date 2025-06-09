@@ -31,7 +31,7 @@ public class GptBadWordComponent {
         boolean flagged = result.isFlagged();
 
         if (flagged) {
-            throw new BadWordDetectedException(BaseCode.CHAT_BAD_WORD_DETECTED);
+            return false;
         }
 
         return true;

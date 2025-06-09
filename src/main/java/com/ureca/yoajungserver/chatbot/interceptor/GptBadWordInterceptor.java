@@ -1,5 +1,7 @@
 package com.ureca.yoajungserver.chatbot.interceptor;
 
+import com.ureca.yoajungserver.chatbot.exception.BadWordDetectedException;
+import com.ureca.yoajungserver.common.BaseCode;
 import com.ureca.yoajungserver.common.component.GptBadWordComponent;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +23,9 @@ public class GptBadWordInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        return gptBadWordComponent.validate(question);
+        if(!gptBadWordComponent.validate(question)){
+            throw new BadWordDetectedException(BaseCode.CHAT_BAD_WORD_DETECTED);
+        }
+        return true;
     }
 }

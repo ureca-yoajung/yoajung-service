@@ -45,6 +45,7 @@ public enum BaseCode {
     REVIEW_ALREADY_EXIST("ALREADY_EXIST_REVIEW_409", HttpStatus.CONFLICT, "이미 리뷰를 작성했습니다."),
     NOT_REVIEW_AUTHOR("NOT_REVIEW_AUTHOR_409", HttpStatus.CONFLICT, "리뷰 작성자만 접근 가능합니다."),
     REVIEW_NOT_ALLOWED("REVIEW_NOT_ALLOWED_409", HttpStatus.CONFLICT, "리뷰 작성 권한이 없습니다."),
+    REVIEW_BAD_WORD_DETECTED("BAD_WORD_REVIEW_400", HttpStatus.BAD_REQUEST, "욕설/모욕이 포함된 리뷰를 게시할 수 없습니다."),
 
 
     // Chat
