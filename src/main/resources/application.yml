@@ -43,6 +43,7 @@ spring:
           timeout: 5000
           write timeout: 5000
   email-code-expiration-millis: 1800000
+  password-reset-token-expiration-millis: 600000
 
   ai:
     openai:
