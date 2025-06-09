@@ -1,13 +1,13 @@
 package com.ureca.yoajungserver.review.exception;
 
 import com.ureca.yoajungserver.common.BaseCode;
+import com.ureca.yoajungserver.common.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class PlanNotFoundException extends IllegalArgumentException {
+public class PlanNotFoundException extends BusinessException {
 
-    private final BaseCode baseCode;
     public PlanNotFoundException(BaseCode baseCode) {
-        this.baseCode = baseCode;
+        super(baseCode);
     }
 }

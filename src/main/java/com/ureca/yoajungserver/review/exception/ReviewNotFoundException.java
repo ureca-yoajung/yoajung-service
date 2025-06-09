@@ -1,13 +1,13 @@
 package com.ureca.yoajungserver.review.exception;
 
 import com.ureca.yoajungserver.common.BaseCode;
+import com.ureca.yoajungserver.common.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class ReviewNotFoundException extends IllegalArgumentException {
+public class ReviewNotFoundException extends BusinessException {
 
-    private final BaseCode baseCode;
     public ReviewNotFoundException(BaseCode baseCode) {
-        this.baseCode = baseCode;
+        super(baseCode);
     }
 }
