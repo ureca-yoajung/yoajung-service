@@ -1,16 +1,15 @@
 package com.ureca.yoajungserver.plan.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.plan.dto.response.DetailProductDto;
 import com.ureca.yoajungserver.plan.dto.response.ListPlanResponse;
 import com.ureca.yoajungserver.plan.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.ureca.yoajungserver.common.BaseCode.PLAN_LIST_SUCCESS;
+import static com.ureca.yoajungserver.common.BaseCode.PLAN_PRODUCT_SUCCESS;
 
 import java.util.List;
 
@@ -28,5 +27,13 @@ public class PlanController {
         return ResponseEntity
                 .status(PLAN_LIST_SUCCESS.getStatus())
                 .body(ApiResponse.of(PLAN_LIST_SUCCESS, responses));
+    }
+
+    @GetMapping("/products/{planId}")
+    public ResponseEntity<ApiResponse<?>> getListPlanProduct(@PathVariable(value = "planId") Long planId) {
+        List<DetailProductDto> responses = planService.getListPlanProducts(planId);
+        return ResponseEntity
+                .status(PLAN_PRODUCT_SUCCESS.getStatus())
+                .body(ApiResponse.of(PLAN_PRODUCT_SUCCESS, responses));
     }
 }

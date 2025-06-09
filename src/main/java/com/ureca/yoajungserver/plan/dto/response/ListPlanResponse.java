@@ -18,10 +18,10 @@ public class ListPlanResponse {
     private Integer tetheringSharingAllowance;
     private Integer speedAfterLimit;
     private String description;
-    private List<ListServiceDto> services;
+    private List<ListProductDto> products;
     private List<ListBenefitDto> benefits;
 
-    public static ListPlanResponse fromPlan(Plan plan, List<ListServiceDto> services, List<ListBenefitDto> benefits) {
+    public static ListPlanResponse fromPlan(Plan plan, List<ListProductDto> products, List<ListBenefitDto> benefits) {
         return ListPlanResponse.builder()
                 .planId(plan.getId())
                 .networkType(plan.getNetworkType().name())
@@ -30,7 +30,7 @@ public class ListPlanResponse {
                 .tetheringSharingAllowance(plan.getTetheringSharingAllowance())
                 .speedAfterLimit(plan.getSpeedAfterLimit())
                 .description(plan.getDescription())
-                .services(services)
+                .products(products)
                 .benefits(benefits)
                 .build();
     }
