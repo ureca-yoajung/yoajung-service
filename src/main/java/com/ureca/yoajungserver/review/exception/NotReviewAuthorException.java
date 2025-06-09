@@ -1,13 +1,13 @@
 package com.ureca.yoajungserver.review.exception;
 
 import com.ureca.yoajungserver.common.BaseCode;
+import com.ureca.yoajungserver.common.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class NotReviewAuthorException extends IllegalArgumentException {
+public class NotReviewAuthorException extends BusinessException {
 
-    private final BaseCode baseCode;
     public NotReviewAuthorException(BaseCode baseCode) {
-        this.baseCode = baseCode;
+        super(baseCode);
     }
 }

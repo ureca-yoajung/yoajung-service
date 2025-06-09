@@ -72,7 +72,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         return jpaQueryFactory
                 .select(review.star.avg())
                 .from(review)
-                .where(review.plan.id.eq(planId))
+                .where(review.plan.id.eq(planId)
+                        .and(review.isDeleted.isFalse()))
                 .fetchOne();
     }
 

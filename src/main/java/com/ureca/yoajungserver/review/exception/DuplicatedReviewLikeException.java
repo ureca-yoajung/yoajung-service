@@ -1,13 +1,13 @@
 package com.ureca.yoajungserver.review.exception;
 
 import com.ureca.yoajungserver.common.BaseCode;
+import com.ureca.yoajungserver.common.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class DuplicatedReviewLikeException extends IllegalArgumentException {
+public class DuplicatedReviewLikeException extends BusinessException {
 
-    private final BaseCode baseCode;
     public DuplicatedReviewLikeException(BaseCode baseCode) {
-        this.baseCode = baseCode;
+        super(baseCode);
     }
 }

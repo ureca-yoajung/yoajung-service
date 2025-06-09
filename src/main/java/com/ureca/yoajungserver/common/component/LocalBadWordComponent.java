@@ -16,7 +16,7 @@ public class LocalBadWordComponent {
         boolean badWordCheck = badWordFiltering.check(question);
 
         if (badWordCheck) {
-            throw new BadWordDetectedException(BaseCode.CHAT_BAD_WORD_DETECTED);
+            return false;
         }
 
         return true;
