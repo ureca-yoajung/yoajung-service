@@ -17,7 +17,7 @@ public enum BaseCode {
 
     // user/singup
     USER_SIGNUP_SUCCESS("USER_SIGNUP_SUCCESS_201", HttpStatus.CREATED, "회원가입 됐습니다"),
-    USER_NOT_FOUND("NOT_FOUND_USER_404", HttpStatus.NOT_FOUND, "유저가 없습니다"),
+    USER_NOT_FOUND("USER_NOT_FOUND_404", HttpStatus.NOT_FOUND, "유저가 없습니다"),
     USER_DUPLICATED_EMAIL("USER_DUPLICATED_EMAIL_409", HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     USER_DUPLICATED_PHONE_NUMBER("USER_DUPLICATED_PHONE_NUMBER_409", HttpStatus.CONFLICT, "이미 가입된 전화번호입니다"),
 
@@ -26,6 +26,13 @@ public enum BaseCode {
     USER_LOGIN_FAIL("USER_LOGIN_FAIL_401", HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
     USER_LOGOUT_SUCCESS("USER_LOGOUT_SUCCESS_200", HttpStatus.OK, "로그아웃에 성공했습니다."),
     USER_SESSION_EXPIRED("USER_SESSION_EXPIRED_401", HttpStatus.UNAUTHORIZED, "세션이 만료됐습니다. 다시 로그인해주세요."),
+
+    // tendency
+    TENDENCY_ALREADY_EXISTS("TENDENCY_ALREADY_EXISTS_409", HttpStatus.CONFLICT, "이미 등록된 성향입니다"),
+    TENDENCY_CREATED("TENDENCY_CREATED_201", HttpStatus.CREATED, "성향을 등록했습니다"),
+    TENDENCY_UPDATED("TENDENCY_UPDATED_200", HttpStatus.OK, "성향을 수정했습니다"),
+    TENDENCY_FIND_SUCCESS("TENDENCY_SUCCESS_200", HttpStatus.OK, "성향정보 조회했습니다"),
+    TENDENCY_NOT_FOUND("TENDENCY_NOT_FOUND_404", HttpStatus.NOT_FOUND, "성향이 없습니다"),
 
     // pw
     PASSWORD_RESET_LINK_SENT("PASSWORD_RESET_LINK_SENT_200", HttpStatus.OK, "비밀번호 재설정 링크가 전송됐습니다"),
