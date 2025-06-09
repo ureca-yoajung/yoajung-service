@@ -1,10 +1,7 @@
 package com.ureca.yoajungserver.plan.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
-import com.ureca.yoajungserver.plan.dto.response.DetailPlanBenefitResponse;
-import com.ureca.yoajungserver.plan.dto.response.DetailPlanProductResponse;
-import com.ureca.yoajungserver.plan.dto.response.DetailProductDto;
-import com.ureca.yoajungserver.plan.dto.response.ListPlanResponse;
+import com.ureca.yoajungserver.plan.dto.response.*;
 import com.ureca.yoajungserver.plan.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +29,7 @@ public class PlanController {
 
     @GetMapping("/{planId}")
     public ResponseEntity<ApiResponse<?>> getDetailPlan(@PathVariable(value = "planId") Long planId) {
-        DetailPlanProductResponse responses = planService.getDetailPlanProducts(planId);
+        DetailPlanResponse responses = planService.getDetailPlan(planId);
         return ResponseEntity
                 .status(PLAN_DETAIL_SUCCESS.getStatus())
                 .body(ApiResponse.of(PLAN_DETAIL_SUCCESS, responses));

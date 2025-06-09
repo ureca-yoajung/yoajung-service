@@ -54,6 +54,14 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
+    public DetailPlanResponse getDetailPlan(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
+
+        return DetailPlanResponse.fromPlan(plan);
+    }
+
+    @Override
     public DetailPlanProductResponse getDetailPlanProducts(Long planId) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));

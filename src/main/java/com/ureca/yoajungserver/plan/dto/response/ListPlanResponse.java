@@ -9,7 +9,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@AllArgsConstructor
 public class ListPlanResponse {
     private Long planId;
     private String networkType;
