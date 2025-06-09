@@ -1,11 +1,13 @@
 package com.ureca.yoajungserver.common;
 
 import com.ureca.yoajungserver.common.exception.BusinessException;
+import com.ureca.yoajungserver.user.exception.EmailSendFailedException;
 import jakarta.transaction.SystemException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -41,8 +43,21 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.of(BaseCode.INVALID_REQUEST, message));
     }// 검증 예외
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.ok(BaseCode.USER_LOGIN_FAIL));
+    }// 로그인 실패
+
+    @ExceptionHandler(EmailSendFailedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleEmailSendFailed(EmailSendFailedException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.ok(BaseCode.EMAIL_SEND_FAILED));
+    }
+
     @ExceptionHandler(RedisConnectionFailureException.class)
     public ResponseEntity<ApiResponse<Void>> handlerRedisFaulrue(RedisConnectionFailureException exception) {
+
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(ApiResponse.ok(BaseCode.REDIS_UNAVAILABLE));
     }// 레디스연결실패
