@@ -15,6 +15,8 @@ public class PlanKeywordResponse {
 
     private Integer price;
 
+    private String networkType;
+
     private String callAllowance;
 
     private String smsAllowance;

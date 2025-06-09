@@ -15,7 +15,7 @@ public enum BaseCode {
     STATUS_UNAUTHORIZED("STATUS_UNAUTHORIZED_401", HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     STATUS_FORBIDDEN("STATUS_FORBIDDEN_403", HttpStatus.FORBIDDEN, "권한이 없니다."),
 
-    // user/singup
+    // user/signup
     USER_SIGNUP_SUCCESS("USER_SIGNUP_SUCCESS_201", HttpStatus.CREATED, "회원가입 됐습니다"),
     USER_NOT_FOUND("NOT_FOUND_USER_404", HttpStatus.NOT_FOUND, "유저가 없습니다"),
     USER_DUPLICATED_EMAIL("USER_DUPLICATED_EMAIL_409", HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
