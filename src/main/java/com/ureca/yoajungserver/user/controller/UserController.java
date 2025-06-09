@@ -22,6 +22,6 @@ public class UserController {
     @PostMapping("/api/user/signup")
     public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request, HttpSession session) {
         userService.signup(request, session);
-        return ResponseEntity.ok(ApiResponse.ok(BaseCode.USER_LOGIN_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.ok(BaseCode.USER_SIGNUP_SUCCESS));
     }
 }
