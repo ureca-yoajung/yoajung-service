@@ -37,8 +37,8 @@ public class PlanServiceImpl implements PlanService {
                             .map(ListBenefitDto::fromBenefit)
                             .collect(Collectors.toList());
 
-                    List<ListServiceDto> serviceDtos = plan.getPlanServices().stream()
-                            .map(com.ureca.yoajungserver.plan.entity.PlanService::getService)
+                    List<ListServiceDto> serviceDtos = plan.getPlanProducts().stream()
+                            .map(com.ureca.yoajungserver.plan.entity.PlanProduct::getProduct)
                             .map(ListServiceDto::fromService)
                             .collect(Collectors.toList());
 

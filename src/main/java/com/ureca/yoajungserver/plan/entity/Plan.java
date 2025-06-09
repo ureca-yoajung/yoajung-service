@@ -54,7 +54,7 @@ public class Plan extends BaseTimeEntity {
 
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "plan", fetch = FetchType.LAZY)
-    private List<PlanService> planServices;
+    private List<PlanProduct> planProducts;
 
     @Builder
     private Plan(String name, NetworkType networkType, PlanCategory planCategory, Integer basePrice, Integer dataAllowance, Integer tetheringSharingAllowance, Integer speedAfterLimit, String description) {

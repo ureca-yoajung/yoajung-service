@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Service extends BaseTimeEntity {
+public class Product extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +18,11 @@ public class Service extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ServiceType serviceType;
+    private ProductType productType;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ServiceCategory serviceCategory;
+    private ProductCategory productCategory;
 
     @Column(nullable = false)
     private String description;
@@ -31,10 +31,10 @@ public class Service extends BaseTimeEntity {
     private String serviceImage;
 
     @Builder
-    private Service(String name, ServiceType serviceType, ServiceCategory serviceCategory, String description, String serviceImage) {
+    private Product(String name, ProductType productType, ProductCategory productCategory, String description, String serviceImage) {
         this.name = name;
-        this.serviceType = serviceType;
-        this.serviceCategory = serviceCategory;
+        this.productType = productType;
+        this.productCategory = productCategory;
         this.description = description;
         this.serviceImage = serviceImage;
     }

@@ -3,14 +3,13 @@ package com.ureca.yoajungserver.plan.entity;
 import com.ureca.yoajungserver.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlanService extends BaseTimeEntity {
+public class PlanProduct extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +20,6 @@ public class PlanService extends BaseTimeEntity {
     private Plan plan;
 
     @ManyToOne
-    @JoinColumn(name = "service_id", nullable = false)
-    private Service service;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 }
