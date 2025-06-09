@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,5 +40,14 @@ public class TendencyController {
         Tendency tendency = tendencyService.registerTendency(userDetails.getUsername(), request);
         TendencyResponse response = TendencyResponse.fromEntity(tendency);
         return ResponseEntity.ok(ApiResponse.of(BaseCode.STATUS_CREATED, response));
+    }
+
+    @PutMapping("/api/tendency")
+    public ResponseEntity<ApiResponse<TendencyResponse>> updateTendency(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody TendencyRequest request) {
+        Tendency tendency = tendencyService.updateTendency(userDetails.getUsername(), request);
+        TendencyResponse response = TendencyResponse.fromEntity(tendency);
+        return ResponseEntity.ok(ApiResponse.of(BaseCode.TENDENCY_UPDATED, response));
     }
 }
