@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -29,6 +30,21 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     @Override
     public void sendResetLink(String email) {
+
+       /*
+       troubleshooting
+       링크 요청을 여러번할 시 이전에 남아있는 토큰들은 다 지워져야 한다.
+        */
+
+        Set<String> keys = redisTemplate.keys(PASSWORD_RESET_KEY_PREFIX + "*");
+        if (!keys.isEmpty()) {
+            for (String key : keys) {
+                String value = redisTemplate.opsForValue().get(key);
+                if (email.equals(value)) {
+                    redisTemplate.delete(key);
+                }
+            }
+        }
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         String token = UUID.randomUUID().toString();
@@ -36,7 +52,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
         redisTemplate.opsForValue().set(redisKey, email, Duration.ofMillis(expirationMillis));
 
-        String resetLink = "http://localhost:8080/reset-password?token=" + token;
+        String resetLink = "http://localhost:8080/reset-password.html?token=" + token;
 
         emailService.sendPasswordResetLink(email, resetLink);
     }
