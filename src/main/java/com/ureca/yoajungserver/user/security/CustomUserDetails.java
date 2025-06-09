@@ -11,17 +11,13 @@ import java.util.Collections;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
-    private final Long id;
     private final String email;
     private final String password;
-    private final String name;
     private final String role;
 
     public CustomUserDetails(User user) {
-        this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
-        this.name = user.getName();
         this.role = user.getRole().name();
     }
 
