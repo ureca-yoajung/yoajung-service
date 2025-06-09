@@ -4,6 +4,8 @@ import com.ureca.yoajungserver.common.BaseCode;
 import com.ureca.yoajungserver.common.exception.BusinessException;
 import com.ureca.yoajungserver.user.dto.reqeust.SendCodeRequest;
 import com.ureca.yoajungserver.user.dto.reqeust.VerifyCodeRequest;
+import com.ureca.yoajungserver.user.exception.EmailCodeExpiredException;
+import com.ureca.yoajungserver.user.exception.EmailCodeMismatchException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,17 +50,19 @@ public class AuthServiceImpl implements AuthService {
         if (pending == null) {
             throw new BusinessException(BaseCode.INVALID_REQUEST);
         }
+        // 세션에서 보류중인 이메일을 꺼낸다. 없으면 에러
 
         String email = pending.toString();
         String redisKey = CODE_KEY_PREFIX + email;
         String correctCode = redisTemplate.opsForValue().get(redisKey);
+        // 레디스에서 키값을 조회
 
         if (correctCode == null) {
-            throw new BusinessException(BaseCode.EMAIL_CODE_EXPIRED);
+            throw new EmailCodeExpiredException();
         }// 레디스에서 가져와서 점검 하는데 만료
 
         if (!correctCode.equals(request.getCode())) {
-            throw new BusinessException(BaseCode.EMAIL_CODE_MISMATCH);
+            throw new EmailCodeMismatchException();
         }// 코드 불 일치
 
         httpSession.setAttribute(VERIFIED_EMAIL, email);
