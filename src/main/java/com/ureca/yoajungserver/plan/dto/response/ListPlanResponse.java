@@ -11,6 +11,8 @@ import java.util.List;
 @Builder
 public class ListPlanResponse {
     private Long planId;
+    private String name;
+    private String planCategory;
     private String networkType;
     private Integer basePrice;
     private Integer dataAllowance;
@@ -23,6 +25,8 @@ public class ListPlanResponse {
     public static ListPlanResponse fromPlan(Plan plan, List<ListProductDto> products, List<ListBenefitDto> benefits) {
         return ListPlanResponse.builder()
                 .planId(plan.getId())
+                .name(plan.getName())
+                .planCategory(plan.getPlanCategory().name())
                 .networkType(plan.getNetworkType().name())
                 .basePrice(plan.getBasePrice())
                 .dataAllowance(plan.getDataAllowance())

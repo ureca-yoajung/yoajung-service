@@ -2,6 +2,7 @@ package com.ureca.yoajungserver.plan.service;
 
 import com.ureca.yoajungserver.plan.dto.response.*;
 import com.ureca.yoajungserver.plan.entity.*;
+import com.ureca.yoajungserver.plan.exception.InvalidPlanCategoryException;
 import com.ureca.yoajungserver.plan.repository.PlanBenefitRepository;
 import com.ureca.yoajungserver.plan.repository.PlanProductRepository;
 import com.ureca.yoajungserver.plan.repository.PlanRepository;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ureca.yoajungserver.common.BaseCode.PLAN_NOT_FOUND;
+import static com.ureca.yoajungserver.common.BaseCode.INVALID_PLAN_CATEGORY;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +32,18 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ListPlanResponse> getListPlan(int page, int size) {
+    public List<ListPlanResponse> getListPlan(int page, int size, String planType) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Plan> planPage = planRepository.findAll(pageable);
+        Page<Plan> planPage;
+        if (planType == null || planType.isBlank()) {
+            planPage = planRepository.findAll(pageable);
+        } else {
+            PlanCategory planCategory = PlanCategory.fromType(planType.toUpperCase())
+                    .orElseThrow(() -> new InvalidPlanCategoryException(INVALID_PLAN_CATEGORY));
+
+            planPage = planRepository.findAllByPlanCategory(planCategory, pageable);
+        }
 
         return planPage.getContent().stream()
                 .map(plan -> {

@@ -19,8 +19,10 @@ public class PlanController {
     private final PlanService planService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getListPlan(@RequestParam int page, @RequestParam int size) {
-        List<ListPlanResponse> responses = planService.getListPlan(page, size);
+    public ResponseEntity<ApiResponse<?>> getListPlan(
+            @RequestParam int page, @RequestParam int size,
+            @RequestParam(defaultValue = "") String planType) {
+        List<ListPlanResponse> responses = planService.getListPlan(page, size, planType);
 
         return ResponseEntity
                 .status(PLAN_LIST_SUCCESS.getStatus())
