@@ -1,10 +1,9 @@
 package com.ureca.yoajungserver.user.service;
 
-import com.ureca.yoajungserver.common.BaseCode;
-import com.ureca.yoajungserver.common.exception.BusinessException;
 import com.ureca.yoajungserver.user.dto.reqeust.SignupRequest;
 import com.ureca.yoajungserver.user.entity.Role;
 import com.ureca.yoajungserver.user.entity.User;
+import com.ureca.yoajungserver.user.exception.EmailNotVerifiedException;
 import com.ureca.yoajungserver.user.exception.UserDuplicatedEmailException;
 import com.ureca.yoajungserver.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -31,7 +30,7 @@ public class UserServiceImpl implements UserService {
         // 세션에 저장된 인증된 이메일 확인
         Object verified = httpSession.getAttribute(VERIFIED_EMAIL);
         if (verified == null || !verified.equals(email)) {
-            throw new BusinessException(BaseCode.INVALID_REQUEST);
+            throw new EmailNotVerifiedException();
         }
 
         // 이메일 중복 검사
