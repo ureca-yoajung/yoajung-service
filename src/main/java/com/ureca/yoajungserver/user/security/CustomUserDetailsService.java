@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.user.security;
 
 import com.ureca.yoajungserver.user.entity.User;
+import com.ureca.yoajungserver.user.exception.UserNotFoundException;
 import com.ureca.yoajungserver.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,8 +16,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException(email));
+        User user = userRepository.findByEmail(email).orElseThrow(
+                UserNotFoundException::new);
         return new CustomUserDetails(user);
     }
 }

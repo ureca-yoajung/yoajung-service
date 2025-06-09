@@ -5,6 +5,7 @@ import com.ureca.yoajungserver.common.exception.BusinessException;
 import com.ureca.yoajungserver.user.dto.reqeust.SignupRequest;
 import com.ureca.yoajungserver.user.entity.Role;
 import com.ureca.yoajungserver.user.entity.User;
+import com.ureca.yoajungserver.user.exception.UserDuplicatedEmailException;
 import com.ureca.yoajungserver.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
         // 이메일 중복 검사
         userRepository.findByEmail(email).ifPresent(u -> {
-            throw new BusinessException(BaseCode.USER_DUPLICATED_EMAIL);
+            throw new UserDuplicatedEmailException();
         });
 
         // 비밀번호 암호화
