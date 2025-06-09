@@ -1,10 +1,9 @@
 package com.ureca.yoajungserver.user.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
-import com.ureca.yoajungserver.user.dto.reqeust.LoginRequest;
-import com.ureca.yoajungserver.user.dto.reqeust.SendCodeRequest;
-import com.ureca.yoajungserver.user.dto.reqeust.VerifyCodeRequest;
+import com.ureca.yoajungserver.user.dto.reqeust.*;
 import com.ureca.yoajungserver.user.service.AuthService;
+import com.ureca.yoajungserver.user.service.PasswordResetService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -28,6 +27,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/send-code")
     public ResponseEntity<ApiResponse<Void>> sendCode(@Valid @RequestBody SendCodeRequest request, HttpSession session) {
@@ -70,6 +70,20 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(HttpSession session) {
         session.invalidate();
         return ResponseEntity.ok(ApiResponse.ok(USER_LOGOUT_SUCCESS));
+    }
+
+    @PostMapping("/reset-request")
+    public ResponseEntity<ApiResponse<Void>> requestPasswordReset(
+            @Valid @RequestBody PasswordResetRequest request) {
+        passwordResetService.sendResetLink(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.ok(PASSWORD_RESET_LINK_SENT));
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody PasswordResetConfirmRequest request) {
+        passwordResetService.resetPassword(request.getToken(), request.getPassword());
+        return ResponseEntity.ok(ApiResponse.ok(PASSWORD_RESET_SUCCESS));
     }
 }
 
