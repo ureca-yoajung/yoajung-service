@@ -1,5 +1,8 @@
 package com.ureca.yoajungserver.review.service;
 
+import com.ureca.yoajungserver.chatbot.exception.BadWordDetectedException;
+import com.ureca.yoajungserver.common.component.GptBadWordComponent;
+import com.ureca.yoajungserver.common.component.LocalBadWordComponent;
 import com.ureca.yoajungserver.plan.entity.Plan;
 import com.ureca.yoajungserver.review.dto.request.ReviewCreateRequest;
 import com.ureca.yoajungserver.review.dto.request.ReviewUpdateRequest;
@@ -30,6 +33,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewLikeRepository reviewLikeRepository;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final GptBadWordComponent gptBadWordComponent;
+    private final LocalBadWordComponent localBadWordComponent;
 
     // 리뷰 조회
     @Override
@@ -67,6 +72,11 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ReviewNotAllowedException(REVIEW_NOT_ALLOWED);
         }
 
+        // 욕설 필터링
+        if(!gptBadWordComponent.validate(request.getContent()) || !localBadWordComponent.validate(request.getContent())){
+            throw new BadWordDetectedException(REVIEW_BAD_WORD_DETECTED);
+        }
+
         Review review = Review.builder()
                 .user(user)
                 .plan(plan)
@@ -101,6 +111,11 @@ public class ReviewServiceImpl implements ReviewService {
         // 리뷰 작성자 아니면 수정불가
         if(!review.getUser().getId().equals(user.getId())) {
             throw new NotReviewAuthorException(NOT_REVIEW_AUTHOR);
+        }
+
+        // 욕설 필터링
+        if(!gptBadWordComponent.validate(request.getContent()) || !localBadWordComponent.validate(request.getContent())){
+            throw new BadWordDetectedException(REVIEW_BAD_WORD_DETECTED);
         }
 
         review.updateReview(request.getStar(), request.getContent());
