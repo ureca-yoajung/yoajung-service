@@ -1,9 +1,9 @@
 package com.ureca.yoajungserver.chatbot.service;
 
-import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
+import com.ureca.yoajungserver.chatbot.dto.ChatbotResponse;
 import java.io.IOException;
 
 public interface ChatbotService {
 
-    PlanKeywordResponse keywordMapper(String input) throws IOException;
+    ChatbotResponse keywordMapper(String input, String userId) throws IOException;
 }
