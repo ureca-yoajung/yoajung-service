@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.user.entity;
 
 import com.ureca.yoajungserver.common.BaseTimeEntity;
+import com.ureca.yoajungserver.user.dto.reqeust.TendencyRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,5 +39,12 @@ public class Tendency extends BaseTimeEntity {
         this.avgMonthlyVoiceMin = avgMonthlyVoiceMin;
         this.comment = comment;
         this.preferencePrice = preferencePrice;
+    }
+
+    public void updateTendency(TendencyRequest request) {
+        this.avgMonthlyDataGB = request.getAvgMonthLyDataGB();
+        this.avgMonthlyVoiceMin = request.getAvgMonthlyVoiceMin();
+        this.comment = request.getComment();
+        this.preferencePrice = request.getPreferencePrice();
     }
 }

@@ -8,7 +8,6 @@ import com.ureca.yoajungserver.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +22,6 @@ public class UserController {
     @PostMapping("/api/user/signup")
     public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request, HttpSession session) {
         userService.signup(request, session);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(BaseCode.USER_SIGNUP_SUCCESS));
+        return ResponseEntity.ok(ApiResponse.ok(BaseCode.USER_LOGIN_SUCCESS));
     }
 }
