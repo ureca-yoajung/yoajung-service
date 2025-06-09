@@ -1,12 +1,8 @@
 package com.ureca.yoajungserver.plan.service;
 
-import com.ureca.yoajungserver.plan.dto.response.DetailProductDto;
-import com.ureca.yoajungserver.plan.dto.response.ListBenefitDto;
-import com.ureca.yoajungserver.plan.dto.response.ListPlanResponse;
-import com.ureca.yoajungserver.plan.dto.response.ListProductDto;
-import com.ureca.yoajungserver.plan.entity.Plan;
-import com.ureca.yoajungserver.plan.entity.PlanBenefit;
-import com.ureca.yoajungserver.plan.entity.PlanProduct;
+import com.ureca.yoajungserver.plan.dto.response.*;
+import com.ureca.yoajungserver.plan.entity.*;
+import com.ureca.yoajungserver.plan.repository.PlanBenefitRepository;
 import com.ureca.yoajungserver.plan.repository.PlanProductRepository;
 import com.ureca.yoajungserver.plan.repository.PlanRepository;
 import com.ureca.yoajungserver.plan.exception.PlanNotFoundException;
@@ -18,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ureca.yoajungserver.common.BaseCode.PLAN_NOT_FOUND;
@@ -28,6 +26,7 @@ public class PlanServiceImpl implements PlanService {
 
     private final PlanRepository planRepository;
     private final PlanProductRepository planProductRepository;
+    private final PlanBenefitRepository planBenefitRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -64,5 +63,27 @@ public class PlanServiceImpl implements PlanService {
         return planProducts.stream()
                 .map(product -> DetailProductDto.fromProduct(product.getProduct()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public DetailPlanBenefitResponse getDetailPlanBenefit(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
+
+        List<PlanBenefit> planBenefits = planBenefitRepository.findByPlanId(plan.getId());
+
+        Map<BenefitType, Benefit> benefitMap = planBenefits.stream()
+                .map(PlanBenefit::getBenefit)
+                .collect(Collectors.toMap(Benefit::getBenefitType, Function.identity(), (a, b) -> a));
+
+        return DetailPlanBenefitResponse.builder()
+                .voice(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.VOICE)))
+                .sms(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.SMS)))
+                .media(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.MEDIA)))
+                .smartDevice(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.SMART_DEVICE)))
+                .base(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.BASE)))
+                .premium(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.PREMIUM)))
+                .other(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.OTHER)))
+                .build();
     }
 }
