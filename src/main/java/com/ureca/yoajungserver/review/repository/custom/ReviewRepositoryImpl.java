@@ -1,7 +1,9 @@
 package com.ureca.yoajungserver.review.repository.custom;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,6 +26,22 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+
+    // 로그인한 사용자면 작성자여부 판단, 비로그인은 False 반환
+    private BooleanExpression reviewUserIdExist(Long userId) {
+        if(userId == null)
+            return Expressions.FALSE;
+        return review.user.id.eq(userId);
+    }
+
+    // 로그인한 사용자면 좋아요여부 판단, 비로그인은 False 반환
+    private BooleanExpression reviewLikeUserIdExist(Long userId) {
+        if(userId == null)
+            return Expressions.FALSE;
+        return reviewLike.user.id.eq(userId);
+    }
+
+
     // 리뷰 조회
     @Override
     public Page<ReviewListResponse> findReviewList(Long userId, Long planId, Pageable pageable) {
@@ -37,11 +55,11 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                         review.star,
                         reviewLike.id.count(),
                         review.createDate,
-                        review.user.id.eq(userId),
+                        reviewUserIdExist(userId),
                         JPAExpressions
                                 .selectOne()
                                 .from(reviewLike)
-                                .where(reviewLike.user.id.eq(userId)
+                                .where(reviewLikeUserIdExist(userId)
                                         .and(reviewLike.review.id.eq(review.id)))
                                 .exists()
                 ))

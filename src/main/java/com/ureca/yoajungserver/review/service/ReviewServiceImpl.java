@@ -17,15 +17,20 @@ import com.ureca.yoajungserver.user.entity.User;
 import com.ureca.yoajungserver.review.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 import static com.ureca.yoajungserver.common.BaseCode.*;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -40,19 +45,28 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewPageResponse reviewList(Long planId, Pageable pageable) {
 
-        // 로그인한 유저 (더미데이터)
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        // 로그인한 유저
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Page<ReviewListResponse> reviewList = reviewRepository.findReviewList(user.getId(), planId, pageable);
+        Optional<User> user = userRepository.findByEmail(email);
+
+        // 평균별점
         Double avgStar = reviewRepository.avgStar(planId);
-        Boolean isPlanUser = reviewRepository.isPlanUser(user.getId(), planId);
-
         if(avgStar == null){
             avgStar = 0.0;
         }
 
-        return new ReviewPageResponse(reviewList, avgStar, isPlanUser);
+        // 로그인 되어있는 경우
+        if(user.isPresent()) {
+            Page<ReviewListResponse> reviewList = reviewRepository.findReviewList(user.get().getId(), planId, pageable);
+            Boolean isPlanUser = reviewRepository.isPlanUser(user.get().getId(), planId);
+            return new ReviewPageResponse(reviewList, avgStar, isPlanUser, true);
+        }
+
+        // 비로그인 경우
+        Page<ReviewListResponse> reviewList = reviewRepository.findReviewList(null, planId, pageable);
+
+        return new ReviewPageResponse(reviewList, avgStar, false, false);
     }
 
     // 리뷰 등록
@@ -60,9 +74,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewCreateResponse insertReview(Long planId, ReviewCreateRequest request) {
 
-        // 로그인한 유저 (더미데이터)
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        // 로그인한 유저
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
@@ -101,9 +116,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewUpdateResponse updateReview(Long reviewId, ReviewUpdateRequest request) {
 
-        // 로그인한 유저 (더미데이터)
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        // 로그인한 유저
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new ReviewNotFoundException(REVIEW_NOT_FOUND));
@@ -130,9 +146,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewDeleteResponse deleteReview(Long reviewId) {
 
-        // 로그인한 유저 (더미데이터)
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        // 로그인한 유저
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new ReviewNotFoundException(REVIEW_NOT_FOUND));
@@ -154,9 +171,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewLikeResponse reviewLike(Long reviewId) {
 
-        // 로그인한 유저 (더미데이터)
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        // 로그인한 유저
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
         // 리뷰 존재여부 확인
         Review review = reviewRepository.findById(reviewId)

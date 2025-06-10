@@ -179,6 +179,7 @@ async function deleteReview(reviewId) {
 
 
 // 좋아요 등록/취소
+// +++) 👽👽 비로그인 사용자가 좋아요 누르려고 하면 로그인페이지로 리다이렉트하게 수정
 function handleLikeClick(reviewId, likeBtn, likeCountSpan) {
     const liked = likeBtn.classList.contains('liked');
 
