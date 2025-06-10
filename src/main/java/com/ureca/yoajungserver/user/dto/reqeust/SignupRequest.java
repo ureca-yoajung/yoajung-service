@@ -26,7 +26,7 @@ public class SignupRequest {
     private String password;
 
     @NotBlank(message = "전화번호 입력")
-    @Pattern(regexp = "^01[0-9]-?\\d{4}-?\\d{4}$", message = "형식을 맞추세요")
+    @Pattern(regexp = "^010\\d{8}$", message = "형식을 맞추세요")
     private String phoneNumber;
 
     @NotNull(message = "성별")
