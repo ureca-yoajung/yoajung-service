@@ -7,9 +7,7 @@ import lombok.Getter;
 @Getter
 public class InvalidPlanCategoryException extends BusinessException {
 
-    private final BaseCode baseCode;
     public InvalidPlanCategoryException(BaseCode baseCode) {
-        super(baseCode);
-        this.baseCode = baseCode;
+        super(baseCode.INVALID_PLAN_CATEGORY);
     }
 }
