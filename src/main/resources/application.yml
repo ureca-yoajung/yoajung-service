@@ -26,7 +26,6 @@ spring:
       timeout: 2000ms
 
   session:
-    store-type: redis
     timeout: 30m
     redis:
       namespace: spring:session
@@ -46,15 +45,18 @@ spring:
           timeout: 5000
           write timeout: 5000
   email-code-expiration-millis: 1800000
+  password-reset-token-expiration-millis: 600000
 
   ai:
     openai:
       api-key: "${OPENAI_API_KEY}"
       chat:
         options:
-          model: gpt-4o
-          temperature: 0.4
+          model: gpt-4.1-mini
+          temperature: 0.7
     chat:
+      system-prompt: classpath:prompt/prompt.txt
+
       memory:
         repository:
           jdbc:

@@ -58,4 +58,8 @@ public class User extends BaseTimeEntity {
         this.familyCount = familyCount;
         this.role = role;
     }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
