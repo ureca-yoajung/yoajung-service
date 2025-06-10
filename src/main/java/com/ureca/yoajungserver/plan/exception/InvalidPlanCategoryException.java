@@ -5,9 +5,9 @@ import com.ureca.yoajungserver.common.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class PlanNotFoundException extends BusinessException {
+public class InvalidPlanCategoryException extends BusinessException {
 
-    public PlanNotFoundException(BaseCode baseCode) {
-        super(baseCode.PLAN_NOT_FOUND);
+    public InvalidPlanCategoryException(BaseCode baseCode) {
+        super(baseCode.INVALID_PLAN_CATEGORY);
     }
 }

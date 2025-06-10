@@ -2,6 +2,10 @@ package com.ureca.yoajungserver.plan.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
 import com.ureca.yoajungserver.plan.dto.response.*;
+import com.ureca.yoajungserver.plan.entity.PlanCategory;
+import com.ureca.yoajungserver.plan.entity.PlanSortType;
+import com.ureca.yoajungserver.plan.exception.InvalidPlanCategoryException;
+import com.ureca.yoajungserver.plan.exception.InvalidPlanSortTypeException;
 import com.ureca.yoajungserver.plan.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +23,24 @@ public class PlanController {
     private final PlanService planService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getListPlan(@RequestParam int page, @RequestParam int size) {
-        List<ListPlanResponse> responses = planService.getListPlan(page, size);
+    public ResponseEntity<ApiResponse<?>> getListPlan(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "") String planType,
+            @RequestParam(defaultValue = "POPULAR") String sortedType
+    ) {
+        PlanCategory category = null;
+        if (!planType.isBlank()) {
+            category = PlanCategory.fromType(planType.toUpperCase())
+                    .orElseThrow(() -> new InvalidPlanCategoryException(INVALID_PLAN_CATEGORY));
+        }
+
+        PlanSortType planSortType = PlanSortType.fromType(sortedType.toUpperCase())
+                    .orElseThrow(() -> new InvalidPlanSortTypeException(INVALID_PLAN_SORT_TYPE));
+
+        List<ListPlanResponse> responses = (planSortType == PlanSortType.POPULAR)
+                ? planService.getPopularPlans(page, size, category, planSortType)
+                : planService.getListPlan(page, size, category, planSortType);
 
         return ResponseEntity
                 .status(PLAN_LIST_SUCCESS.getStatus())
