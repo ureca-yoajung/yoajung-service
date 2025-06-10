@@ -1,7 +1,6 @@
 package com.ureca.yoajungserver.common;
 
 import com.ureca.yoajungserver.common.exception.BusinessException;
-import com.ureca.yoajungserver.user.exception.EmailSendFailedException;
 import jakarta.transaction.SystemException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.redis.RedisConnectionFailureException;
@@ -48,12 +47,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.ok(BaseCode.USER_LOGIN_FAIL));
     }// 로그인 실패
-
-    @ExceptionHandler(EmailSendFailedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleEmailSendFailed(EmailSendFailedException exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.ok(BaseCode.EMAIL_SEND_FAILED));
-    }
 
     @ExceptionHandler(RedisConnectionFailureException.class)
     public ResponseEntity<ApiResponse<Void>> handlerRedisFaulrue(RedisConnectionFailureException exception) {
