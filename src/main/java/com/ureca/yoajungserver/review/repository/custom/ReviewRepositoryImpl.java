@@ -38,7 +38,12 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     private BooleanExpression reviewLikeUserIdExist(Long userId) {
         if(userId == null)
             return Expressions.FALSE;
-        return reviewLike.user.id.eq(userId);
+        return JPAExpressions
+                .selectOne()
+                .from(reviewLike)
+                .where(reviewLike.user.id.eq(userId)
+                        .and(reviewLike.review.id.eq(review.id)))
+                .exists();
     }
 
 
@@ -56,12 +61,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                         reviewLike.id.count(),
                         review.createDate,
                         reviewUserIdExist(userId),
-                        JPAExpressions
-                                .selectOne()
-                                .from(reviewLike)
-                                .where(reviewLikeUserIdExist(userId)
-                                        .and(reviewLike.review.id.eq(review.id)))
-                                .exists()
+                        reviewLikeUserIdExist(userId)
                 ))
                 .from(review)
                 .join(review.user, user)
