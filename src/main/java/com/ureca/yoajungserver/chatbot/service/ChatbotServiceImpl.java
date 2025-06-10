@@ -22,8 +22,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Override
     public ChatbotResponse keywordMapper(String input, String userId) throws IOException {
 
-        // ChatClient에 Prompt 전달 → LLM 호출 → ChatResponse 획득
-        // 강화된 시스템 프롬프트와 ChatMemory(대화기록) 덕분에 LLM이 대화를 주도합니다.
+        // ChatClient 에 Prompt 전달 → LLM 호출 → ChatResponse 획득
         String llmOutput = Objects.requireNonNull(chatClient.prompt()
                         .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
                         .user(input)
@@ -31,35 +30,31 @@ public class ChatbotServiceImpl implements ChatbotService {
                         .content())
                 .strip();
 
-        log.info("LLM 응답 (User ID: {}): {}", userId, llmOutput);
+        log.info("LLM JSON 응답: {}", llmOutput);
 
-        // LLM 응답이 JSON 형식인지 확인하여 분기 처리
-        if (isJsonResponse(llmOutput)) {
-            // JSON 응답이면, 모든 정보가 수집 완료된 상태
-            try {
-                PlanKeywordResponse planKeywordResponse = objectMapper.readValue(llmOutput, PlanKeywordResponse.class);
-                // 성공적으로 파싱되면 최종 결과를 반환합니다.
-                return ChatbotResponse.result(planKeywordResponse);
-            } catch (IOException e) {
-                // LLM이 JSON과 유사하지만 잘못된 형식의 텍스트를 생성한 경우,
-                // 이를 사용자에게 다시 질문하도록 처리할 수 있습니다.
-                log.warn("JSON 파싱 실패, LLM의 응답을 질문으로 간주: {}", llmOutput, e);
-                return ChatbotResponse.question("죄송합니다, 이해하지 못했어요. 조금 더 자세히 설명해주시겠어요?");
-            }
-        } else {
-            // JSON이 아니면, 정보 수집을 위한 추가 질문 상태
-            // LLM이 생성한 다음 질문을 그대로 사용자에게 전달합니다.
-            return ChatbotResponse.question(llmOutput);
+        // JSON 시작/끝이 확실한지 검사
+        checkJsonForm(llmOutput);
+
+        // 실제 파싱 시도
+        PlanKeywordResponse planKeywordResponse = parseLlmOutput(llmOutput);
+
+        // 필수 필드 검증
+        return ChatbotResponse.result(planKeywordResponse);
+    }
+
+    private void checkJsonForm(String trimmed) {
+        if (!(trimmed.startsWith("{") && trimmed.endsWith("}"))) {
+            throw new IllegalStateException("JSON 형식 오류");
         }
     }
 
-    /**
-     * LLM의 응답이 JSON 형식인지 간단히 확인하는 헬퍼 메소드
-     *
-     * @param response LLM의 응답 문자열
-     * @return JSON 형식이면 true, 아니면 false
-     */
-    private boolean isJsonResponse(String response) {
-        return response.startsWith("{") && response.endsWith("}");
+    private PlanKeywordResponse parseLlmOutput(String llmOutput) throws IOException {
+        PlanKeywordResponse planKeywordResponse;
+        try {
+            planKeywordResponse = objectMapper.readValue(llmOutput, PlanKeywordResponse.class);
+        } catch (IOException e) {
+            throw new IOException("JSON 매핑 실패");
+        }
+        return planKeywordResponse;
     }
 }
