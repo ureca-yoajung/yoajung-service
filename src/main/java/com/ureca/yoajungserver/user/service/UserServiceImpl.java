@@ -1,10 +1,13 @@
 package com.ureca.yoajungserver.user.service;
 
 import com.ureca.yoajungserver.user.dto.reqeust.SignupRequest;
+import com.ureca.yoajungserver.user.dto.reqeust.UserUpdateRequest;
+import com.ureca.yoajungserver.user.dto.response.UserResponse;
 import com.ureca.yoajungserver.user.entity.Role;
 import com.ureca.yoajungserver.user.entity.User;
 import com.ureca.yoajungserver.user.exception.EmailNotVerifiedException;
 import com.ureca.yoajungserver.user.exception.UserDuplicatedEmailException;
+import com.ureca.yoajungserver.user.exception.UserNotFoundException;
 import com.ureca.yoajungserver.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -56,5 +59,29 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         httpSession.removeAttribute(VERIFIED_EMAIL);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserResponse getUserInfo(String username) {
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(UserNotFoundException::new);
+
+        return UserResponse.fromEntity(user);
+    }
+
+    @Override
+    public UserResponse updateUserInfo(String username, UserUpdateRequest request) {
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.updateInfo(
+                request.getName(),
+                request.getPhoneNumber(),
+                request.getGender(),
+                request.getAgeGroup(),
+                request.getFamilyCount()
+        );
+        return UserResponse.fromEntity(user);
     }
 }
