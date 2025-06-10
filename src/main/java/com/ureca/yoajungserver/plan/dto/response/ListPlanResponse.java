@@ -1,7 +1,6 @@
 package com.ureca.yoajungserver.plan.dto.response;
 
 import com.ureca.yoajungserver.plan.entity.Plan;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 

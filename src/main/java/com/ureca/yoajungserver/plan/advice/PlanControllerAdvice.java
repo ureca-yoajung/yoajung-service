@@ -2,6 +2,7 @@ package com.ureca.yoajungserver.plan.advice;
 
 import com.ureca.yoajungserver.common.ApiResponse;
 import com.ureca.yoajungserver.plan.exception.InvalidPlanCategoryException;
+import com.ureca.yoajungserver.plan.exception.InvalidPlanSortTypeException;
 import com.ureca.yoajungserver.review.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +18,12 @@ public class PlanControllerAdvice {
 
     @ExceptionHandler(InvalidPlanCategoryException.class)
     public ResponseEntity<ApiResponse<?>> handleInvalidPlanCategoryException(InvalidPlanCategoryException e) {
+        return ResponseEntity.status(e.getBaseCode().getStatus())
+                .body(ApiResponse.ok(e.getBaseCode()));
+    }
+
+    @ExceptionHandler(InvalidPlanSortTypeException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidPlanSortTypeException(InvalidPlanSortTypeException e) {
         return ResponseEntity.status(e.getBaseCode().getStatus())
                 .body(ApiResponse.ok(e.getBaseCode()));
     }
