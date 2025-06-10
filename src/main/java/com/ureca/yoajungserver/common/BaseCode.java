@@ -16,6 +16,8 @@ public enum BaseCode {
     STATUS_FORBIDDEN("STATUS_FORBIDDEN_403", HttpStatus.FORBIDDEN, "권한이 없니다."),
 
     // user/signup
+    USER_FIND_SUCCESS("USER_FIND_SUCCESS_200", HttpStatus.OK, " 회원 정보 조회했습니다"),
+    USER_UPDATED_SUCCESS("USER_FIND_SUCCESS_200", HttpStatus.OK, " 회원 정보 수정했습니다"),
     USER_SIGNUP_SUCCESS("USER_SIGNUP_SUCCESS_201", HttpStatus.CREATED, "회원가입 됐습니다"),
     USER_NOT_FOUND("USER_NOT_FOUND_404", HttpStatus.NOT_FOUND, "유저가 없습니다"),
     USER_DUPLICATED_EMAIL("USER_DUPLICATED_EMAIL_409", HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
@@ -29,8 +31,8 @@ public enum BaseCode {
 
     // tendency
     TENDENCY_ALREADY_EXISTS("TENDENCY_ALREADY_EXISTS_409", HttpStatus.CONFLICT, "이미 등록된 성향입니다"),
-    TENDENCY_CREATED("TENDENCY_CREATED_201", HttpStatus.CREATED, "성향을 등록했습니다"),
-    TENDENCY_UPDATED("TENDENCY_UPDATED_200", HttpStatus.OK, "성향을 수정했습니다"),
+    TENDENCY_CREATED_SUCCESS("TENDENCY_CREATED_SUCCESS_201", HttpStatus.CREATED, "성향을 등록했습니다"),
+    TENDENCY_UPDATED_SUCCESS("TENDENCY_UPDATED_SUCCESS_200", HttpStatus.OK, "성향을 수정했습니다"),
     TENDENCY_FIND_SUCCESS("TENDENCY_SUCCESS_200", HttpStatus.OK, "성향정보 조회했습니다"),
     TENDENCY_NOT_FOUND("TENDENCY_NOT_FOUND_404", HttpStatus.NOT_FOUND, "성향이 없습니다"),
 

@@ -62,4 +62,22 @@ public class User extends BaseTimeEntity {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void updateInfo(String name, String phoneNumber, Gender gender, AgeGroup ageGroup, Integer familyCount) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+        if (gender != null) {
+            this.gender = gender;
+        }
+        if (ageGroup != null) {
+            this.ageGroup = ageGroup;
+        }
+        if (familyCount != null) {
+            this.familyCount = familyCount;
+        }
+    }
 }

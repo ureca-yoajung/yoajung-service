@@ -1,11 +1,13 @@
 package com.ureca.yoajungserver.user.dto.reqeust;
 
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class TendencyRequest {
     @Min(value = 0, message = "0 이상")
     private Integer avgMonthlyDataGB;

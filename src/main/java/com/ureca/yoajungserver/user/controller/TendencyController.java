@@ -39,7 +39,7 @@ public class TendencyController {
 
         Tendency tendency = tendencyService.registerTendency(userDetails.getUsername(), request);
         TendencyResponse response = TendencyResponse.fromEntity(tendency);
-        return ResponseEntity.ok(ApiResponse.of(BaseCode.STATUS_CREATED, response));
+        return ResponseEntity.ok(ApiResponse.of(BaseCode.TENDENCY_CREATED_SUCCESS, response));
     }
 
     @PutMapping("/api/tendency")
@@ -48,6 +48,6 @@ public class TendencyController {
             @Valid @RequestBody TendencyRequest request) {
         Tendency tendency = tendencyService.updateTendency(userDetails.getUsername(), request);
         TendencyResponse response = TendencyResponse.fromEntity(tendency);
-        return ResponseEntity.ok(ApiResponse.of(BaseCode.TENDENCY_UPDATED, response));
+        return ResponseEntity.ok(ApiResponse.of(BaseCode.TENDENCY_UPDATED_SUCCESS, response));
     }
 }
