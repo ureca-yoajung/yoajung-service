@@ -10,22 +10,32 @@
 <section>
     <label>카테고리:
         <select id="category">
+            <option value="ALL">전체</option>
             <option value="LTE_FIVE_G">5G/LTE</option>
             <option value="ONLINE_ONLY">온라인 전용</option>
         </select>
     </label>
-    <label>최소 요금: <input type="number" id="minPrice" placeholder="0"></label>
-    <label>최대 요금: <input type="number" id="maxPrice" placeholder="100000"></label>
-    <label>
-        데이터:
-        <select id="unlimited">
-            <option value="">전체</option>
-            <option value="true">무제한</option>
-            <option value="false">정량/속도제한</option>
-        </select>
-    </label>
+    <br>
+    <br>
+    <fieldset>
+      <legend>데이터</legend>
+      <label><input type="radio" name="dataType" value="UNLIMITED">무제한</label>
+      <label><input type="radio" name="dataType" value="FIXED">정량</label>
+      <label><input type="radio" name="dataType" value="THROTTLED">속도제한</label>
+      <label><input type="radio" name="dataType" value="" checked>상관없음</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>요금 범위</legend>
+      <label><input type="radio" name="priceRange" value="UNDER5">~5만원</label>
+      <label><input type="radio" name="priceRange" value="BETWEEN6_8">6~8만원</label>
+      <label><input type="radio" name="priceRange" value="ABOVE9">9만원~</label>
+      <label><input type="radio" name="priceRange" value="" checked>상관없음</label>
+    </fieldset>
+
     <fieldset>
         <legend>프로덕트</legend>
+        <label><input type="checkbox" id="noProduct">혜택은 필요없어요</label><br>
         <label><input type="checkbox" name="product" value="아이들나라">아이들나라</label>
         <label><input type="checkbox" name="product" value="넷플릭스">NETFLIX</label>
         <label><input type="checkbox" name="product" value="바이브">바이브</label>
@@ -42,20 +52,21 @@
     async function fetchPlans() {
         // ① 폼 값 수집
         const category   = document.getElementById('category').value;
-        const minPrice   = document.getElementById('minPrice').value;
-        const maxPrice   = document.getElementById('maxPrice').value;
-        const unlimited  = document.getElementById('unlimited').value;
+        const dataType   = document.querySelector('input[name="dataType"]:checked').value;
+        const priceRange = document.querySelector('input[name="priceRange"]:checked').value;
 
-        const productNames = [...document.querySelectorAll('input[name="product"]:checked')]
-            .map(cb => cb.value)
-            .join(',');
+        let productNames = '';
+        if (!document.getElementById('noProduct').checked) {
+            productNames = [...document.querySelectorAll('input[name="product"]:checked')]
+                            .map(cb => cb.value)
+                            .join(',');
+        }
 
         // ② 쿼리스트링 빌드
         const params = new URLSearchParams();
         params.append('category', category);
-        if (minPrice)      params.append('minPrice', minPrice);
-        if (maxPrice)      params.append('maxPrice', maxPrice);
-        if (unlimited)     params.append('unlimited', unlimited);
+        if (dataType)    params.append('dataType', dataType);
+        if (priceRange)  params.append('priceRange', priceRange);
         if (productNames)  params.append('productNames', productNames);
 
         // ③ API 호출

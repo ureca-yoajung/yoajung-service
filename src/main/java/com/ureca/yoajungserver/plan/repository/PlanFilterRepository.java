@@ -3,10 +3,7 @@ package com.ureca.yoajungserver.plan.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.yoajungserver.plan.dto.request.PlanFilterRequest;
-import com.ureca.yoajungserver.plan.entity.Plan;
-import com.ureca.yoajungserver.plan.entity.QPlan;
-import com.ureca.yoajungserver.plan.entity.QPlanProduct;
-import com.ureca.yoajungserver.plan.entity.QProduct;
+import com.ureca.yoajungserver.plan.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -27,17 +24,31 @@ public class PlanFilterRepository {
         QProduct product = QProduct.product;
 
         BooleanBuilder booleanBuilder = new BooleanBuilder(); // 동적 where 절 구성
-        booleanBuilder.and(plan.planCategory.eq(planFilterRequest.getCategory())); // 카테고리 필터
 
-        // 요금 범위
-        if (planFilterRequest.getMinPrice()!=null) booleanBuilder.and(plan.basePrice.goe(planFilterRequest.getMinPrice()));
-        if (planFilterRequest.getMaxPrice()!=null) booleanBuilder.and(plan.basePrice.loe(planFilterRequest.getMaxPrice()));
+        if(planFilterRequest.getCategory() != null && planFilterRequest.getCategory() != PlanCategory.ALL){
+            booleanBuilder.and(plan.planCategory.eq(planFilterRequest.getCategory())); // 카테고리 필터, ALL 이 아닐 때
+        }
 
-        // 데이터 ( 무제한, 정량제/속도제한 )
-        if (Boolean.TRUE.equals(planFilterRequest.getUnlimited()))
-            booleanBuilder.and(plan.dataAllowance.goe(9999)); // 무제한
-        else if (planFilterRequest.getUnlimited() != null && !planFilterRequest.getUnlimited())
-            booleanBuilder.and(plan.dataAllowance.lt(9999)); // 정량/속도제한
+        // 가격 범위 필터
+        if (planFilterRequest.getPriceRange() != null) {
+            switch (planFilterRequest.getPriceRange()) {
+                case "UNDER5"      -> booleanBuilder.and(plan.basePrice.loe(59900));
+                case "BETWEEN6_8"  -> booleanBuilder.and(plan.basePrice.between(60000, 89900));
+                case "ABOVE9"      -> booleanBuilder.and(plan.basePrice.goe(90000));
+            }
+        }
+
+        // 데이터 타입 필터
+        String dt = planFilterRequest.getDataType();
+        if (dt != null && !dt.isBlank()) {
+            switch (dt) {
+                case "UNLIMITED"  -> booleanBuilder.and(plan.dataAllowance.goe(9999));
+                case "FIXED"      -> booleanBuilder.and(plan.dataAllowance.lt(9999)
+                                                  .and(plan.speedAfterLimit.eq(0)));
+                case "THROTTLED"  -> booleanBuilder.and(plan.dataAllowance.lt(9999)
+                                                  .and(plan.speedAfterLimit.gt(0)));
+            }
+        }
 
         // 프로덕트 이름 필터
         if (planFilterRequest.getProductNames() != null && !planFilterRequest.getProductNames().isEmpty())

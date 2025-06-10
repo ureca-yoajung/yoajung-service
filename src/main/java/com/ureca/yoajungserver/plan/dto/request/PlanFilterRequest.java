@@ -10,8 +10,13 @@ import java.util.Set;
 @Builder
 public class PlanFilterRequest {
     private PlanCategory category;
-    private Integer minPrice;
-    private Integer maxPrice;
-    private Boolean unlimited;
-    private Set<String> productNames; // OTT, NETFLIX …
+
+    /** 데이터 타입: UNLIMITED | FIXED | THROTTLED | ANY(null) */
+    private String dataType;
+
+    /** 가격 범위: UNDER5 | BETWEEN6_8 | ABOVE9 | ANY(null) */
+    private String priceRange;
+
+    /** 선택된 프로덕트 이름 (없으면 필터 미적용) */
+    private Set<String> productNames;
 }
