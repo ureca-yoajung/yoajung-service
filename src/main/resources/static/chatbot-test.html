@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Yoajung Chatbot Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            height: 600px;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background-color: #f1f1f1;
+            color: black;
+            align-self: flex-start;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+        }
+
+        #send-btn {
+            margin-left: 10px;
+            padding: 8px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="메시지를 입력하세요...">
+            <button id="send-btn">전송</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatMessages = document.getElementById("chat-messages");
+            const userInput = document.getElementById("user-input");
+            const sendBtn = document.getElementById("send-btn");
+
+            // --- [핵심 로직] ---
+            // 페이지가 로드될 때 '단 한 번만' 고유한 userId를 생성합니다.
+            // 이 userId는 이 페이지를 벗어나기 전까지 계속 사용됩니다.
+            const currentUserId = `test-session-${Date.now()}`;
+            console.log("이번 대화의 고유 userId:", currentUserId);
+
+            // 메시지를 화면에 표시하는 헬퍼 함수
+            function displayMessage(text, sender) {
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message", `${sender}-message`);
+                messageElement.textContent = text;
+                chatMessages.appendChild(messageElement);
+                // 새 메시지가 추가되면 맨 아래로 스크롤
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // 봇의 첫 인사 메시지
+            displayMessage("안녕하세요? 요금제 추천 서비스를 이용하시고 싶으신가요?", "bot");
+
+            // 메시지 전송 함수
+            async function sendMessage() {
+                const messageText = userInput.value.trim();
+                if (!messageText) return;
+
+                // 1. 사용자 메시지를 화면에 표시
+                displayMessage(messageText, "user");
+                userInput.value = "";
+
+                try {
+                    // 2. 고정된 userId와 함께 백엔드 API 호출
+                    const response = await fetch(`http://localhost:8080/chat?input=${encodeURIComponent(messageText)}&userId=${currentUserId}`);
+
+                    if (!response.ok) {
+                        const errorJson = await response.json().catch(() => ({message: "알 수 없는 서버 오류"}));
+                        throw new Error(errorJson.message);
+                    }
+
+                    const result = await response.json();
+
+                    // 3. 챗봇 응답 처리
+                    if (result.data.complete) {
+                        // 대화 종료 (최종 JSON 도착)
+                        console.log("최종 결과 (JSON):", result.data.data);
+                        displayMessage("추천에 필요한 모든 정보를 얻었습니다! 결과를 확인합니다.", "bot");
+                    } else {
+                        // 다음 질문 표시
+                        displayMessage(result.data.message, "bot");
+                    }
+
+                } catch (error) {
+                    console.error("오류 발생:", error);
+                    displayMessage(`오류가 발생했습니다: ${error.message}`, "bot");
+                }
+            }
+
+            sendBtn.addEventListener("click", sendMessage);
+            userInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
