@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5G 스탠다드 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/plan-detail.css"/>
+</head>
+
+<body>
+    <!DOCTYPE html>
+    <html lang="ko">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>5G 스탠다드 - YOAJUNG</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+              rel="stylesheet">
+        <link rel="stylesheet" href="plan-detail.css">
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <div id="navbar"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="index.html">홈</a> > <a href="plans.html">요금제</a> > 5G 스탠다드
+            </div>
+
+            <!-- Plan Detail Header -->
+            <div class="plan-header">
+                <div class="plan-info">
+                    <h1 id="planName">5G 스탠다드</h1>
+                    <div class="plan-badges">
+                        <span class="badge badge-popular">인기</span>
+                        <span class="badge badge-5g" id="networkType">5G</span>
+                        <span class="badge badge-category" id="planCategory">PHONE</span>
+                    </div>
+                    <div class="plan-price">
+                        월 <span id="basePrice">55,000</span>원
+                    </div>
+                    <p class="plan-description" id="planDescription">
+                        대용량 데이터와 다양한 혜택을 제공하는 인기 요금제입니다.
+                        스트리밍, 게임, 업무 등 다양한 용도로 활용하기에 최적화되어 있습니다.
+                    </p>
+
+                    <div class="plan-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">📱</div>
+                            <span class="feature-text">데이터 <span id="dataAllowance">100</span>GB</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📞</div>
+                            <span class="feature-text">음성통화 무제한</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">💬</div>
+                            <span class="feature-text">문자 무제한</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🔗</div>
+                            <span class="feature-text">테더링 <span id="tetheringSharingAllowance">10</span>GB</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🚀</div>
+                            <span class="feature-text">속도제한 후 <span id="speedAfterLimit">5</span>Mbps</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits Section -->
+            <div class="benefits-section">
+                <!-- Media Benefits -->
+                <div class="benefit-category">
+                    <div class="category-header">
+                        <h1 class="category-title">
+                            <span class="category-icon">🎵</span>
+                            미디어 혜택
+                            <span class="choose-one-badge">택 1</span>
+                        </h1>
+                        <p class="category-description">다양한 미디어 서비스 중 하나를 선택하세요</p>
+                    </div>
+                    <div class="benefits-grid" id="mediaBenefits">
+                        <div class="benefit-card" data-benefit-id="1">
+                            <div class="benefit-header">
+                                <div class="benefit-icon">🎵</div>
+                                <div class="benefit-info">
+                                    <h4 class="benefit-name">지니뮤직 무제한</h4>
+                                    <span class="benefit-type">MEDIA</span>
+                                </div>
+                            </div>
+                            <p class="benefit-description">무제한 음악 스트리밍 서비스로 최신 음악부터 클래식까지 자유롭게 감상하세요</p>
+                            <div class="benefit-details">
+                                <span class="benefit-limit">무제한 이용</span>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card" data-benefit-id="2">
+                            <div class="benefit-header">
+                                <div class="benefit-icon">📺</div>
+                                <div class="benefit-info">
+                                    <h4 class="benefit-name">티빙 스탠다드</h4>
+                                    <span class="benefit-type">MEDIA</span>
+                                </div>
+                            </div>
+                            <p class="benefit-description">인기 드라마, 예능, 영화를 언제 어디서나 시청할 수 있는 동영상 스트리밍 서비스</p>
+                            <div class="benefit-details">
+                                <span class="benefit-limit">HD 화질 지원</span>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card" data-benefit-id="3">
+                            <div class="benefit-header">
+                                <div class="benefit-icon">▶️</div>
+                                <div class="benefit-info">
+                                    <h4 class="benefit-name">유튜브 프리미엄</h4>
+                                    <span class="benefit-type">MEDIA</span>
+                                </div>
+                            </div>
+                            <p class="benefit-description">광고 없는 유튜브 시청과 백그라운드 재생, 오프라인 다운로드 기능 제공</p>
+                            <div class="benefit-details">
+                                <span class="benefit-limit">광고 제거</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits Section -->
+            <div class="benefits-section">
+                <!-- Premium Benefits -->
+                <div class="benefit-category">
+                    <div class="category-header">
+                        <h1 class="category-title">
+                            <span class="category-icon">⭐</span>
+                            프리미엄 혜택
+                            <span class="choose-one-badge">택 1</span>
+                        </h1>
+                        <p class="category-description">프리미엄 서비스 중 하나를 선택하세요</p>
+                    </div>
+                    <div class="benefits-grid" id="premiumBenefits">
+                        <div class="benefit-card" data-benefit-id="4">
+                            <div class="benefit-header">
+                                <div class="benefit-icon">☁️</div>
+                                <div class="benefit-info">
+                                    <h4 class="benefit-name">클라우드 스토리지 100GB</h4>
+                                    <span class="benefit-type">BASE</span>
+                                </div>
+                            </div>
+                            <p class="benefit-description">안전한 클라우드 저장공간으로 언제 어디서나 파일에 접근하세요</p>
+                            <div class="benefit-details">
+                                <span class="benefit-limit">100GB 제공</span>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card" data-benefit-id="5">
+                            <div class="benefit-header">
+                                <div class="benefit-icon">🛡️</div>
+                                <div class="benefit-info">
+                                    <h4 class="benefit-name">보안 서비스</h4>
+                                    <span class="benefit-type">OTHER</span>
+                                </div>
+                            </div>
+                            <p class="benefit-description">악성코드 차단, 피싱 방지 등 종합 보안 서비스를 제공합니다</p>
+                            <div class="benefit-details">
+                                <span class="benefit-limit">실시간 보호</span>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card" data-benefit-id="6">
+                            <div class="benefit-header">
+                                <div class="benefit-icon">🎮</div>
+                                <div class="benefit-info">
+                                    <h4 class="benefit-name">게임 패스</h4>
+                                    <span class="benefit-type">OTHER</span>
+                                </div>
+                            </div>
+                            <p class="benefit-description">다양한 모바일 게임을 무료로 즐길 수 있는 게임 패스 서비스</p>
+                            <div class="benefit-details">
+                                <span class="benefit-limit">50+ 게임</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section (기존 유지) -->
+            <div class="reviews-section">
+                <div class="reviews-header">
+                    <h2 class="reviews-title">사용자 리뷰</h2>
+                    <div class="reviews-stats">
+                        <div class="rating-summary">
+                            <span class="rating-score">4.2</span>
+                            <div class="stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <span class="review-count">(24개 리뷰)</span>
+                        </div>
+                        <button class="write-review-btn" onclick="toggleReviewForm()">
+                            리뷰 작성
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Review Form -->
+                <div class="review-form" id="reviewForm">
+                    <h3 style="margin-bottom: 20px; color: var(--text-primary);">리뷰 작성</h3>
+                    <form onsubmit="submitReview(event)">
+                        <div class="form-group">
+                            <label class="form-label">평점</label>
+                            <div class="rating-input" id="ratingInput">
+                                <span class="rating-star" data-rating="1">★</span>
+                                <span class="rating-star" data-rating="2">★</span>
+                                <span class="rating-star" data-rating="3">★</span>
+                                <span class="rating-star" data-rating="4">★</span>
+                                <span class="rating-star" data-rating="5">★</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewTitle" class="form-label">제목</label>
+                            <input type="text" id="reviewTitle" class="form-input" placeholder="리뷰 제목을 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewContent" class="form-label">내용</label>
+                            <textarea id="reviewContent" class="form-textarea" placeholder="이 요금제에 대한 경험을 공유해주세요"
+                                      required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" onclick="toggleReviewForm()">취소</button>
+                            <button type="submit" class="btn-submit">리뷰 등록</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Reviews List -->
+                <div class="reviews-list" id="reviewsList">
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">김</div>
+                                <div class="reviewer-details">
+                                    <h4>김민수</h4>
+                                    <span class="review-date">2024년 1월 15일</span>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            데이터 용량도 충분하고 속도도 빨라서 만족합니다. 특히 유튜브 프리미엄이 포함되어 있어서 더욱 좋네요. 가격 대비 혜택이 많은 것 같아요.
+                        </div>
+                        <div class="review-helpful">
+                            <button class="helpful-btn" onclick="toggleHelpful(this)">
+                                👍 도움됨 <span>12</span>
+                            </button>
+                            <span>|</span>
+                            <button class="helpful-btn" onclick="toggleHelpful(this)">
+                                👎 도움안됨 <span>1</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">이</div>
+                                <div class="reviewer-details">
+                                    <h4>이지은</h4>
+                                    <span class="review-date">2024년 1월 10일</span>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            전반적으로 괜찮은 요금제입니다. 다만 테더링 용량이 조금 더 많았으면 좋겠어요. 그래도 가격 대비 만족스럽습니다.
+                        </div>
+                        <div class="review-helpful">
+                            <button class="helpful-btn" onclick="toggleHelpful(this)">
+                                👍 도움됨 <span>8</span>
+                            </button>
+                            <span>|</span>
+                            <button class="helpful-btn" onclick="toggleHelpful(this)">
+                                👎 도움안됨 <span>0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                fetch('/assets/navbar.html')
+                    .then(res => res.text())
+                    .then(html => {
+                        document.getElementById('navbar').innerHTML = html;
+                    })
+                    .catch(err => console.error('navbar 로딩 실패:', err));
+            });
+
+            let selectedRating = 0;
+
+            // 리뷰 폼 토글
+            function toggleReviewForm() {
+                const form = document.getElementById('reviewForm');
+                form.classList.toggle('active');
+            }
+
+            // 평점 선택
+            document.addEventListener('DOMContentLoaded', function () {
+                const ratingStars = document.querySelectorAll('.rating-star');
+
+                ratingStars.forEach(star => {
+                    star.addEventListener('click', function () {
+                        selectedRating = parseInt(this.dataset.rating);
+                        updateRatingDisplay();
+                    });
+
+                    star.addEventListener('mouseover', function () {
+                        const rating = parseInt(this.dataset.rating);
+                        highlightStars(rating);
+                    });
+                });
+
+                document.getElementById('ratingInput').addEventListener('mouseleave', function () {
+                    updateRatingDisplay();
+                });
+            });
+
+            function highlightStars(rating) {
+                const stars = document.querySelectorAll('.rating-star');
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+
+            function updateRatingDisplay() {
+                highlightStars(selectedRating);
+            }
+
+            // 리뷰 제출
+            function submitReview(event) {
+                event.preventDefault();
+
+                if (selectedRating === 0) {
+                    alert('평점을 선택해주세요.');
+                    return;
+                }
+
+                const title = document.getElementById('reviewTitle').value;
+                const content = document.getElementById('reviewContent').value;
+
+                // 새 리뷰 생성
+                const newReview = createReviewElement({
+                    name: '사용자',
+                    avatar: '사',
+                    date: new Date().toLocaleDateString('ko-KR'),
+                    rating: selectedRating,
+                    title: title,
+                    content: content,
+                    helpful: 0,
+                    notHelpful: 0
+                });
+
+                // 리뷰 목록에 추가
+                const reviewsList = document.getElementById('reviewsList');
+                reviewsList.insertBefore(newReview, reviewsList.firstChild);
+
+                // 폼 초기화
+                document.getElementById('reviewTitle').value = '';
+                document.getElementById('reviewContent').value = '';
+                selectedRating = 0;
+                updateRatingDisplay();
+                toggleReviewForm();
+
+                alert('리뷰가 등록되었습니다!');
+            }
+
+            function createReviewElement(review) {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review-item';
+
+                const stars = '★'.repeat(review.rating) + '★'.repeat(5 - review.rating).replace(/★/g, '<span class="star empty">★</span>');
+
+                reviewDiv.innerHTML = `
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">${review.avatar}</div>
+                        <div class="reviewer-details">
+                            <h4>${review.name}</h4>
+                            <span class="review-date">${review.date}</span>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        ${'<span class="star">★</span>'.repeat(review.rating)}
+                        ${'<span class="star empty">★</span>'.repeat(5 - review.rating)}
+                    </div>
+                </div>
+                <div class="review-content">
+                    ${review.content}
+                </div>
+                <div class="review-helpful">
+                    <button class="helpful-btn" onclick="toggleHelpful(this)">
+                        👍 도움됨 <span>${review.helpful}</span>
+                    </button>
+                    <span>|</span>
+                    <button class="helpful-btn" onclick="toggleHelpful(this)">
+                        👎 도움안됨 <span>${review.notHelpful}</span>
+                    </button>
+                </div>
+            `;
+
+                return reviewDiv;
+            }
+
+            // 도움됨/도움안됨 토글
+            function toggleHelpful(button) {
+                const span = button.querySelector('span');
+                const currentCount = parseInt(span.textContent);
+
+                if (button.classList.contains('active')) {
+                    button.classList.remove('active');
+                    span.textContent = currentCount - 1;
+                } else {
+                    // 같은 리뷰의 다른 버튼 비활성화
+                    const reviewItem = button.closest('.review-item');
+                    const otherButtons = reviewItem.querySelectorAll('.helpful-btn');
+                    otherButtons.forEach(btn => {
+                        if (btn !== button && btn.classList.contains('active')) {
+                            btn.classList.remove('active');
+                            const otherSpan = btn.querySelector('span');
+                            otherSpan.textContent = parseInt(otherSpan.textContent) - 1;
+                        }
+                    });
+
+                    button.classList.add('active');
+                    span.textContent = currentCount + 1;
+                }
+            }
+        </script>
+    </body>
+
+    </html>
