@@ -1,10 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOAJUNG - AI 요금제 추천</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/index.css"/>
 </head>
 <body>
-    index
+    <!-- Navigation -->
+    <div id="navbar"></div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>AI가 찾아주는<br>나만의 요금제</h1>
+                <p>사용 패턴을 분석해 가장 경제적인 요금제를 추천해드립니다</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary-hero btn-large" onclick="startRecommendation()">AI 추천 받기</button>
+                    <a href="#plans" class="btn btn-outline-hero btn-large">요금제 보기</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="/assets/image/yoajung.png" alt="요아정 AI 요금제 추천 서비스 마스코트"/>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="about">
+        <div class="features-container">
+            <h2 class="section-title">간단하고 정확한 추천</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI 분석</h3>
+                    <p>사용 패턴과 예산을 분석하여 최적의 요금제를 찾아드립니다</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>가격 비교</h3>
+                    <p>모든 통신사의 요금제를 비교하여 가장 저렴한 옵션을 제안합니다</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>빠른 추천</h3>
+                    <p>몇 가지 질문만으로 30초 안에 맞춤 요금제를 추천받으세요</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section class="plans" id="plans">
+        <div class="plans-container">
+            <h2 class="section-title">인기 요금제</h2>
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <h3 class="plan-name">라이트</h3>
+                    <div class="plan-price">35,000원</div>
+                    <ul class="plan-features">
+                        <li>데이터 8GB</li>
+                        <li>음성통화 기본</li>
+                        <li>문자 기본</li>
+                        <li>5G 지원</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
+                </div>
+                <div class="plan-card popular">
+                    <div class="popular-badge">인기</div>
+                    <h3 class="plan-name">스탠다드</h3>
+                    <div class="plan-price">55,000원</div>
+                    <ul class="plan-features">
+                        <li>데이터 100GB</li>
+                        <li>음성통화 무제한</li>
+                        <li>문자 무제한</li>
+                        <li>5G 지원</li>
+                        <li>테더링 10GB</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
+                </div>
+                <div class="plan-card">
+                    <h3 class="plan-name">프리미엄</h3>
+                    <div class="plan-price">75,000원</div>
+                    <ul class="plan-features">
+                        <li>데이터 무제한</li>
+                        <li>음성통화 무제한</li>
+                        <li>문자 무제한</li>
+                        <li>5G 지원</li>
+                        <li>테더링 무제한</li>
+                        <li>해외로밍 할인</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-ghost btn-large">모든 요금제 보기</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 YOAJUNG. All rights reserved.</p>
+    </footer>
+
+    <!-- Chat Button -->
+    <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/assets/navbar.html')
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('navbar').innerHTML = html;
+                })
+                .catch(err => console.error('navbar 로딩 실패:', err));
+        });
+
+        function startRecommendation() {
+            alert('AI 추천 서비스를 시작합니다!');
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+    </script>
 </body>
 </html>

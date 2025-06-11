@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>요금제 리스트 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/plan-list.css"/>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <div id="navbar"></div>
+
+    <div class="main-content">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-container">
+                <h1 class="filter-title">요금제</h1>
+                <div class="category-menu">
+                    <button class="category-btn active" onclick="filterByCategory('all')">전체</button>
+                    <button class="category-btn" onclick="filterByCategory('5G/LTE')">5G/LTE</button>
+                    <button class="category-btn" onclick="filterByCategory('ONLINE_ONLY')">온라인 전용</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plans Container -->
+        <div class="plans-container">
+            <div class="plans-header">
+                <div class="plans-count" id="plansCount">총 6개의 요금제</div>
+                <select class="sort-select" onchange="sortPlans()">
+                    <option value="price-low">가격 낮은순</option>
+                    <option value="price-high">가격 높은순</option>
+                    <option value="data-high">데이터 많은순</option>
+                    <option value="popular">인기순</option>
+                </select>
+            </div>
+
+            <div class="detailed-plans-grid" id="plans-grid">
+                <!-- Plans will be populated by JavaScript -->
+            </div>
+            <div class="load-more-container">
+                <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreProducts()">
+                    <span class="current-count" id="currentCount">6</span>개 / 총 <span id="totalCount">50</span>개 상품
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/assets/navbar.html')
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('navbar').innerHTML = html;
+                })
+                .catch(err => console.error('navbar 로딩 실패:', err));
+        });
+
+        // Sample plans data
+        const plansData = [
+            {
+                id: 1,
+                name: "5G 라이트",
+                networkType: "5G",
+                category: "PHONE",
+                basePrice: 35000,
+                dataAllowance: 8,
+                tetheringSharingAllowance: 5,
+                speedAfterLimit: 1,
+                description: "가벼운 사용자를 위한 기본 5G 요금제입니다. 적당한 데이터와 기본적인 부가서비스를 제공하여 합리적인 가격으로 5G 서비스를 이용할 수 있습니다.",
+                services: ["지니뮤직", "티빙 베이직"],
+                popular: false
+            },
+            {
+                id: 2,
+                name: "5G 스탠다드",
+                networkType: "5G",
+                category: "PHONE",
+                basePrice: 55000,
+                dataAllowance: 100,
+                tetheringSharingAllowance: 10,
+                speedAfterLimit: 5,
+                description: "대용량 데이터와 다양한 혜택을 제공하는 인기 요금제입니다. 스트리밍, 게임, 업무 등 다양한 용도로 활용하기에 최적화되어 있습니다.",
+                services: ["지니뮤직", "티빙", "유튜브 프리미엄"],
+                popular: true
+            },
+            {
+                id: 3,
+                name: "5G 프리미엄",
+                networkType: "5G",
+                category: "PHONE",
+                basePrice: 75000,
+                dataAllowance: 9999,
+                tetheringSharingAllowance: 9999,
+                speedAfterLimit: 100,
+                description: "무제한 데이터와 프리미엄 서비스를 모두 제공하는 최고급 요금제입니다. 데이터 걱정 없이 모든 디지털 라이프를 즐기실 수 있습니다.",
+                services: ["지니뮤직", "티빙", "유튜브 프리미엄", "넷플릭스", "디즈니+"],
+                popular: false
+            },
+            {
+                id: 4,
+                name: "LTE 이코노미",
+                networkType: "LTE",
+                category: "PHONE",
+                basePrice: 25000,
+                dataAllowance: 3,
+                tetheringSharingAllowance: 1,
+                speedAfterLimit: 0.5,
+                description: "경제적인 LTE 요금제로 기본적인 통신 서비스를 합리적인 가격에 제공합니다. 가벼운 사용자나 보조폰으로 적합합니다.",
+                services: ["지니뮤직"],
+                popular: false
+            },
+            {
+                id: 5,
+                name: "온라인 전용 5G",
+                networkType: "5G",
+                category: "ONLINE_ONLY",
+                basePrice: 45000,
+                dataAllowance: 50,
+                tetheringSharingAllowance: 8,
+                speedAfterLimit: 3,
+                description: "온라인 가입 전용 할인 혜택을 제공하는 요금제입니다. 매장 방문 없이 간편하게 가입하고 더 저렴한 가격으로 이용하세요.",
+                services: ["지니뮤직", "티빙"],
+                popular: false
+            },
+            {
+                id: 6,
+                name: "태블릿 데이터",
+                networkType: "5G",
+                category: "TABLET_WATCH",
+                basePrice: 20000,
+                dataAllowance: 20,
+                tetheringSharingAllowance: 0,
+                speedAfterLimit: 1,
+                description: "태블릿 전용 데이터 요금제로 모바일 오피스나 학습용으로 최적화되어 있습니다. 영상 시청과 클라우드 서비스 이용에 적합합니다.",
+                services: ["유튜브 프리미엄"],
+                popular: false
+            }
+        ];
+
+        let currentPlans = [...plansData];
+        let currentCategory = 'all';
+
+        function renderPlans(plans) {
+            const plansGrid = document.getElementById('plans-grid');
+            plansGrid.innerHTML = '';
+
+            if (plans.length === 0) {
+                plansGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <h3>해당하는 요금제가 없습니다</h3>
+                        <p>다른 카테고리를 선택해보세요.</p>
+                    </div>
+                `;
+                updatePlansCount(0);
+                return;
+            }
+
+            plans.forEach(plan => {
+                const planCard = document.createElement('div');
+                planCard.className = 'detailed-plan-card';
+                planCard.innerHTML = `
+                    <div class="plan-header">
+                        <h3 class="plan-name">${plan.name}</h3>
+                        <span class="network-badge ${plan.networkType.toLowerCase()}">${plan.networkType}</span>
+                    </div>
+                    <div class="plan-price">월 ${plan.basePrice.toLocaleString()}원</div>
+                    <div class="plan-details">
+                        <div class="detail-row">
+                            <span class="detail-label">데이터</span>
+                            <span class="detail-value">${plan.dataAllowance === 9999 ? '무제한' : plan.dataAllowance + 'GB'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">테더링</span>
+                            <span class="detail-value">${plan.tetheringSharingAllowance === 9999 ? '무제한' : plan.tetheringSharingAllowance + 'GB'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">속도제한 후</span>
+                            <span class="detail-value">${plan.speedAfterLimit}Mbps</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">카테고리</span>
+                            <span class="detail-value">${getCategoryName(plan.category)}</span>
+                        </div>
+                    </div>
+                    <div class="services-section">
+                        <div class="services-title">포함 서비스</div>
+                        <div class="services-list">
+                            ${plan.services.map(service => `<span class="service-tag">${service}</span>`).join('')}
+                        </div>
+                    </div>
+                    <p class="plan-description">${plan.description}</p>
+                    <button class="btn btn-primary btn-large" style="width: 100%;" onclick="">자세히 보기</button>
+                `;
+                plansGrid.appendChild(planCard);
+            });
+
+            updatePlansCount(plans.length);
+        }
+
+        function getCategoryName(category) {
+            const categoryNames = {
+                'PHONE': '일반폰',
+                'ONLINE_ONLY': '온라인전용',
+                'TABLET_WATCH': '태블릿/워치',
+                'DUAL_NUMBER': '듀얼넘버'
+            };
+            return categoryNames[category] || category;
+        }
+
+        function updatePlansCount(count) {
+            document.getElementById('plansCount').textContent = `총 ${count}개의 요금제`;
+        }
+
+        function filterByCategory(category) {
+            // Update active state of buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            currentCategory = category;
+            let filteredPlans = [...plansData];
+
+            if (category === '5G') {
+                filteredPlans = filteredPlans.filter(plan => plan.networkType === '5G' && plan.category !== 'ONLINE_ONLY');
+            } else if (category === 'LTE') {
+                filteredPlans = filteredPlans.filter(plan => plan.networkType === 'LTE');
+            } else if (category === 'ONLINE_ONLY') {
+                filteredPlans = filteredPlans.filter(plan => plan.category === 'ONLINE_ONLY');
+            }
+            // 'all' case doesn't need filtering
+
+            currentPlans = filteredPlans;
+            renderPlans(currentPlans);
+        }
+
+        function sortPlans() {
+            const sortSelect = document.querySelector('.sort-select');
+            const sortValue = sortSelect.value;
+
+            switch (sortValue) {
+                case 'price-low':
+                    currentPlans.sort((a, b) => a.basePrice - b.basePrice);
+                    break;
+                case 'price-high':
+                    currentPlans.sort((a, b) => b.basePrice - a.basePrice);
+                    break;
+                case 'data-high':
+                    currentPlans.sort((a, b) => {
+                        const aData = a.dataAllowance === 9999 ? 999999 : a.dataAllowance;
+                        const bData = b.dataAllowance === 9999 ? 999999 : b.dataAllowance;
+                        return bData - aData;
+                    });
+                    break;
+                case 'popular':
+                    currentPlans.sort((a, b) => {
+                        if (a.popular && !b.popular) return -1;
+                        if (!a.popular && b.popular) return 1;
+                        return 0;
+                    });
+                    break;
+            }
+
+            renderPlans(currentPlans);
+        }
+
+        function loadMoreProducts() {
+            // 로드 더 기능 구현
+            console.log('더 많은 상품 로드');
+        }
+
+        function showHome() {
+            // 홈으로 이동
+            console.log('홈으로 이동');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            renderPlans(currentPlans);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/signup.css"/>
+</head>
+<body>
+    <!-- Navigation -->
+    <div id="navbar"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="signup-container">
+            <div class="signup-header">
+                <h1 class="signup-title">회원가입</h1>
+                <p class="signup-subtitle">YOAJUNG과 함께 시작하세요</p>
+            </div>
+
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName" class="form-label">이름</label>
+                        <input
+                                type="text"
+                                id="firstName"
+                                name="firstName"
+                                class="form-input"
+                                placeholder="이름"
+                                required
+                        >
+                        <div class="input-feedback" id="firstNameFeedback"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" class="form-label">성</label>
+                        <input
+                                type="text"
+                                id="lastName"
+                                name="lastName"
+                                class="form-input"
+                                placeholder="성"
+                                required
+                        >
+                        <div class="input-feedback" id="lastNameFeedback"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">이메일</label>
+                    <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="이메일을 입력하세요"
+                            required
+                    >
+                    <div class="input-feedback" id="emailFeedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" class="form-label">휴대폰 번호</label>
+                    <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            class="form-input"
+                            placeholder="010-0000-0000"
+                            required
+                    >
+                    <div class="input-feedback" id="phoneFeedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input"
+                            placeholder="비밀번호를 입력하세요"
+                            required
+                    >
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">비밀번호를 입력하세요</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+                    <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            class="form-input"
+                            placeholder="비밀번호를 다시 입력하세요"
+                            required
+                    >
+                    <div class="input-feedback" id="confirmPasswordFeedback"></div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" class="checkbox" required>
+                    <label for="terms" class="checkbox-label">
+                        <a href="#" onclick="showTerms()">이용약관</a> 및 <a href="#" onclick="showPrivacy()">개인정보처리방침</a>에 동의합니다
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="marketing" class="checkbox">
+                    <label for="marketing" class="checkbox-label">
+                        마케팅 정보 수신에 동의합니다 (선택)
+                    </label>
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="signup-button" id="signupButton" disabled>회원가입</button>
+            </form>
+
+            <div class="login-link">
+                이미 계정이 있으신가요? <a href="login.html">로그인</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/assets/navbar.html')
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('navbar').innerHTML = html;
+                })
+                .catch(err => console.error('navbar 로딩 실패:', err));
+        });
+        
+        let validationState = {
+            firstName: false,
+            lastName: false,
+            email: false,
+            phone: false,
+            password: false,
+            confirmPassword: false,
+            terms: false
+        };
+
+        function validateField(fieldName, value) {
+            const input = document.getElementById(fieldName);
+            const feedback = document.getElementById(fieldName + 'Feedback');
+
+            let isValid = false;
+            let message = '';
+
+            switch (fieldName) {
+                case 'firstName':
+                case 'lastName':
+                    isValid = value.length >= 2;
+                    message = isValid ? '✓ 올바른 형식입니다' : '2글자 이상 입력해주세요';
+                    break;
+
+                case 'email':
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    isValid = emailRegex.test(value);
+                    message = isValid ? '✓ 사용 가능한 이메일입니다' : '올바른 이메일 형식이 아닙니다';
+                    break;
+
+                case 'phone':
+                    const phoneRegex = /^010-\d{4}-\d{4}$/;
+                    isValid = phoneRegex.test(value);
+                    message = isValid ? '✓ 올바른 형식입니다' : '010-0000-0000 형식으로 입력해주세요';
+                    break;
+
+                case 'confirmPassword':
+                    const password = document.getElementById('password').value;
+                    isValid = value === password && value.length > 0;
+                    message = isValid ? '✓ 비밀번호가 일치합니다' : '비밀번호가 일치하지 않습니다';
+                    break;
+            }
+
+            validationState[fieldName] = isValid;
+
+            if (feedback) {
+                feedback.textContent = message;
+                feedback.className = `input-feedback ${isValid ? 'success' : 'error'}`;
+            }
+
+            input.className = `form-input ${isValid ? 'success' : 'error'}`;
+
+            updateSubmitButton();
+        }
+
+        function validatePassword(password) {
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+
+            let strength = 0;
+            let strengthLabel = '';
+
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthFill.className = 'strength-fill strength-weak';
+                    strengthLabel = '약함';
+                    validationState.password = false;
+                    break;
+                case 2:
+                    strengthFill.className = 'strength-fill strength-fair';
+                    strengthLabel = '보통';
+                    validationState.password = false;
+                    break;
+                case 3:
+                case 4:
+                    strengthFill.className = 'strength-fill strength-good';
+                    strengthLabel = '좋음';
+                    validationState.password = true;
+                    break;
+                case 5:
+                    strengthFill.className = 'strength-fill strength-strong';
+                    strengthLabel = '매우 강함';
+                    validationState.password = true;
+                    break;
+            }
+
+            strengthText.textContent = password.length > 0 ? `비밀번호 강도: ${strengthLabel}` : '비밀번호를 입력하세요';
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const button = document.getElementById('signupButton');
+            const allValid = Object.values(validationState).every(valid => valid);
+            button.disabled = !allValid;
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            // 로딩 상태 시작
+            form.classList.add('loading');
+            hideError();
+
+            // 실제 회원가입 로직 시뮬레이션
+            setTimeout(() => {
+                alert('회원가입이 완료되었습니다!');
+                // 실제로는 서버 API 호출 후 로그인 페이지로 리다이렉트
+                window.location.href = 'login.html';
+            }, 2000);
+        }
+
+        function socialSignup(provider) {
+            alert(`${provider} 회원가입 기능은 준비 중입니다.`);
+        }
+
+        function showTerms() {
+            alert('이용약관 페이지를 표시합니다.');
+        }
+
+        function showPrivacy() {
+            alert('개인정보처리방침 페이지를 표시합니다.');
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError() {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.style.display = 'none';
+        }
+
+        // 이벤트 리스너 설정
+        document.addEventListener('DOMContentLoaded', function () {
+            // 입력 필드 유효성 검사
+            ['firstName', 'lastName', 'email', 'phone', 'confirmPassword'].forEach(fieldName => {
+                const input = document.getElementById(fieldName);
+                input.addEventListener('blur', (e) => validateField(fieldName, e.target.value));
+                input.addEventListener('input', (e) => {
+                    if (fieldName === 'confirmPassword') {
+                        validateField(fieldName, e.target.value);
+                    }
+                });
+            });
+
+            // 비밀번호 강도 체크
+            document.getElementById('password').addEventListener('input', (e) => {
+                validatePassword(e.target.value);
+                // 비밀번호 확인 필드도 다시 검사
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                if (confirmPassword) {
+                    validateField('confirmPassword', confirmPassword);
+                }
+            });
+
+            // 약관 동의 체크
+            document.getElementById('terms').addEventListener('change', (e) => {
+                validationState.terms = e.target.checked;
+                updateSubmitButton();
+            });
+
+            // 휴대폰 번호 자동 포맷팅
+            document.getElementById('phone').addEventListener('input', (e) => {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value.length >= 3) {
+                    value = value.replace(/(\d{3})(\d{0,4})(\d{0,4})/, (match, p1, p2, p3) => {
+                        if (p3) return `${p1}-${p2}-${p3}`;
+                        if (p2) return `${p1}-${p2}`;
+                        return p1;
+                    });
+                }
+                e.target.value = value;
+            });
+        });
+    </script>
+</body>
+</html>
