@@ -68,7 +68,7 @@
     document.getElementById('searchBtn').addEventListener('click', fetchPlans);
 
     async function fetchPlans() {
-        // ① 폼 값 수집
+        //  폼 값 수집
         const category   = document.getElementById('category').value;
         const dataType   = document.querySelector('input[name="dataType"]:checked').value;
         const priceRange = document.querySelector('input[name="priceRange"]:checked').value;
@@ -86,7 +86,7 @@
                             .join(',');
         }
 
-        // ② 쿼리스트링 빌드
+        //  쿼리스트링 빌드
         const params = new URLSearchParams();
         params.append('category', category);
         if (dataType)    params.append('dataType', dataType);
@@ -95,11 +95,11 @@
         if (ageGroup) params.append('ageGroup', ageGroup);
         if (sort)     params.append('sort', sort);
 
-        // ③ API 호출
+        //  API 호출
         const res  = await fetch(`/api/plans?${params.toString()}`);
         const json = await res.json();          // {code, message, data}
 
-        // ④ 결과 렌더링
+        //  결과 렌더링
         const ul = document.getElementById('result');
         ul.innerHTML = '';
 
@@ -107,6 +107,15 @@
             const li = document.createElement('li');
             li.textContent = `[${p.name}]  ${p.basePrice.toLocaleString()}원  (${p.dataAllowance >= 9999 ? '무제한' : p.dataAllowance+'GB'})`;
             ul.appendChild(li);
+            if (p.benefits && p.benefits.length) {
+                const benefitsUl = document.createElement('ul');
+                p.benefits.forEach(b => {
+                    const bLi = document.createElement('li');
+                    bLi.textContent = `${b.name} : ${b.description}`;
+                    benefitsUl.appendChild(bLi);
+                });
+                ul.appendChild(benefitsUl);
+            }
         });
     }
 // 연령대 필터는 '인기순'일 때만 표시

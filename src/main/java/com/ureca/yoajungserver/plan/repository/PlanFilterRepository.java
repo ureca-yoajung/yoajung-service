@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import com.ureca.yoajungserver.plan.entity.QPlanBenefit;
+import com.ureca.yoajungserver.plan.entity.QBenefit;
 
 @RequiredArgsConstructor
 @Repository
@@ -25,6 +27,8 @@ public class PlanFilterRepository {
         QPlan plan = QPlan.plan;
         QPlanProduct planProduct = QPlanProduct.planProduct;
         QProduct product = QProduct.product;
+        QPlanBenefit planBenefit = QPlanBenefit.planBenefit;
+        QBenefit benefit = QBenefit.benefit;
         String sort = planFilterRequest.getSort();
         boolean popularSort = "POPULAR".equalsIgnoreCase(sort);
         QPlanStatistic stat = popularSort ? QPlanStatistic.planStatistic : null;
@@ -36,7 +40,7 @@ public class PlanFilterRepository {
             booleanBuilder.and(plan.planCategory.eq(planFilterRequest.getCategory())); // 카테고리 필터, ALL 이 아닐 때
         }
 
-        // 연령대 필터  (stat.ageGroup 기준) - 인기순일 때만 적용
+        // 연령대 필터 (stat.ageGroup 기준) - 인기순일 때만 적용
         if (popularSort &&
             planFilterRequest.getAgeGroup() != null &&
             planFilterRequest.getAgeGroup() != AgeGroup.ALL) {
@@ -71,7 +75,7 @@ public class PlanFilterRepository {
         // 정렬 지정
         OrderSpecifier<?> orderSpec;
         if ("POPULAR".equalsIgnoreCase(sort)) {
-            orderSpec = null;   // handled via groupBy/max() below
+            orderSpec = null;
         } else if ("LOW_PRICE".equalsIgnoreCase(sort)) {
             orderSpec = plan.basePrice.asc();
         } else if ("HIGH_PRICE".equalsIgnoreCase(sort)) {
@@ -85,19 +89,22 @@ public class PlanFilterRepository {
         JPAQuery<Plan> query;
 
         if (popularSort) {
-            // ── 인기순: 통계 join, Plan 컬럼만 SELECT, 연관 컬렉션은 이후 LAZY ──
+            //  인기순
             query = queryFactory.select(plan)
                     .from(plan)
+                    .leftJoin(plan.planProducts, planProduct)
+                    .leftJoin(planProduct.product, product)
                     .leftJoin(stat).on(stat.planId.eq(plan.id))
                     .where(booleanBuilder)
                     .groupBy(plan.id)
                     .orderBy(stat.userCount.max().desc());
         } else {
-            // ── 그 외 정렬 ──
             query = queryFactory.selectDistinct(plan)
                     .from(plan)
                     .leftJoin(plan.planProducts, planProduct).fetchJoin()
                     .leftJoin(planProduct.product, product).fetchJoin()
+                    .leftJoin(plan.planBenefits, planBenefit).fetchJoin()
+                    .leftJoin(planBenefit.benefit, benefit).fetchJoin()
                     .where(booleanBuilder)
                     .orderBy(orderSpec);
         }
