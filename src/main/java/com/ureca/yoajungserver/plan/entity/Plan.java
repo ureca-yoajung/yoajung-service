@@ -7,7 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.Set;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE Plan SET deletedAt = NOW() WHERE id = ?")
+@SQLRestriction("deletedAt is NULL")
 public class Plan extends BaseTimeEntity {
 
     @Id
@@ -47,6 +52,9 @@ public class Plan extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String description;
+
+    @Column
+    private LocalDateTime deletedAt;
 
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "plan", fetch = FetchType.LAZY)
