@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="planProduct")
 public class PlanProduct extends BaseTimeEntity {
 
     @Id
@@ -16,10 +17,10 @@ public class PlanProduct extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "plan_id", nullable = false)
+    @JoinColumn(name = "planId", nullable = false)
     private Plan plan;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "productId", nullable = false)
     private Product product;
 }

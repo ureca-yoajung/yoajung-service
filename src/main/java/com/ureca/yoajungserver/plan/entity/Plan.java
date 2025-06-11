@@ -16,6 +16,7 @@ import java.util.Set;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="plan")
 public class Plan extends BaseTimeEntity {
 
     @Id
@@ -25,24 +26,24 @@ public class Plan extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name="networkType", nullable = false)
     @Enumerated(EnumType.STRING)
     private NetworkType networkType;
 
-    @Column(nullable = false)
+    @Column(name="planCategory", nullable = false)
     @Enumerated(EnumType.STRING)
     private PlanCategory planCategory;
 
-    @Column(nullable = false)
+    @Column(name="basePrice", nullable = false)
     private Integer basePrice;
 
-    @Column(nullable = false)
+    @Column(name="dataAllowance", nullable = false)
     private Integer dataAllowance;
 
-    @Column(nullable = false)
+    @Column(name="tetheringSharingAllowance", nullable = false)
     private Integer tetheringSharingAllowance;
 
-    @Column(nullable = false)
+    @Column(name="speedAfterLimit", nullable = false)
     private Integer speedAfterLimit;
 
     @Column(nullable = false)
