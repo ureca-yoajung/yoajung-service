@@ -192,6 +192,13 @@ body {
     font-weight: 500;
 }
 
+.plans-filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
 .sort-select {
     padding: 8px 16px;
     border: 2px solid #e5e5e5;
@@ -205,6 +212,20 @@ body {
 .sort-select:focus {
     outline: none;
     border-color: var(--primary);
+}
+
+.plan-user-filter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    color: var(--text-primary);
 }
 
 .detailed-plans-grid {
@@ -422,6 +443,56 @@ body {
 
 .load-more-btn:disabled::before {
     display: none;
+}
+
+/* Chat Button */
+.chat-button {
+    position: fixed;
+    bottom: 50px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    background: var(--primary);
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230, 0, 126, 0.4);
+    transition: all 0.2s;
+    z-index: 50;
+}
+
+.chat-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(230, 0, 126, 0.6);
+}
+
+#scrollTopBtn {
+    position: fixed;
+    bottom: 120px;
+    right: 30px;
+    width: 56px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.63); /* 블랙 계열의 투명 배경 */
+    border: 1px solid rgba(0, 0, 0, 0.15); /* 은은한 경계 */
+    border-radius: 16px;
+    color: #000000; /* 메인 블랙 컬러 */
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 */
+    transition: all 0.2s;
+    z-index: 49;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#scrollTopBtn:hover {
+    transform: scale(1.05);
+    background: rgba(0, 0, 0, 0.15); /* 더 진한 블랙 톤 강조 */
+    color: #FFFFFF; /* 대비를 위한 반전 텍스트 */
 }
 
 @keyframes spin {

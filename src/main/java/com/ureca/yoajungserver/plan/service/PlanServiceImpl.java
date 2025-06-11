@@ -34,7 +34,7 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ListPlanResponse> getListPlan(int page, int size, PlanCategory planCategory, PlanSortType sortedType) {
+    public ListPlanResponse getListPlan(int page, int size, PlanCategory planCategory, PlanSortType sortedType) {
         if (sortedType == PlanSortType.POPULAR) {
             throw new IllegalArgumentException("POPULAR sort type should use getPopularPlans method");
         }
@@ -47,22 +47,30 @@ public class PlanServiceImpl implements PlanService {
                 ? planRepository.findAll(pageable)
                 : planRepository.findAllByPlanCategory(planCategory, pageable);
 
-        return convertToListPlanResponse(planPage.getContent());
+        return ListPlanResponse.builder()
+                .plans(convertToListPlanResponse(planPage.getContent()))
+                .count(planPage.getTotalElements())
+                .build();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ListPlanResponse> getPopularPlans(int page, int size, PlanCategory planCategory, PlanSortType sortedType) {
+    public ListPlanResponse getPopularPlans(int page, int size, PlanCategory planCategory, PlanSortType sortedType) {
         Pageable pageable;
 
         LocalDateTime today = LocalDate.now().atStartOfDay(); // 2025-06-09T00:00
         LocalDateTime endDate = today;                        // 오늘 0시
         LocalDateTime startDate = today.minusDays(7);         // 7일 전 0시
 
-        System.out.println("조회 기간: " + startDate + " ~ " + endDate);
-
         List<Long> popularPlanIds = userRepository.findPopularPlansInDateRange(startDate, endDate);
-        System.out.println("인기 요금제 ID 목록: " + popularPlanIds);
+
+        long totalCount;
+
+        if (planCategory == null) {
+            totalCount = planRepository.count();
+        } else {
+            totalCount = planRepository.countByPlanCategory(planCategory);
+        }
 
         if (popularPlanIds.isEmpty()) {
             Sort sort = PlanSortType.toSort(sortedType != null ? sortedType : PlanSortType.HIGH_DATA).orElse(Sort.unsorted());
@@ -70,7 +78,11 @@ public class PlanServiceImpl implements PlanService {
             Page<Plan> fallbackPlans = (planCategory == null)
                     ? planRepository.findAll(pageable)
                     : planRepository.findAllByPlanCategory(planCategory, pageable);
-            return convertToListPlanResponse(fallbackPlans.getContent());
+
+            return ListPlanResponse.builder()
+                    .plans(convertToListPlanResponse(fallbackPlans.getContent()))
+                    .count(fallbackPlans.getTotalElements())
+                    .build();
         }
 
         // 인기 요금제를 순서대로 조회
@@ -127,7 +139,10 @@ public class PlanServiceImpl implements PlanService {
             }
         }
 
-        return convertToListPlanResponse(result);
+        return ListPlanResponse.builder()
+                .plans(convertToListPlanResponse(result))
+                .count(totalCount)
+                .build();
     }
 
     @Override
@@ -187,7 +202,7 @@ public class PlanServiceImpl implements PlanService {
                 .build();
     }
 
-    private List<ListPlanResponse> convertToListPlanResponse(List<Plan> plans) {
+    private List<ListPlanDto> convertToListPlanResponse(List<Plan> plans) {
         return plans.stream()
                 .map(plan -> {
                     List<ListBenefitDto> benefitDtos = plan.getPlanBenefits().stream()
@@ -201,7 +216,7 @@ public class PlanServiceImpl implements PlanService {
                             .map(ListProductDto::fromService)
                             .collect(Collectors.toList());
 
-                    return ListPlanResponse.fromPlan(plan, serviceDtos, benefitDtos);
+                    return ListPlanDto.fromPlan(plan, serviceDtos, benefitDtos);
                 })
                 .collect(Collectors.toList());
     }
