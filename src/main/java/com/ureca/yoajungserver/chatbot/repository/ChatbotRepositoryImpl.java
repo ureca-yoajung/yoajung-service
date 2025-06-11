@@ -85,28 +85,21 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                 .fetch();
 
 
-        // 뽑은 요금제의 혜택
-        // ~~~~~~~~~~~~~~~~
+            // 추천 요금제와 혜택 매핑
+            // 추천 요금제 ID 목록
+            List<Long> planIdList = planList.stream()
+                    .map(PersonalPlanListResponse::getId)
+                    .collect(Collectors.toList());
 
-        // list에 추출된 요금제들이 담겨있음.
-        // 해당 요금제의 benefit을 추출.
-
-        // 1. 요금제 추출: plan정보를 dto에 담는다. List(planRecommendResponse)
-        // 2. 혜택 추출: 뽑은 plan의 혜택을 dto에 담는다. resultDto : planREcommendREsponse, callAllowance, smsAllowance 가짐.
-
-
-            // 요금제 ID 목록 추출
-            List<Long> planIds = planList.stream().map(PersonalPlanListResponse::getId).collect(Collectors.toList());
-
-            // 혜택 조회 (VOICE, SMS만)
+            // 혜택 조회 (통화, 문자만)
             List<Tuple> benefits = jpaQueryFactory
                     .select(planBenefit.plan.id, benefit.benefitType, benefit.voiceLimit, benefit.smsLimit)
                     .from(planBenefit)
                     .join(planBenefit.benefit, benefit)
-                    .where(planBenefit.plan.id.in(planIds))
+                    .where(planBenefit.plan.id.in(planIdList))
                     .fetch();
 
-            // 요금제 ID와 <voice, sms>매핑
+            // 요금제 ID와 [혜택타입, 통화, 문자] 매핑
             Map<Long, List<BenefitEntry>> benefitMap = benefits.stream()
                     .collect(Collectors.groupingBy(
                             t -> t.get(planBenefit.plan.id),
@@ -115,12 +108,12 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                                     t.get(benefit.voiceLimit),
                                     t.get(benefit.smsLimit)
                             ), Collectors.toList())
-
                     ));
 
-            // 최종 dto 변환
-            List<PersonalPlanRecommendResponse> result = planList.stream()
+            // 최종 dto 리스트 변환
+            List<PersonalPlanRecommendResponse> recommendResult = planList.stream()
                     .map(planDto -> {
+                        // 요금제 id 로 혜택 List 가져오기
                         List<BenefitEntry> benefitList = benefitMap.get(planDto.getId());
 
                         Integer call = null;
@@ -128,7 +121,6 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
 
                         if (benefitList != null) {
                             for (BenefitEntry entry : benefitList) {
-
                                 if(entry.getBenefitType() == BenefitType.VOICE)
                                     call = entry.getVoiceLimit();
                                 else if(entry.getBenefitType() == BenefitType.SMS)
@@ -136,14 +128,11 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                             }
                         }
 
-                        PersonalPlanRecommendResponse response = new PersonalPlanRecommendResponse(planDto, call, sms);
-                        return response;
+                        return new PersonalPlanRecommendResponse(planDto, call, sms);
                     }).collect(Collectors.toList());
 
-        return result;
+        return recommendResult;
     }
-
-
 
     // 카테고리 조건
     private BooleanExpression categoryCondition(String category) {
@@ -184,8 +173,6 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
     }
 
     // 데이터 사용량 조건
-    // 👽👽👽👽👽데이터 보통/적음 기준? 보통의 기준을 between으로 해야할까..? 그럼 110부터 무제한 사이의 요금제는??
-    // 👽👽👽👽👽dataAllowance는 GB단위?
     private BooleanExpression dataCondition(String data) {
         switch(data){
             case "무제한" : return plan.dataAllowance.eq(9999).or(plan.speedAfterLimit.goe(3));
