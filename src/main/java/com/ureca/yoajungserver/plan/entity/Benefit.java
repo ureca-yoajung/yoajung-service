@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="benefit")
+@Table(name = "benefit")
 public class Benefit extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,10 +22,10 @@ public class Benefit extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BenefitType benefitType;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name="voiceLimit")

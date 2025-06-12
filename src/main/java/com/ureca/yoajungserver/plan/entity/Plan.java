@@ -11,24 +11,22 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="plan")
-@SQLDelete(sql = "UPDATE Plan SET deletedAt = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE plan SET deletedAt = NOW() WHERE id = ?")
 @SQLRestriction("deletedAt is NULL")
 public class Plan extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name",nullable = false)
     private String name;
 
     @Column(name="networkType", nullable = false)
@@ -51,10 +49,10 @@ public class Plan extends BaseTimeEntity {
     @Column(name="speedAfterLimit", nullable = false)
     private Integer speedAfterLimit;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column
+    @Column(name = "deletedAt")
     private LocalDateTime deletedAt;
 
     @BatchSize(size = 10)
