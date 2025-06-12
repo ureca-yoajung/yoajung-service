@@ -11,10 +11,11 @@ import lombok.*;
 public class Product extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name="productType", nullable = false)
@@ -25,7 +26,7 @@ public class Product extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name="productImage", nullable = false)

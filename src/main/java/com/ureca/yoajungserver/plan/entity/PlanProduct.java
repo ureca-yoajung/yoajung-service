@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class PlanProduct extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
