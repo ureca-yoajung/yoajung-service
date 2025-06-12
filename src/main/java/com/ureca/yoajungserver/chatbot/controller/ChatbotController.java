@@ -7,11 +7,13 @@ import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 import com.ureca.yoajungserver.chatbot.service.ChatbotService;
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.user.security.CustomUserDetails;
 import java.io.IOException;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,9 +27,12 @@ public class ChatbotController {
 
     @GetMapping("/chat")
     public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> getPlanRecommendation(
-            @RequestParam("input") String input,
-            @RequestParam("userId") String userId) throws IOException {
-        return ResponseEntity.ok(ApiResponse.of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapper(input, userId)));
+            @RequestParam("question") String question,
+            @RequestParam("guestId") String guestId,
+            @AuthenticationPrincipal CustomUserDetails user) throws IOException {
+        String id = (user != null && user.getId() != null)
+                ? user.getId().toString()
+                : guestId;
+        return ResponseEntity.ok(ApiResponse.of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapper(question, id)));
     }
-
 }
