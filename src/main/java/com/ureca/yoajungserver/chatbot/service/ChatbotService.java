@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface ChatbotService {
 
-    ChatbotResponse keywordMapper(String input, String userId) throws IOException;
+    List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) throws IOException;
+//    ChatbotResponse keywordMapper(String input, String userId) throws IOException;
     List<PersonalPlanRecommendResponse> planList(PlanKeywordResponse keywordResponse);
 }

@@ -25,7 +25,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     private final ChatbotRepository chatbotRepository;
 
     @Override
-    public ChatbotResponse keywordMapper(String input, String userId) throws IOException {
+    public List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) throws IOException {
         // 실제 파싱 시도
         PlanKeywordResponse planKeywordResponse = chatClient.prompt()
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
@@ -33,8 +33,9 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .call()
                 .entity(PlanKeywordResponse.class);
 
+        System.out.println(planKeywordResponse);
         // 필수 필드 검증
-        return ChatbotResponse.result(planKeywordResponse);
+        return chatbotRepository.recommendPlans(planKeywordResponse);
     }
 
     private void checkJsonForm(String trimmed) {

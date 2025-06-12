@@ -25,7 +25,7 @@ public class ChatbotController {
     private final ChatbotService chatbotService;
 
     @GetMapping("/chat")
-    public ResponseEntity<ApiResponse<ChatbotResponse>> getPlanRecommendation(
+    public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> getPlanRecommendation(
             @RequestParam("input") String input,
             @RequestParam("userId") String userId) throws IOException {
         return ResponseEntity.ok(ApiResponse.of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapper(input, userId)));

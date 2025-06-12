@@ -20,8 +20,8 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="plan")
-@SQLDelete(sql = "UPDATE Plan SET deletedAt = NOW() WHERE id = ?")
-@SQLRestriction("deletedAt is NULL")
+//@SQLDelete(sql = "UPDATE Plan SET deletedAt = NOW() WHERE id = ?")
+//@SQLRestriction("deletedAt is NULL")
 public class Plan extends BaseTimeEntity {
 
     @Id
