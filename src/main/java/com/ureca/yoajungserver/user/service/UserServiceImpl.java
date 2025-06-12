@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(UserNotFoundException::new);
 
         user.updateInfo(
-                request.getName(),
+                user.getName(),
                 request.getPhoneNumber(),
                 request.getGender(),
                 request.getAgeGroup(),
