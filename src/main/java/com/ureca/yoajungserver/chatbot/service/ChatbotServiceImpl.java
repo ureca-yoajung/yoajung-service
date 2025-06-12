@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ureca.yoajungserver.chatbot.dto.ChatbotResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
+
+import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
+import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -18,6 +22,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+    private final ChatbotRepository chatbotRepository;
 
     @Override
     public ChatbotResponse keywordMapper(String input, String userId) throws IOException {
@@ -46,5 +51,12 @@ public class ChatbotServiceImpl implements ChatbotService {
             throw new IOException("JSON 매핑 실패");
         }
         return planKeywordResponse;
+    }
+
+    // 요금제 조회
+    @Override
+    public List<PersonalPlanRecommendResponse> planList(PlanKeywordResponse keywordResponse) {
+
+        return chatbotRepository.recommendPlans(keywordResponse);
     }
 }
