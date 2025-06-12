@@ -5,6 +5,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ureca.yoajungserver.chatbot.dto.BenefitEntry;
@@ -40,6 +41,33 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
     @Override
     public List<PersonalPlanRecommendResponse> recommendPlans(PlanKeywordResponse keyword) {
 
+        BooleanBuilder havingBuilder = new BooleanBuilder();
+
+        if(callCondition(keyword.getCallAllowance()) != null) {
+            havingBuilder.and(new CaseBuilder()
+                    .when(callCondition(keyword.getCallAllowance()))
+                    .then(1).otherwise(0)
+                    .max().eq(1));
+        }
+        if(smsCondition(keyword.getSmsAllowance()) != null) {
+            havingBuilder.and(new CaseBuilder()
+                    .when(smsCondition(keyword.getSmsAllowance()))
+                    .then(1).otherwise(0)
+                    .max().eq(1));
+        }
+        if(mediaCondition(keyword.getMediaService()) != null) {
+            havingBuilder.and(new CaseBuilder()
+                    .when(mediaCondition(keyword.getMediaService()))
+                    .then(1).otherwise(0)
+                    .max().eq(1));
+        }
+        if(premiumCondition(keyword.getPremiumService()) != null) {
+            havingBuilder.and(new CaseBuilder()
+                    .when(premiumCondition(keyword.getPremiumService()))
+                    .then(1).otherwise(0)
+                    .max().eq(1));
+        }
+
         // 추천 요금제 리스트
         List<PersonalPlanListResponse> planList = jpaQueryFactory
                 .select(Projections.constructor(PersonalPlanListResponse.class,
@@ -59,29 +87,11 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                         priceCondition(keyword.getPrice()),
                         networkCondition(keyword.getNetworkType()),
                         dataCondition(keyword.getDataAllowance()),
+                        afterLimitCondition(keyword.getSpeedAfterLimit()),
                         tetheringCondition(keyword.getTetheringSharing()))
                 .groupBy(plan.id)
-                .having(
-                        // Benefit 조건
-                        new CaseBuilder()
-                                .when(callCondition(keyword.getCallAllowance()))
-                                .then(1).otherwise(0)
-                                .max().eq(1),
-                        new CaseBuilder()
-                                .when(smsCondition(keyword.getSmsAllowance()))
-                                .then(1).otherwise(0)
-                                .max().eq(1),
-                        new CaseBuilder()
-                                .when(mediaCondition(keyword.getMediaService()))
-                                .then(1).otherwise(0)
-                                .max().eq(1),
-                        new CaseBuilder()
-                                .when(premiumCondition(keyword.getPremiumService()))
-                                .then(1).otherwise(0)
-                                .max().eq(1)
-                )
+                .having(havingBuilder)
                 .orderBy(plan.basePrice.desc())
-//                .limit(3)
                 .fetch();
 
 
@@ -145,9 +155,23 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
     }
 
     // 가격 조건
-    private BooleanExpression priceCondition(Integer price) {
-        if(price != null)
-            return plan.basePrice.loe(price);
+    private BooleanExpression priceCondition(String price) {
+
+        if(!hasText(price))
+            return null;
+
+        Integer priceInt = Integer.parseInt(price.replaceAll("[^0-9]", ""));
+
+        if(price.contains("이상")) return plan.basePrice.goe(priceInt);
+        else if(price.contains("이하")) return plan.basePrice.loe(priceInt);
+        else if(price.contains("초과")) return plan.basePrice.gt(priceInt);
+        else if(price.contains("미만")) return plan.basePrice.lt(priceInt);
+        else if(price.contains("평균")) {
+            int min = (priceInt / 10000) * 10000;
+            int max = min + 10000;
+            return plan.basePrice.between(min, max-1);
+        }
+
         return null;
     }
 
@@ -183,6 +207,22 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
         }
     }
 
+    // 속도제한 조건
+    private BooleanExpression afterLimitCondition(String afterLimit) {
+
+        if(!hasText(afterLimit))
+            return null;
+
+        Integer afterLimitInt = Integer.parseInt(afterLimit.replaceAll("[^0-9]", ""));
+
+        if(afterLimit.contains("이상")) return plan.speedAfterLimit.goe(afterLimitInt);
+        else if(afterLimit.contains("이하")) return plan.speedAfterLimit.loe(afterLimitInt);
+        else if(afterLimit.contains("초과")) return plan.speedAfterLimit.gt(afterLimitInt);
+        else if(afterLimit.contains("미만")) return plan.speedAfterLimit.lt(afterLimitInt);
+
+        return null;
+    }
+
     // 테더링 조건
     private BooleanExpression tetheringCondition(String tethering) {
         if(hasText(tethering))
@@ -192,30 +232,18 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
 
     // 미디어 서비스 조건
     private BooleanExpression mediaCondition(String media) {
-        if(media.equals("Y"))
+
+        if(hasText(media))
             return benefit.benefitType.eq(BenefitType.MEDIA);
-        return JPAExpressions
-                .selectOne()
-                .from(planBenefit)
-                .join(planBenefit.benefit, benefit)
-                .where(
-                        planBenefit.plan.id.eq(plan.id),
-                        benefit.benefitType.eq(BenefitType.MEDIA)
-                ).notExists();
+        return null;
     }
 
     // 프리미엄 서비스 조건
     private BooleanExpression premiumCondition(String premium) {
-        if(premium.equals("Y"))
+
+        if(hasText(premium))
             return benefit.benefitType.eq(BenefitType.PREMIUM);
-        return JPAExpressions
-                .selectOne()
-                .from(planBenefit)
-                .join(planBenefit.benefit, benefit)
-                .where(
-                        planBenefit.plan.id.eq(plan.id),
-                        benefit.benefitType.eq(BenefitType.PREMIUM)
-                ).notExists();
+        return null;
     }
 
 }
