@@ -85,51 +85,51 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                 .fetch();
 
 
-            // 추천 요금제와 혜택 매핑
-            // 추천 요금제 ID 목록
-            List<Long> planIdList = planList.stream()
-                    .map(PersonalPlanListResponse::getId)
-                    .collect(Collectors.toList());
+        // 추천 요금제와 혜택 매핑
+        // 추천 요금제 ID 목록
+        List<Long> planIdList = planList.stream()
+                .map(PersonalPlanListResponse::getId)
+                .collect(Collectors.toList());
 
-            // 혜택 조회 (통화, 문자만)
-            List<Tuple> benefits = jpaQueryFactory
-                    .select(planBenefit.plan.id, benefit.benefitType, benefit.voiceLimit, benefit.smsLimit)
-                    .from(planBenefit)
-                    .join(planBenefit.benefit, benefit)
-                    .where(planBenefit.plan.id.in(planIdList))
-                    .fetch();
+        // 혜택 조회 (통화, 문자만)
+        List<Tuple> benefits = jpaQueryFactory
+                .select(planBenefit.plan.id, benefit.benefitType, benefit.voiceLimit, benefit.smsLimit)
+                .from(planBenefit)
+                .join(planBenefit.benefit, benefit)
+                .where(planBenefit.plan.id.in(planIdList))
+                .fetch();
 
-            // 요금제 ID와 [혜택타입, 통화, 문자] 매핑
-            Map<Long, List<BenefitEntry>> benefitMap = benefits.stream()
-                    .collect(Collectors.groupingBy(
-                            t -> t.get(planBenefit.plan.id),
-                            Collectors.mapping(t -> new BenefitEntry(
-                                    t.get(benefit.benefitType),
-                                    t.get(benefit.voiceLimit),
-                                    t.get(benefit.smsLimit)
-                            ), Collectors.toList())
-                    ));
+        // 요금제 ID와 [혜택타입, 통화, 문자] 매핑
+        Map<Long, List<BenefitEntry>> benefitMap = benefits.stream()
+                .collect(Collectors.groupingBy(
+                        t -> t.get(planBenefit.plan.id),
+                        Collectors.mapping(t -> new BenefitEntry(
+                                t.get(benefit.benefitType),
+                                t.get(benefit.voiceLimit),
+                                t.get(benefit.smsLimit)
+                        ), Collectors.toList())
+                ));
 
-            // 최종 dto 리스트 변환
-            List<PersonalPlanRecommendResponse> recommendResult = planList.stream()
-                    .map(planDto -> {
-                        // 요금제 id 로 혜택 List 가져오기
-                        List<BenefitEntry> benefitList = benefitMap.get(planDto.getId());
+        // 최종 dto 리스트 변환
+        List<PersonalPlanRecommendResponse> recommendResult = planList.stream()
+                .map(planDto -> {
+                    // 요금제 id 로 혜택 List 가져오기
+                    List<BenefitEntry> benefitList = benefitMap.get(planDto.getId());
 
-                        Integer call = null;
-                        Integer sms = null;
+                    Integer call = null;
+                    Integer sms = null;
 
-                        if (benefitList != null) {
-                            for (BenefitEntry entry : benefitList) {
-                                if(entry.getBenefitType() == BenefitType.VOICE)
-                                    call = entry.getVoiceLimit();
-                                else if(entry.getBenefitType() == BenefitType.SMS)
-                                    sms = entry.getSmsLimit();
-                            }
+                    if (benefitList != null) {
+                        for (BenefitEntry entry : benefitList) {
+                            if(entry.getBenefitType() == BenefitType.VOICE)
+                                call = entry.getVoiceLimit();
+                            else if(entry.getBenefitType() == BenefitType.SMS)
+                                sms = entry.getSmsLimit();
                         }
+                    }
 
-                        return new PersonalPlanRecommendResponse(planDto, call, sms);
-                    }).collect(Collectors.toList());
+                    return new PersonalPlanRecommendResponse(planDto, call, sms);
+                }).collect(Collectors.toList());
 
         return recommendResult;
     }
@@ -172,7 +172,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return benefit.smsLimit.goe(Integer.parseInt(sms));
     }
 
-   // 데이터 사용량 조건
+    // 데이터 사용량 조건
     private BooleanExpression dataCondition(String data) {
         switch(data){
             case "무제한" : return plan.dataAllowance.eq(9999).or(plan.speedAfterLimit.goe(3));
@@ -192,16 +192,16 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
 
     // 미디어 서비스 조건
     private BooleanExpression mediaCondition(String media) {
-            if(media.equals("Y"))
-                return benefit.benefitType.eq(BenefitType.MEDIA);
-            return JPAExpressions
-                    .selectOne()
-                    .from(planBenefit)
-                    .join(planBenefit.benefit, benefit)
-                    .where(
-                            planBenefit.plan.id.eq(plan.id),
-                            benefit.benefitType.eq(BenefitType.MEDIA)
-                    ).notExists();
+        if(media.equals("Y"))
+            return benefit.benefitType.eq(BenefitType.MEDIA);
+        return JPAExpressions
+                .selectOne()
+                .from(planBenefit)
+                .join(planBenefit.benefit, benefit)
+                .where(
+                        planBenefit.plan.id.eq(plan.id),
+                        benefit.benefitType.eq(BenefitType.MEDIA)
+                ).notExists();
     }
 
     // 프리미엄 서비스 조건
@@ -219,4 +219,3 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
     }
 
 }
-

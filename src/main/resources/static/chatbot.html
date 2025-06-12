@@ -685,6 +685,7 @@
         budget: null,
     }
 
+    let userId = null;
     // DOM 요소
     let isTyping = false;
     const chatMessages = document.getElementById('chatMessages');
@@ -702,6 +703,7 @@
             .catch(err => console.error('navbar 로딩 실패:', err));
         updateSendButtonState();
         scrollToBottom();
+        userId = getOrCreateUserId();
     });
 
     // 메시지 입력 이벤트
@@ -722,8 +724,8 @@
 
     function getOrCreateUserId() {
         // 이미 로컬에 userId가 있으면 바로 리턴
-        let userId = localStorage.getItem('userId');
-        if (!userId) {
+        let localUserId = localStorage.getItem('userId');
+        if (!localUserId) {
             // 없으면 UUID 생성 (modern 브라우저) 또는 fallback
             if (crypto && crypto.randomUUID) {
                 userId = crypto.randomUUID();
@@ -746,7 +748,7 @@
 
         try {
             // 하드코딩 테스트용 JSON 파싱 예시
-            const userId = getOrCreateUserId();
+            // const userId = getOrCreateUserId();
             console.log(userId);
             const response = await fetch(`/chat?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`);
             const data = await response.json();

@@ -51,4 +51,11 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
         return planKeywordResponse;
     }
+
+    // 요금제 조회
+    @Override
+    public List<PersonalPlanRecommendResponse> planList(PlanKeywordResponse keywordResponse) {
+
+        return chatbotRepository.recommendPlans(keywordResponse);
+    }
 }

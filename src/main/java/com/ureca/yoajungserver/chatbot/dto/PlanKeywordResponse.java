@@ -19,6 +19,8 @@ public class PlanKeywordResponse {
 
     private String networkType;
 
+    private Integer speedAfterLimit;
+
     private String callAllowance;
 
     private String smsAllowance;
