@@ -3,50 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <title>마이페이지</title>
+    <style>
+        .tab {
+            display: inline-block;
+            margin: 0 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            color: #2c80ff;
+            text-decoration: underline;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-<h2>내 정보</h2>
+<h2>마이페이지</h2>
 <button onclick="window.location.href='main.html'">메인으로</button>
 <button onclick="logout()">로그아웃</button>
-<div id="userinfo"></div>
+<div>
+    <span class="tab active" id="tab-info">내 정보</span>
+    <span class="tab" id="tab-tendency">내 성향</span>
+</div>
+
+<!-- 내 정보 -->
+<div class="section active" id="section-info">
+    <div id="userinfo"></div>
+</div>
+
+<!-- 내 성향 -->
+<div class="section" id="section-tendency">
+    <div id="tendency"></div>
+</div>
+
 <script>
+    // 탭 전환
+    document.getElementById('tab-info').onclick = function () {
+        setTab('info');
+    };
+    document.getElementById('tab-tendency').onclick = function () {
+        setTab('tendency');
+    };
+
+    function setTab(tab) {
+        document.getElementById('tab-info').classList.toggle('active', tab === 'info');
+        document.getElementById('tab-tendency').classList.toggle('active', tab === 'tendency');
+        document.getElementById('section-info').classList.toggle('active', tab === 'info');
+        document.getElementById('section-tendency').classList.toggle('active', tab === 'tendency');
+        if (tab === 'info') loadMyInfo();
+        if (tab === 'tendency') loadTendency();
+    }
+
+    // 내 정보
+    let userData = null, userEditMode = false;
+
+    function renderUserInfo() {
+        const d = userData;
+        const el = document.getElementById('userinfo');
+        if (!d) {
+            el.innerHTML = "정보 없음";
+            return;
+        }
+        if (userEditMode) {
+            el.innerHTML = `
+                <form id="user-edit-form">
+                    <div>이메일: <input type="email" name="email" value="${d.email}" disabled></div>
+                    <div>이름: <input type="text" name="name" value="${d.name}" disabled></div>
+                    <div>전화번호: <input type="text" name="phoneNumber" value="${d.phoneNumber || ''}" required></div>
+                    <div>성별:
+                        <select name="gender" required>
+                            <option value="MALE" ${d.gender === 'MALE' ? 'selected' : ''}>남자</option>
+                            <option value="FEMALE" ${d.gender === 'FEMALE' ? 'selected' : ''}>여자</option>
+                        </select>
+                    </div>
+                    <div>연령대:
+                        <select name="ageGroup" required>
+                            <option value="TEN_S" ${d.ageGroup === 'TEN_S' ? 'selected' : ''}>10대</option>
+                            <option value="TWENTY_S" ${d.ageGroup === 'TWENTY_S' ? 'selected' : ''}>20대</option>
+                            <option value="THIRTY_S" ${d.ageGroup === 'THIRTY_S' ? 'selected' : ''}>30대</option>
+                            <option value="FORTY_S" ${d.ageGroup === 'FORTY_S' ? 'selected' : ''}>40대</option>
+                            <option value="FIFTY_S" ${d.ageGroup === 'FIFTY_S' ? 'selected' : ''}>50대</option>
+                            <option value="SIXTY_S_PLUS" ${d.ageGroup === 'SIXTY_S_PLUS' ? 'selected' : ''}>60대 이상</option>
+                        </select>
+                    </div>
+                    <div>가족수: <input type="number" name="familyCount" value="${d.familyCount || ''}" required></div>
+                    <button type="submit">수정 완료</button>
+                </form>
+            `;
+            document.getElementById('user-edit-form').onsubmit = function (e) {
+                e.preventDefault();
+                const obj = Object.fromEntries(new FormData(e.target));
+                fetch('/api/user/me', {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify(obj)
+                }).then(r => r.json()).then(data => {
+                    if (data && data.data) {
+                        userData = data.data;
+                        userEditMode = false;
+                        renderUserInfo();
+                        alert(data.message || "수정 완료");
+                    } else alert(data.message || "실패");
+                });
+            }
+        } else {
+            el.innerHTML = `
+                <div>이메일: ${d.email}</div>
+                <div>이름: ${d.name}</div>
+                <div>전화번호: ${d.phoneNumber || ''}</div>
+                <div>성별: ${d.gender}</div>
+                <div>연령대: ${d.ageGroup}</div>
+                <div>가족수: ${d.familyCount || ''}</div>
+                <button id="user-edit-btn">내 정보 수정</button>
+            `;
+            document.getElementById('user-edit-btn').onclick = () => {
+                userEditMode = true;
+                renderUserInfo();
+            }
+        }
+    }
+
     function loadMyInfo() {
-        fetch('/api/user/me', {
-            method: 'GET',
-            credentials: 'include'
-        })
+        fetch('/api/user/me', {method: 'GET', credentials: 'include'})
             .then(res => {
                 if (res.status === 401) {
-                    alert("로그인이 필요합니다!");
-                    window.location.href = "login.html";
-                    return;
+                    alert("로그인 필요");
+                    location.href = "login.html";
+                    return
                 }
                 return res.json();
             })
             .then(data => {
                 if (data && data.data) {
-                    document.getElementById('userinfo').innerHTML =
-                        `<pre>${JSON.stringify(data.data, null, 2)}</pre>`;
-                } else if (data) {
-                    document.getElementById('userinfo').innerText =
-                        data.message || "정보를 불러오지 못했습니다.";
+                    userData = data.data;
+                    userEditMode = false;
+                    renderUserInfo();
+                }
+            });
+    }
+
+    // 내 성향
+    let tendencyData = null, tendencyEditMode = false;
+
+    function renderTendency() {
+        const d = tendencyData;
+        const el = document.getElementById('tendency');
+        if (!d && !tendencyEditMode) {
+            el.innerHTML = `성향 정보가 없습니다.<br><button id="tendency-reg-btn">성향 등록</button>`;
+            document.getElementById('tendency-reg-btn').onclick = () => {
+                tendencyEditMode = true;
+                renderTendency();
+            }
+            return;
+        }
+        if (tendencyEditMode) {
+            el.innerHTML = `
+                <form id="tendency-edit-form">
+                    <div>월평균 데이터 사용량(GB): <input name="avgMonthlyDataGB" type="number" value="${d ? d.avgMonthlyDataGB : ''}" required></div>
+                    <div>월평균 통화량(분): <input name="avgMonthlyVoiceMin" type="number" value="${d ? d.avgMonthlyVoiceMin : ''}" required></div>
+                    <div>희망 요금제 가격(원): <input name="preferencePrice" type="number" value="${d ? d.preferencePrice : ''}" required></div>
+                    <div>기타(주요 사용 목적 등): <input name="comment" value="${d ? d.comment : ''}" required></div>
+                    <button type="submit">${d ? '수정 완료' : '등록 완료'}</button>
+                </form>
+            `;
+            document.getElementById('tendency-edit-form').onsubmit = function (e) {
+                e.preventDefault();
+                const obj = Object.fromEntries(new FormData(e.target));
+                fetch('/api/tendency', {
+                    method: d ? 'PUT' : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify(obj)
+                }).then(r => r.json()).then(data => {
+                    if (data && data.data) {
+                        tendencyData = data.data;
+                        tendencyEditMode = false;
+                        renderTendency();
+                        alert(data.message || "저장 완료");
+                    } else alert(data.message || "실패");
+                });
+            }
+        } else if (d) {
+            el.innerHTML = `
+                <div>월평균 데이터 사용량(GB): ${d.avgMonthlyDataGB}</div>
+                <div>월평균 통화량(분): ${d.avgMonthlyVoiceMin}</div>
+                <div>희망 요금제 가격(원): ${d.preferencePrice}</div>
+                <div>기타: ${d.comment}</div>
+                <button id="tendency-edit-btn">성향 수정</button>
+            `;
+            document.getElementById('tendency-edit-btn').onclick = () => {
+                tendencyEditMode = true;
+                renderTendency();
+            }
+        }
+    }
+
+    function loadTendency() {
+        fetch('/api/tendency/me', {method: 'GET', credentials: 'include'})
+            .then(res => {
+                if (res.status === 401) {
+                    alert("로그인 필요");
+                    location.href = "login.html";
+                    return
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data && data.data) {
+                    tendencyData = data.data;
+                    tendencyEditMode = false;
+                    renderTendency();
+                } else {
+                    tendencyData = null;
+                    tendencyEditMode = false;
+                    renderTendency();
                 }
             });
     }
 
     function logout() {
-        fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'include'
-        })
+        fetch('/api/auth/logout', {method: 'POST', credentials: 'include'})
             .then(res => res.json())
             .then(data => {
-                alert(data.message || "로그아웃 완료");
-                window.location.href = "login.html";
+                alert(data.message || "로그아웃");
+                location.href = "login.html";
             });
     }
 
-    window.onload = loadMyInfo;
+    window.onload = function () {
+        loadMyInfo();
+        // 탭 초기화 상태가 info라 tendency는 클릭시만 로딩
+    }
 </script>
 </body>
 </html>

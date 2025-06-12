@@ -3,12 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>메인 페이지</title>
+    <style>
+        #modal-bg {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        #tendency-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 2em;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
 <h2>메인 페이지</h2>
 <button onclick="window.location.href='mypage.html'">내 정보 보기</button>
 <button onclick="logout()">로그아웃</button>
 <div id="result"></div>
+
+<!-- 성향 입력 모달 -->
+<div id="modal-bg"></div>
+<div id="tendency-modal">
+    <h3>성향 정보 입력</h3>
+    <form id="tendency-form">
+        <label>월평균 데이터 사용량(GB): <input name="avgMonthlyDataGB" type="number" required></label><br>
+        <label>월평균 통화량(분): <input name="avgMonthlyVoiceMin" type="number" required></label><br>
+        <label>희망 요금제 가격(원): <input name="preferencePrice" type="number" required></label><br>
+        <label>기타(주요 사용 목적 등): <input name="comment" required></label><br>
+        <button type="submit">등록</button>
+        <button type="button" id="tendency-later">다음에 하기</button>
+    </form>
+</div>
 <script>
     function logout() {
         fetch('/api/auth/logout', {
@@ -21,6 +57,45 @@
                 window.location.href = "login.html";
             });
     }
+
+    // 모달 표시/숨김
+    function showTendencyModal() {
+        document.getElementById('modal-bg').style.display = "block";
+        document.getElementById('tendency-modal').style.display = "block";
+    }
+
+    function hideTendencyModal() {
+        document.getElementById('modal-bg').style.display = "none";
+        document.getElementById('tendency-modal').style.display = "none";
+    }
+
+    // 진입 시 성향 등록여부 확인
+    window.onload = function () {
+        fetch('/api/tendency/me', {credentials: 'include'})
+            .then(res => res.json())
+            .then(data => {
+                if (!data.data) showTendencyModal();
+            });
+    }
+    // 성향 등록
+    document.getElementById('tendency-form').onsubmit = function (e) {
+        e.preventDefault();
+        const obj = Object.fromEntries(new FormData(e.target));
+        fetch('/api/tendency', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify(obj)
+        }).then(res => res.json())
+            .then(data => {
+                alert(data.message || "등록 완료");
+                hideTendencyModal();
+            });
+    };
+    // 다음에 하기
+    document.getElementById('tendency-later').onclick = function () {
+        hideTendencyModal();
+    };
 </script>
 </body>
 </html>
