@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 재설정 요청</title>
+</head>
+<body>
+<h2>비밀번호 재설정 요청</h2>
+<input id="reset-email" placeholder="이메일">
+<button id="reset-request-btn">재설정 메일 보내기</button>
+<button onclick="location.href='login.html'">뒤로</button>
+<script>
+    document.getElementById('reset-request-btn').onclick = function () {
+        fetch('/api/auth/reset-request', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                email: document.getElementById('reset-email').value
+            })
+        })
+            .then(r => r.json())
+            .then(d => alert(JSON.stringify(d)));
+    };
+</script>
+</body>
+</html>

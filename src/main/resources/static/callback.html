@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>카카오 콜백</title>
+</head>
+<body>
+<h2>카카오 소셜 로그인 처리 중...</h2>
+<div id="result"></div>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+        // 1. 인가코드로 액세스토큰 발급
+        fetch(`/api/oauth/kakao/token?code=${code}`)
+            .then(r => r.json())
+            .then(({accessToken}) => {
+                // 2. 액세스토큰으로 로그인(회원조회)
+                fetch(`/api/oauth/kakao/login?accessToken=${accessToken}`)
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d && d.data && d.data.user) {
+                            document.getElementById('result').innerText = "로그인 완료!";
+                            setTimeout(() => window.location.href = "main.html", 1500);
+                        } else if (d && d.data && d.data.email && d.data.name) {
+                            document.getElementById('result').innerText = "추가정보 필요, 추가정보 입력 페이지로 이동";
+                            setTimeout(() =>
+                                    window.location.href = "additional-info.html?email=" + encodeURIComponent(d.data.email)
+                                        + "&name=" + encodeURIComponent(d.data.name)
+                                        + "&accessToken=" + encodeURIComponent(d.data.accessToken),
+                                1500);
+                        } else {
+                            document.getElementById('result').innerText = "예상치 못한 응답";
+                        }
+                    });
+            });
+    } else {
+        document.getElementById('result').innerText = "인가 코드가 없습니다";
+    }
+</script>
+</body>
+</html>

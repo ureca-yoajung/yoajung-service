@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>추가 정보 입력</title>
+</head>
+<body>
+<h2>추가 정보 입력</h2>
+<form id="info-form">
+    <input type="email" name="email" id="email" readonly placeholder="이메일"><br>
+    <input type="text" name="name" id="name" readonly placeholder="이름"><br>
+
+    <!-- 카카오는 소셜가입 고정비번, 노출하지 않음 -->
+    <input type="hidden" name="password" value="SOCIAL">
+
+    <input type="text" name="phoneNumber" placeholder="전화번호(01012345678)" required><br>
+
+    <select name="gender" required>
+        <option value="">성별</option>
+        <option value="MALE">남자</option>
+        <option value="FEMALE">여자</option>
+    </select><br>
+
+    <select name="ageGroup" required>
+        <option value="">연령</option>
+        <option value="TEN_S">10대</option>
+        <option value="TWENTY_S">20대</option>
+        <option value="THIRTY_S">30대</option>
+        <option value="FORTY_S">40대</option>
+        <option value="FIFTY_S">50대</option>
+        <option value="SIXTY_S_PLUS">60대이상</option>
+    </select><br>
+
+    <input type="number" name="familyCount" placeholder="가족수" required><br>
+
+    <button type="submit">제출</button>
+</form>
+<div id="result"></div>
+<script>
+    // URL에서 email, name 추출해서 readonly input에 자동 세팅
+    const params = new URLSearchParams(location.search);
+    if (params.get('email')) document.getElementById('email').value = params.get('email');
+    if (params.get('name')) document.getElementById('name').value = params.get('name');
+
+    document.getElementById('info-form').onsubmit = async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const obj = Object.fromEntries(new FormData(form));
+        const res = await fetch('/api/oauth/kakao/signup', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(obj),
+            credentials: 'include'
+        });
+        const data = await res.json();
+        if (res.ok) location.href = "main.html";
+        else document.getElementById('result').innerText = data.message || "가입 실패";
+    }
+</script>
+</body>
+</html>

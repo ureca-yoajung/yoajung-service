@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+</head>
+<body>
+<h2>회원가입</h2>
+<form id="signup-form">
+    <input type="email" name="email" id="email" placeholder="이메일" required>
+    <button type="button" id="send-code-btn">인증코드 발송</button>
+    <br>
+    <input type="text" name="code" id="code" placeholder="인증코드 입력">
+    <button type="button" id="verify-code-btn">코드확인</button>
+    <br>
+    <input type="text" name="name" id="name" placeholder="이름" required><br>
+    <input type="password" name="password" id="password" placeholder="비밀번호" required><br>
+    <input name="phoneNumber" id="phoneNumber" placeholder="전화번호" required><br>
+    <select name="gender" id="gender" required>
+        <option value="">성별</option>
+        <option value="MALE">남자</option>
+        <option value="FEMALE">여자</option>
+    </select><br>
+    <select name="ageGroup" id="ageGroup" required>
+        <option value="">연령</option>
+        <option value="TEN_S">10대</option>
+        <option value="TWENTY_S">20대</option>
+        <option value="THIRTY_S">30대</option>
+        <option value="FORTY_S">40대</option>
+        <option value="FIFTY_S">50대</option>
+        <option value="SIXTY_S_PLUS">60대 이상</option>
+    </select><br>
+    <input name="familyCount" id="familyCount" placeholder="가족수" type="number" required><br>
+    <button type="submit" id="signup-btn">회원가입</button>
+</form>
+<div id="signup-result"></div>
+<script>
+    // 이메일 인증코드 발송
+    document.getElementById('send-code-btn').onclick = async function () {
+        const email = document.getElementById('email').value;
+        if (!email) {
+            alert('이메일을 입력하세요!');
+            return;
+        }
+        const res = await fetch('/api/auth/send-code', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email}),
+            credentials: 'include'
+        });
+        const data = await res.json();
+        document.getElementById('signup-result').innerText = data.message;
+    };
+
+    // 이메일 인증코드 확인
+    document.getElementById('verify-code-btn').onclick = async function () {
+        const email = document.getElementById('email').value;
+        const code = document.getElementById('code').value;
+        if (!email || !code) {
+            alert('이메일/코드를 입력하세요!');
+            return;
+        }
+        const res = await fetch('/api/auth/verify-code', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email, code}),
+            credentials: 'include'
+        });
+        const data = await res.json();
+        document.getElementById('signup-result').innerText = data.message;
+    };
+
+    // 회원가입
+    document.getElementById('signup-form').onsubmit = async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const obj = Object.fromEntries(new FormData(form));
+        const res = await fetch('/api/user/signup', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(obj),
+            credentials: 'include'
+        });
+        const data = await res.json();
+        document.getElementById('signup-result').innerText = data.message;
+        if (res.ok) location.href = "main.html";
+    };
+</script>
+</body>
+</html>

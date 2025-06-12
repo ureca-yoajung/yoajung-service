@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인/회원가입</title>
+</head>
+<body>
+<h2>로그인</h2>
+<input id="login-email" placeholder="이메일"><br>
+<input id="login-pw" type="password" placeholder="비밀번호"><br>
+<button id="login-btn">로그인</button>
+<button id="goto-signup-btn">회원가입</button>
+<button id="goto-reset-btn">비밀번호 재설정</button>
+<button id="kakao-login-btn">카카오 로그인</button>
+
+<script>
+    document.getElementById('login-btn').onclick = async function () {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-pw').value
+            })
+        });
+        const d = await res.json();
+        if (res.ok && d.code === "USER_LOGIN_SUCCESS_200") {
+            location.href = "main.html";
+        } else {
+            alert(d.message || "로그인 실패");
+        }
+    };
+
+    document.getElementById('goto-signup-btn').onclick = function () {
+        window.location.href = "signup.html";
+    };
+
+    document.getElementById('goto-reset-btn').onclick = function () {
+        window.location.href = "reset-request.html";
+    };
+
+    document.getElementById('kakao-login-btn').onclick = function () {
+        const KAKAO_AUTH_URL =
+            "https://kauth.kakao.com/oauth/authorize"
+            + "?response_type=code"
+            + "&client_id=10cc850d322121f04dadc24d7a60a11a"
+            + "&redirect_uri=http://localhost:8080/callback.html"
+            + "&scope=profile_nickname,account_email";
+        window.location.href = KAKAO_AUTH_URL;
+    };
+</script>
+</body>
+</html>
