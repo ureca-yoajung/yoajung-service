@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.plan.dto.request;
 
 import com.ureca.yoajungserver.plan.entity.PlanCategory;
+import com.ureca.yoajungserver.user.entity.AgeGroup;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +11,12 @@ import java.util.Set;
 @Builder
 public class PlanFilterRequest {
     private PlanCategory category;
+
+    /** 연령 필터: ALL | TEN_S | TWENTY_S ... */
+    private AgeGroup ageGroup;
+
+    /** 정렬: POPULAR | LOW_PRICE | HIGH_PRICE | DATA */
+    private String sort;
 
     /** 데이터 타입: UNLIMITED | FIXED | THROTTLED | ANY(null) */
     private String dataType;

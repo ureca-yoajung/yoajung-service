@@ -11,39 +11,43 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "user")
 public class User extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan", nullable = false)
     private Plan plan;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(length = 11, nullable = false)
+    @Column(name = "phoneNumber", length = 11, nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(name = "gender", nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(nullable = false)
+    @Column(name = "ageGroup", nullable = false)
     @Enumerated(EnumType.STRING)
     private AgeGroup ageGroup;
 
-    @Column(nullable = false)
+    @Column(name = "familyCount", nullable = false)
     private Integer familyCount;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role")
     private Role role;
 
     @Builder

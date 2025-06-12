@@ -11,20 +11,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="review_like",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id","review_id"})}) // unique 제약조건 설정.
+@Table(name="reviewLike",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"userId","reviewId"})}) // unique 제약조건 설정.
 public class ReviewLike extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name="userId", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="review_id", nullable = false)
+    @JoinColumn(name="reviewId", nullable = false)
     private Review review;
 
 

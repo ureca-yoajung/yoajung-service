@@ -1,10 +1,12 @@
 package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ureca.yoajungserver.chatbot.dto.ChatbotResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.List;
+
+import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
+import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -18,9 +20,10 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+    private final ChatbotRepository chatbotRepository;
 
     @Override
-    public ChatbotResponse keywordMapper(String input, String userId) throws IOException {
+    public List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) throws IOException {
         // 실제 파싱 시도
         PlanKeywordResponse planKeywordResponse = chatClient.prompt()
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
@@ -28,8 +31,9 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .call()
                 .entity(PlanKeywordResponse.class);
 
+        System.out.println(planKeywordResponse);
         // 필수 필드 검증
-        return ChatbotResponse.result(planKeywordResponse);
+        return chatbotRepository.recommendPlans(planKeywordResponse);
     }
 
     private void checkJsonForm(String trimmed) {
@@ -46,5 +50,12 @@ public class ChatbotServiceImpl implements ChatbotService {
             throw new IOException("JSON 매핑 실패");
         }
         return planKeywordResponse;
+    }
+
+    // 요금제 조회
+    @Override
+    public List<PersonalPlanRecommendResponse> planList(PlanKeywordResponse keywordResponse) {
+
+        return chatbotRepository.recommendPlans(keywordResponse);
     }
 }
