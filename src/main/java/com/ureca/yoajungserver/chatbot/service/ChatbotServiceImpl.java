@@ -26,22 +26,12 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     @Override
     public ChatbotResponse keywordMapper(String input, String userId) throws IOException {
-
-        // ChatClient 에 Prompt 전달 → LLM 호출 → ChatResponse 획득
-        String llmOutput = Objects.requireNonNull(chatClient.prompt()
-                        .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-                        .user(input)
-                        .call()
-                        .content())
-                .strip();
-
-        log.info("LLM JSON 응답: {}", llmOutput);
-
-        // JSON 시작/끝이 확실한지 검사
-        checkJsonForm(llmOutput);
-
         // 실제 파싱 시도
-        PlanKeywordResponse planKeywordResponse = parseLlmOutput(llmOutput);
+        PlanKeywordResponse planKeywordResponse = chatClient.prompt()
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .user(input)
+                .call()
+                .entity(PlanKeywordResponse.class);
 
         // 필수 필드 검증
         return ChatbotResponse.result(planKeywordResponse);
