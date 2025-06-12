@@ -1,11 +1,9 @@
 package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ureca.yoajungserver.chatbot.dto.ChatbotResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;

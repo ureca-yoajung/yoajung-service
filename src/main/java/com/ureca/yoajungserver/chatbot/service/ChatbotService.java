@@ -1,6 +1,5 @@
 package com.ureca.yoajungserver.chatbot.service;
 
-import com.ureca.yoajungserver.chatbot.dto.ChatbotResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 
