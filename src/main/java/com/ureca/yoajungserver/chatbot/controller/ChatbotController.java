@@ -30,9 +30,4 @@ public class ChatbotController {
         return ResponseEntity.ok(ApiResponse.of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapper(input, userId)));
     }
 
-    @GetMapping("/chat/recommend-plan")
-    public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> recommendPlan(@RequestBody PlanKeywordResponse keywordResponse){
-        return ResponseEntity.status(STATUS_OK.getStatus())
-                .body(ApiResponse.of(STATUS_OK, chatbotService.planList(keywordResponse)));
-    }
 }

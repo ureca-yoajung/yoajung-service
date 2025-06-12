@@ -81,7 +81,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                                 .max().eq(1)
                 )
                 .orderBy(plan.basePrice.desc())
-                .limit(3)
+//                .limit(3)
                 .fetch();
 
 
@@ -172,12 +172,13 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return benefit.smsLimit.goe(Integer.parseInt(sms));
     }
 
-    // 데이터 사용량 조건
+   // 데이터 사용량 조건
     private BooleanExpression dataCondition(String data) {
         switch(data){
             case "무제한" : return plan.dataAllowance.eq(9999).or(plan.speedAfterLimit.goe(3));
             case "보통" : return plan.dataAllowance.between(30, 110);
             case "적음" : return plan.dataAllowance.lt(30);
+            case "" : return null;
             default : return plan.dataAllowance.goe(Integer.parseInt(data));
         }
     }
