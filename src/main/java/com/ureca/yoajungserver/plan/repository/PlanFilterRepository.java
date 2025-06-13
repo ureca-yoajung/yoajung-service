@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 import com.ureca.yoajungserver.plan.entity.QPlanBenefit;
@@ -100,6 +101,9 @@ public class PlanFilterRepository {
             orderSpec = plan.id.asc(); // default
         }
 
+        int page = Optional.ofNullable(planFilterRequest.getPage()).orElse(0);
+        int size = Optional.ofNullable(planFilterRequest.getSize()).orElse(9);
+
         JPAQuery<Plan> query;
 
         if (popularSort) {
@@ -114,14 +118,18 @@ public class PlanFilterRepository {
                     )
                     .where(booleanBuilder)
                     .groupBy(plan.id)
-                    .orderBy(stat.userCount.max().desc());
+                    .orderBy(stat.userCount.max().desc())
+                    .offset((long) page * size)
+                    .limit(size);
         } else {
             query = queryFactory.selectDistinct(plan)
                     .from(plan)
                     .leftJoin(plan.planProducts, planProduct).fetchJoin()
                     .leftJoin(planProduct.product, product).fetchJoin()
                     .where(booleanBuilder)
-                    .orderBy(orderSpec);
+                    .orderBy(orderSpec)
+                    .offset((long) page * size)
+                    .limit(size);
         }
 
         return query.fetch();

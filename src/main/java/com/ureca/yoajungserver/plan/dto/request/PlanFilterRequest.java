@@ -26,4 +26,7 @@ public class PlanFilterRequest {
 
     /** 선택된 프로덕트 이름 (없으면 필터 미적용) */
     private Set<String> productNames;
+
+    private Integer page;
+    private Integer size;
 }
