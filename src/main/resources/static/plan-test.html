@@ -66,8 +66,14 @@
 <ul id="result"></ul>
 
 <script>
-    let pageIdx = 0;          // current page (0‑based)
+    let pageIdx = 0;
     const PAGE_SIZE = 9;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        ageFieldset.style.display = 'block';
+        pageIdx = 0;
+        fetchPlans(false);
+    });
 
     document.getElementById('searchBtn').addEventListener('click', () => {
         pageIdx = 0;
