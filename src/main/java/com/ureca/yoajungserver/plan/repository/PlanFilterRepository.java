@@ -10,7 +10,11 @@ import com.querydsl.core.types.OrderSpecifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+
 import com.ureca.yoajungserver.plan.entity.QPlanBenefit;
 import com.ureca.yoajungserver.plan.entity.QBenefit;
 
@@ -33,6 +37,17 @@ public class PlanFilterRepository {
         boolean popularSort = "POPULAR".equalsIgnoreCase(sort);
         QPlanStatistic stat = popularSort ? QPlanStatistic.planStatistic : null;
 
+        // 최신 통계일
+        LocalDateTime from = null, to = null;
+        if (popularSort){
+            LocalDateTime latestTime = queryFactory.select(stat.createDate.max())
+                    .from(stat)
+                    .fetchOne();
+            if (latestTime == null) return List.of();
+
+            from = latestTime.toLocalDate().atStartOfDay();
+            to   = from.plusDays(1).minusNanos(1);
+        }
 
         BooleanBuilder booleanBuilder = new BooleanBuilder(); // 동적 where 절 구성
 
@@ -86,6 +101,9 @@ public class PlanFilterRepository {
             orderSpec = plan.id.asc(); // default
         }
 
+        int page = Optional.ofNullable(planFilterRequest.getPage()).orElse(0);
+        int size = Optional.ofNullable(planFilterRequest.getSize()).orElse(9);
+
         JPAQuery<Plan> query;
 
         if (popularSort) {
@@ -94,19 +112,24 @@ public class PlanFilterRepository {
                     .from(plan)
                     .leftJoin(plan.planProducts, planProduct)
                     .leftJoin(planProduct.product, product)
-                    .leftJoin(stat).on(stat.planId.eq(plan.id))
+                    .leftJoin(stat).on(
+                            stat.planId.eq(plan.id)
+                                    .and(stat.createDate.between(from, to))
+                    )
                     .where(booleanBuilder)
                     .groupBy(plan.id)
-                    .orderBy(stat.userCount.max().desc());
+                    .orderBy(stat.userCount.max().desc())
+                    .offset((long) page * size)
+                    .limit(size);
         } else {
             query = queryFactory.selectDistinct(plan)
                     .from(plan)
                     .leftJoin(plan.planProducts, planProduct).fetchJoin()
                     .leftJoin(planProduct.product, product).fetchJoin()
-                    .leftJoin(plan.planBenefits, planBenefit).fetchJoin()
-                    .leftJoin(planBenefit.benefit, benefit).fetchJoin()
                     .where(booleanBuilder)
-                    .orderBy(orderSpec);
+                    .orderBy(orderSpec)
+                    .offset((long) page * size)
+                    .limit(size);
         }
 
         return query.fetch();

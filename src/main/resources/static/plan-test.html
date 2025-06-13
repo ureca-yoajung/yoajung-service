@@ -17,7 +17,7 @@
       </select>
     </label>
     <br><br>
-    <fieldset>
+    <fieldset id="ageFieldset">
       <legend>연령대</legend>
       <label><input type="radio" name="ageGroup" value="ALL" checked>전체</label>
       <label><input type="radio" name="ageGroup" value="TWENTY_S">20대</label>
@@ -59,15 +59,33 @@
         <label><input type="checkbox" name="product" value="바이브">바이브</label>
     </fieldset>
     <button id="searchBtn">검색</button>
+    <button id="moreBtn">더보기</button>
 </section>
 
 <hr>
 <ul id="result"></ul>
 
 <script>
-    document.getElementById('searchBtn').addEventListener('click', fetchPlans);
+    let pageIdx = 0;
+    const PAGE_SIZE = 9;
 
-    async function fetchPlans() {
+    document.addEventListener('DOMContentLoaded', () => {
+        ageFieldset.style.display = 'block';
+        pageIdx = 0;
+        fetchPlans(false);
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        pageIdx = 0;
+        fetchPlans(false);
+    });
+
+    document.getElementById('moreBtn').addEventListener('click', () => {
+        pageIdx += 1;
+        fetchPlans(true);
+    });
+
+    async function fetchPlans(append = false) {
         //  폼 값 수집
         const category   = document.getElementById('category').value;
         const dataType   = document.querySelector('input[name="dataType"]:checked').value;
@@ -94,6 +112,8 @@
         if (productNames)  params.append('productNames', productNames);
         if (ageGroup) params.append('ageGroup', ageGroup);
         if (sort)     params.append('sort', sort);
+        params.append('page', pageIdx);
+        params.append('size', PAGE_SIZE);
 
         //  API 호출
         const res  = await fetch(`/api/plans?${params.toString()}`);
@@ -101,7 +121,7 @@
 
         //  결과 렌더링
         const ul = document.getElementById('result');
-        ul.innerHTML = '';
+        if (!append) ul.innerHTML = '';
 
         json.data.forEach(p => {
             const li = document.createElement('li');
@@ -119,7 +139,7 @@
         });
     }
 // 연령대 필터는 '인기순'일 때만 표시
-const ageFieldset = document.querySelector('fieldset legend').parentNode; // first fieldset is ageGroup
+const ageFieldset = document.getElementById('ageFieldset');
 document.getElementById('sort').addEventListener('change', () => {
     ageFieldset.style.display = (document.getElementById('sort').value === 'POPULAR') ? 'block' : 'none';
 });
