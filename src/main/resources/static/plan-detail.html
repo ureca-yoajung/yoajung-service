@@ -6,21 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>5G 스탠다드 - YOAJUNG</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/884094d6e6.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="assets/css/plan-detail.css"/>
 </head>
-
-<body>
-    <!DOCTYPE html>
-    <html lang="ko">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>5G 스탠다드 - YOAJUNG</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-              rel="stylesheet">
-        <link rel="stylesheet" href="plan-detail.css">
-    </head>
 
     <body>
         <!-- Navigation -->
@@ -30,55 +18,62 @@
         <main class="main-content">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
-                <a href="index.html">홈</a> > <a href="plans.html">요금제</a> > 5G 스탠다드
+                <a href="index.html">홈</a> >
+                <a href="plans.html">요금제</a> >
+                <div id="planDetailName"> 5G 스탠다드 </div>
             </div>
 
-            <!-- Plan Detail Header -->
             <div class="plan-header">
                 <div class="plan-info">
-                    <h1 id="planName">5G 스탠다드</h1>
+                    <h1 id="planName">로딩 중...</h1>
                     <div class="plan-badges">
                         <span class="badge badge-popular">인기</span>
                         <span class="badge badge-5g" id="networkType">5G</span>
                         <span class="badge badge-category" id="planCategory">PHONE</span>
                     </div>
                     <div class="plan-price">
-                        월 <span id="basePrice">55,000</span>원
+                        월 <span id="basePrice">0</span>원
                     </div>
                     <p class="plan-description" id="planDescription">
-                        대용량 데이터와 다양한 혜택을 제공하는 인기 요금제입니다.
-                        스트리밍, 게임, 업무 등 다양한 용도로 활용하기에 최적화되어 있습니다.
+                        로딩 중...
                     </p>
 
                     <div class="plan-features">
                         <div class="feature-item">
                             <div class="feature-icon">📱</div>
-                            <span class="feature-text">데이터 <span id="dataAllowance">100</span>GB</span>
-                        </div>
-                        <div class="feature-item">
-                            <div class="feature-icon">📞</div>
-                            <span class="feature-text">음성통화 무제한</span>
-                        </div>
-                        <div class="feature-item">
-                            <div class="feature-icon">💬</div>
-                            <span class="feature-text">문자 무제한</span>
+                            <span class="feature-text">데이터 <span id="dataAllowance">0</span></span>
                         </div>
                         <div class="feature-item">
                             <div class="feature-icon">🔗</div>
-                            <span class="feature-text">테더링 <span id="tetheringSharingAllowance">10</span>GB</span>
+                            <span class="feature-text">테더링 <span id="tetheringSharingAllowance">0</span>GB</span>
                         </div>
                         <div class="feature-item">
                             <div class="feature-icon">🚀</div>
-                            <span class="feature-text">속도제한 후 <span id="speedAfterLimit">5</span>Mbps</span>
+                            <span class="feature-text">속도제한 후 <span id="speedAfterLimit">0</span>Mbps</span>
                         </div>
                     </div>
                 </div>
             </div>
 
+
             <!-- Benefits Section -->
             <div class="benefits-section">
+                <div class="benefit-category" id="baseBenefitsSection">
+                    <div class="category-header">
+                        <h1 class="category-title">
+                            <span class="category-icon">⭐</span>
+                            기본 혜택
+                        </h1>
+                        <p class="category-description">기본으로 제공되는 혜택입니다</p>
+                    </div>
+                    <div class="benefits-grid" id="baseBenefits"></div>
+                </div>
+            </div>
+
+            <!-- Media Benefits -->
+            <div class="benefits-section" id="mediaContainer">
                 <!-- Media Benefits -->
-                <div class="benefit-category">
+                <div class="benefit-category" id="mediaBenefitsSection">
                     <div class="category-header">
                         <h1 class="category-title">
                             <span class="category-icon">🎵</span>
@@ -87,125 +82,51 @@
                         </h1>
                         <p class="category-description">다양한 미디어 서비스 중 하나를 선택하세요</p>
                     </div>
-                    <div class="benefits-grid" id="mediaBenefits">
-                        <div class="benefit-card" data-benefit-id="1">
-                            <div class="benefit-header">
-                                <div class="benefit-icon">🎵</div>
-                                <div class="benefit-info">
-                                    <h4 class="benefit-name">지니뮤직 무제한</h4>
-                                    <span class="benefit-type">MEDIA</span>
-                                </div>
-                            </div>
-                            <p class="benefit-description">무제한 음악 스트리밍 서비스로 최신 음악부터 클래식까지 자유롭게 감상하세요</p>
-                            <div class="benefit-details">
-                                <span class="benefit-limit">무제한 이용</span>
-                            </div>
-                        </div>
-
-                        <div class="benefit-card" data-benefit-id="2">
-                            <div class="benefit-header">
-                                <div class="benefit-icon">📺</div>
-                                <div class="benefit-info">
-                                    <h4 class="benefit-name">티빙 스탠다드</h4>
-                                    <span class="benefit-type">MEDIA</span>
-                                </div>
-                            </div>
-                            <p class="benefit-description">인기 드라마, 예능, 영화를 언제 어디서나 시청할 수 있는 동영상 스트리밍 서비스</p>
-                            <div class="benefit-details">
-                                <span class="benefit-limit">HD 화질 지원</span>
-                            </div>
-                        </div>
-
-                        <div class="benefit-card" data-benefit-id="3">
-                            <div class="benefit-header">
-                                <div class="benefit-icon">▶️</div>
-                                <div class="benefit-info">
-                                    <h4 class="benefit-name">유튜브 프리미엄</h4>
-                                    <span class="benefit-type">MEDIA</span>
-                                </div>
-                            </div>
-                            <p class="benefit-description">광고 없는 유튜브 시청과 백그라운드 재생, 오프라인 다운로드 기능 제공</p>
-                            <div class="benefit-details">
-                                <span class="benefit-limit">광고 제거</span>
-                            </div>
-                        </div>
+                    <div class="benefits-container">
+                        <button class="scroll-button prev" onclick="scrollBenefits('mediaBenefits', -1)">
+                            <i class="fa-solid fa-angle-left" style="color: black"></i>
+                        </button>
+                        <div class="product-grid" id="mediaBenefits"></div>
+                        <button class="scroll-button next" onclick="scrollBenefits('mediaBenefits', 1)">
+                            <i class="fa-solid fa-angle-right" style="color: black"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Benefits Section -->
-            <div class="benefits-section">
+            <div class="benefits-section" id="premiumContainer">
                 <!-- Premium Benefits -->
-                <div class="benefit-category">
+                <div class="benefit-category" id="premiumBenefitsSection">
                     <div class="category-header">
                         <h1 class="category-title">
-                            <span class="category-icon">⭐</span>
+                            <span class="category-icon">🎁</span>
                             프리미엄 혜택
                             <span class="choose-one-badge">택 1</span>
                         </h1>
                         <p class="category-description">프리미엄 서비스 중 하나를 선택하세요</p>
                     </div>
-                    <div class="benefits-grid" id="premiumBenefits">
-                        <div class="benefit-card" data-benefit-id="4">
-                            <div class="benefit-header">
-                                <div class="benefit-icon">☁️</div>
-                                <div class="benefit-info">
-                                    <h4 class="benefit-name">클라우드 스토리지 100GB</h4>
-                                    <span class="benefit-type">BASE</span>
-                                </div>
-                            </div>
-                            <p class="benefit-description">안전한 클라우드 저장공간으로 언제 어디서나 파일에 접근하세요</p>
-                            <div class="benefit-details">
-                                <span class="benefit-limit">100GB 제공</span>
-                            </div>
-                        </div>
-
-                        <div class="benefit-card" data-benefit-id="5">
-                            <div class="benefit-header">
-                                <div class="benefit-icon">🛡️</div>
-                                <div class="benefit-info">
-                                    <h4 class="benefit-name">보안 서비스</h4>
-                                    <span class="benefit-type">OTHER</span>
-                                </div>
-                            </div>
-                            <p class="benefit-description">악성코드 차단, 피싱 방지 등 종합 보안 서비스를 제공합니다</p>
-                            <div class="benefit-details">
-                                <span class="benefit-limit">실시간 보호</span>
-                            </div>
-                        </div>
-
-                        <div class="benefit-card" data-benefit-id="6">
-                            <div class="benefit-header">
-                                <div class="benefit-icon">🎮</div>
-                                <div class="benefit-info">
-                                    <h4 class="benefit-name">게임 패스</h4>
-                                    <span class="benefit-type">OTHER</span>
-                                </div>
-                            </div>
-                            <p class="benefit-description">다양한 모바일 게임을 무료로 즐길 수 있는 게임 패스 서비스</p>
-                            <div class="benefit-details">
-                                <span class="benefit-limit">50+ 게임</span>
-                            </div>
-                        </div>
+                    <div class="benefits-container">
+                        <button class="scroll-button prev" onclick="scrollBenefits('mediaBenefits', -1)">
+                            <i class="fa-solid fa-angle-left" style="color: black"></i>
+                        </button>
+                        <div class="product-grid" id="premiumBenefits"></div>
+                        <button class="scroll-button next" onclick="scrollBenefits('mediaBenefits', 1)">
+                            <i class="fa-solid fa-angle-right" style="color: black"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Reviews Section (기존 유지) -->
+            <!-- Reviews Section -->
             <div class="reviews-section">
                 <div class="reviews-header">
                     <h2 class="reviews-title">사용자 리뷰</h2>
                     <div class="reviews-stats">
                         <div class="rating-summary">
-                            <span class="rating-score">4.2</span>
-                            <div class="stars">
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star empty">★</span>
-                            </div>
-                            <span class="review-count">(24개 리뷰)</span>
+                            <span class="rating-score" id="averageRating">0.0</span>
+                            <div class="stars" id="averageStars"></div>
+                            <span class="review-count" id="reviewCount">(0개 리뷰)</span>
                         </div>
                         <button class="write-review-btn" onclick="toggleReviewForm()">
                             리뷰 작성
@@ -228,13 +149,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="reviewTitle" class="form-label">제목</label>
-                            <input type="text" id="reviewTitle" class="form-input" placeholder="리뷰 제목을 입력하세요" required>
-                        </div>
-                        <div class="form-group">
                             <label for="reviewContent" class="form-label">내용</label>
-                            <textarea id="reviewContent" class="form-textarea" placeholder="이 요금제에 대한 경험을 공유해주세요"
-                                      required></textarea>
+                            <textarea id="reviewContent" class="form-textarea" placeholder="이 요금제에 대한 경험을 공유해주세요" required></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" onclick="toggleReviewForm()">취소</button>
@@ -245,91 +161,424 @@
 
                 <!-- Reviews List -->
                 <div class="reviews-list" id="reviewsList">
-                    <div class="review-item">
-                        <div class="review-header">
-                            <div class="reviewer-info">
-                                <div class="reviewer-avatar">김</div>
-                                <div class="reviewer-details">
-                                    <h4>김민수</h4>
-                                    <span class="review-date">2024년 1월 15일</span>
-                                </div>
-                            </div>
-                            <div class="review-rating">
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                            </div>
-                        </div>
-                        <div class="review-content">
-                            데이터 용량도 충분하고 속도도 빨라서 만족합니다. 특히 유튜브 프리미엄이 포함되어 있어서 더욱 좋네요. 가격 대비 혜택이 많은 것 같아요.
-                        </div>
-                        <div class="review-helpful">
-                            <button class="helpful-btn" onclick="toggleHelpful(this)">
-                                👍 도움됨 <span>12</span>
-                            </button>
-                            <span>|</span>
-                            <button class="helpful-btn" onclick="toggleHelpful(this)">
-                                👎 도움안됨 <span>1</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="review-item">
-                        <div class="review-header">
-                            <div class="reviewer-info">
-                                <div class="reviewer-avatar">이</div>
-                                <div class="reviewer-details">
-                                    <h4>이지은</h4>
-                                    <span class="review-date">2024년 1월 10일</span>
-                                </div>
-                            </div>
-                            <div class="review-rating">
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star empty">★</span>
-                            </div>
-                        </div>
-                        <div class="review-content">
-                            전반적으로 괜찮은 요금제입니다. 다만 테더링 용량이 조금 더 많았으면 좋겠어요. 그래도 가격 대비 만족스럽습니다.
-                        </div>
-                        <div class="review-helpful">
-                            <button class="helpful-btn" onclick="toggleHelpful(this)">
-                                👍 도움됨 <span>8</span>
-                            </button>
-                            <span>|</span>
-                            <button class="helpful-btn" onclick="toggleHelpful(this)">
-                                👎 도움안됨 <span>0</span>
-                            </button>
-                        </div>
-                    </div>
+                    <!-- Reviews will be loaded here -->
                 </div>
+
+                <div class="pagination" id="reviewsPagination" style="text-align: center; margin-top: 20px;"></div>
             </div>
         </main>
 
+        <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
+
+        <button id="scrollTopBtn" title="맨 위로"><i class="fa-solid fa-caret-up" style="color: white"></i></button>
+
+
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                fetch('/assets/navbar.html')
-                    .then(res => res.text())
-                    .then(html => {
+            // Global variables
+            let selectedRating = 0;
+            let planData = null;
+            let benefitsData = null;
+            let productsData = null;
+            let reviewsData = [];
+            let responseReview = [];
+            let planId;
+
+            let currentPage = 0;
+            const pageSize = 5;
+            let totalPages = 1;
+
+            // Initialize page
+            document.addEventListener('DOMContentLoaded', async () => {
+                // Load navbar
+                try {
+                    const response = await fetch('/assets/navbar.html');
+                    if (response.ok) {
+                        const html = await response.text();
                         document.getElementById('navbar').innerHTML = html;
-                    })
-                    .catch(err => console.error('navbar 로딩 실패:', err));
+                    }
+                } catch (err) {
+                    console.error('navbar 로딩 실패:', err);
+                }
+
+                // Get plan ID from URL or use default
+                planId = getPlanIdFromUrl() || 1;
+
+                // Load plan data
+                await loadPlanData(planId);
+                await loadBenefitsData(planId);
+                await loadProductsData(planId);
+                await loadReviewsData(planId);
+
+                // Initialize rating system
+                initializeRatingSystem();
             });
 
-            let selectedRating = 0;
-
-            // 리뷰 폼 토글
-            function toggleReviewForm() {
-                const form = document.getElementById('reviewForm');
-                form.classList.toggle('active');
+            // Extract plan ID from URL
+            function getPlanIdFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('id') || window.location.pathname.split('/').pop();
             }
 
-            // 평점 선택
-            document.addEventListener('DOMContentLoaded', function () {
+            // Load plan data from API
+            async function loadPlanData(planId) {
+                try {
+                    const response = await fetch(`/api/plan/${planId}`);
+                    const result = await response.json();
+
+                    if (result.status === 'OK' && result.data) {
+                        planData = result.data;
+                        updatePlanInfo();
+                    }
+                } catch (error) {
+                    console.error('Plan data loading failed:', error);
+                    updatePlanInfo();
+                }
+            }
+
+            // Load benefits data from API
+            async function loadBenefitsData(planId) {
+                try {
+                    const response = await fetch(`/api/plan/benefits/${planId}`);
+                    const result = await response.json();
+
+                    if (result.status === 'OK' && result.data) {
+                        benefitsData = result.data;
+                        updateBenefitsInfo();
+                    }
+                } catch (error) {
+                    console.error('Benefits data loading failed:', error);
+                    updateBenefitsInfo();
+                }
+            }
+
+            // Load products data from API
+            async function loadProductsData(planId) {
+                try {
+                    const response = await fetch(`/api/plan/products/${planId}`);
+                    const result = await response.json();
+
+                    if (result.status === 'OK' && result.data) {
+                        productsData = result.data;
+                        updateProductsInfo();
+                    }
+                } catch (error) {
+                    console.error('Products data loading failed:', error);
+                    updateProductsInfo();
+                }
+            }
+
+            // Load reviews data from API
+            async function loadReviewsData(planId) {
+                try {
+                    const response = await fetch(`/review/${planId}?page=${currentPage}&size=${pageSize}`);
+                    const result = await response.json();
+
+                    if (result.status === 'OK' && result.data) {
+                        responseReview = result.data;
+                        totalPages = result.data.totalPages;
+                    }
+                    updateReviewsInfo();
+                } catch (error) {
+                    console.error('Reviews data loading failed:', error);
+                    updateReviewsInfo();
+                }
+            }
+
+            // Update plan information
+            function updatePlanInfo() {
+                if (!planData) return;
+
+                document.getElementById('planName').textContent = planData.name;
+                document.getElementById('planDetailName').textContent = planData.name;
+                document.getElementById('basePrice').textContent = planData.basePrice.toLocaleString();
+                document.getElementById('planDescription').textContent = planData.description;
+
+                // Update network type
+                const networkType = planData.networkType === 'FIVE_G' ? '5G' : '4G';
+                document.getElementById('networkType').textContent = networkType;
+
+                // Update data allowance
+                const dataText = planData.dataAllowance === 9999 ? '무제한' : planData.dataAllowance + 'GB';
+                document.getElementById('dataAllowance').textContent = dataText;
+
+                document.getElementById('tetheringSharingAllowance').textContent = planData.tetheringSharingAllowance;
+                document.getElementById('speedAfterLimit').textContent = planData.speedAfterLimit;
+            }
+
+            // Update benefits information
+            function updateBenefitsInfo() {
+                if (!benefitsData) return;
+
+                // baseBenefitsSection에 모든 혜택을 모아 렌더링
+                const sectionId = 'baseBenefitsSection';
+                const gridId = 'baseBenefits';
+                const section = document.getElementById(sectionId);
+                const grid = document.getElementById(gridId);
+
+                grid.innerHTML = ''; // 기존 카드 제거
+
+                const categoryTypes = {
+                    voice: 'VOICE',
+                    sms: 'SMS',
+                    smartDevice: 'SMARTDEVICE',
+                    base: 'BASE',
+                    other: 'OTHER'
+                };
+
+                let hasBenefits = false;
+
+                for (const [key, type] of Object.entries(categoryTypes)) {
+                    const benefit = benefitsData[key];
+                    if (benefit) {
+                        const benefitCard = createBenefitCard({
+                            id: `${type.toLowerCase()}_benefit`,
+                            name: benefit.name,
+                            description: benefit.description,
+                            type: type,
+                            discountAmount: benefit.discountAmount
+                        });
+                        grid.appendChild(benefitCard);
+                        hasBenefits = true;
+                    }
+                }
+
+                // 혜택 있으면 섹션 표시
+                if (hasBenefits) {
+                    section.classList.add('has-benefits');
+                } else {
+                    section.classList.remove('has-benefits');
+                }
+            }
+
+            function updateProductsInfo() {
+                const premiumContainer = document.getElementById('premiumContainer');
+                const mediaContainer = document.getElementById('mediaContainer');
+
+                const premiumSection = document.getElementById('premiumBenefitsSection');
+                const mediaSection = document.getElementById('mediaBenefitsSection');
+
+                const mediaBenefitsGrid = document.getElementById('mediaBenefits');
+                const premiumBenefitsGrid = document.getElementById('premiumBenefits');
+
+                // 초기화
+                mediaBenefitsGrid.innerHTML = '';
+                premiumBenefitsGrid.innerHTML = '';
+                mediaSection.classList.remove('has-benefits');
+                premiumSection.classList.remove('has-benefits');
+                mediaContainer.style.display = 'none';
+                premiumContainer.style.display = 'none';
+
+                // Handle media products
+                if (productsData.media && productsData.media.length > 0) {
+                    mediaContainer.style.display = '';
+                    mediaSection.classList.add('has-benefits');
+
+                    productsData.media.forEach((product, index) => {
+                        const benefitCard = createProductCard({
+                            id: `media_${index}`,
+                            name: product.name,
+                            description: product.description,
+                            type: 'MEDIA',
+                            imageUrl: product.productImage
+                        });
+                        mediaBenefitsGrid.appendChild(benefitCard);
+                    });
+                }
+
+                // Handle premium products
+                if (productsData.premium && productsData.premium.length > 0) {
+                    premiumContainer.style.display = '';
+                    premiumSection.classList.add('has-benefits');
+
+                    productsData.premium.forEach((product, index) => {
+                        const benefitCard = createProductCard({
+                            id: `premium_${index}`,
+                            name: product.name,
+                            description: product.description,
+                            type: 'PREMIUM',
+                            imageUrl: product.productImage
+                        });
+                        premiumBenefitsGrid.appendChild(benefitCard);
+                    });
+                }
+            }
+
+            // Create benefit card element
+            function createBenefitCard(benefit) {
+                const card = document.createElement('div');
+                card.className = 'benefit-card';
+                card.setAttribute('data-benefit-id', benefit.id);
+
+                let limitText = '';
+                if (benefit.discountAmount && benefit.discountAmount > 0) {
+                    limitText = `${benefit.discountAmount.toLocaleString()}원 할인`;
+                } else {
+                    limitText = '제공';
+                }
+
+                card.innerHTML = `
+                    <div class="benefit-header">
+                        <div class="benefit-info">
+                            <h4 class="benefit-name">${benefit.name}</h4>
+                        </div>
+                    </div>
+                    <p class="benefit-description">${benefit.description}</p>
+                    <div class="benefit-details">
+                        <span class="benefit-limit">${limitText}</span>
+                    </div>
+                `;
+
+                return card;
+            }
+
+            function createProductCard(product) {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+
+                const imageHTML = product.imageUrl
+                    ? `<img src="/assets/image/${product.imageUrl}" alt="${product.name}" class="product-image">`
+                    : '<img src="/assets/image/defaultImg.jpg" alt="${product.name}" class="product-image">';
+
+                card.innerHTML = `
+                    ${imageHTML}
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description}</div>
+                `;
+
+                return card;
+            }
+
+            // Scroll benefits function
+            function scrollBenefits(containerId, direction) {
+                const container = document.getElementById(containerId);
+                const scrollAmount = 320; // Card width + gap
+                container.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+
+            // Update reviews information
+            function updateReviewsInfo() {
+
+                reviewsData = responseReview.content.map(review => ({
+                    id: review.reviewId,
+                    userId: review.userId,
+                    userName: review.userName,
+                    content: review.content,
+                    rating: review.star,
+                    helpful: review.likeCnt,
+                    notHelpful: 0,
+                    createdAt: review.createDate
+                }));
+
+                updateReviewsStats();
+                renderReviews();
+                renderPagination();
+            }
+
+            // Update reviews statistics
+            function updateReviewsStats() {
+                document.getElementById('averageRating').textContent = responseReview.avgStar.toFixed(1);
+                document.getElementById('reviewCount').textContent = `(${responseReview.totalElements}개 리뷰)`;
+
+                // Update average stars
+                const starsContainer = document.getElementById('averageStars');
+                starsContainer.innerHTML = '';
+                const rating = Math.round(parseFloat(responseReview.avgStar));
+
+                for (let i = 1; i <= 5; i++) {
+                    const star = document.createElement('span');
+                    star.className = i <= rating ? 'star' : 'star empty';
+                    star.textContent = '★';
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            // Render reviews list
+            function renderReviews() {
+                const reviewsList = document.getElementById('reviewsList');
+                reviewsList.innerHTML = '';
+
+                if (reviewsData.length === 0) {
+                    reviewsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px 0;">아직 리뷰가 없습니다. 첫 번째 리뷰를 작성해보세요!</p>';
+                    return;
+                }
+
+                reviewsData.forEach(review => {
+                    const reviewElement = createReviewElement(review);
+                    reviewsList.appendChild(reviewElement);
+                });
+            }
+
+            function renderPagination() {
+                const pagination = document.getElementById('reviewsPagination');
+                pagination.innerHTML = '';
+
+                if (totalPages <= 1) return;
+
+                for (let i = 0; i < totalPages; i++) {
+                    const btn = document.createElement('button');
+                    btn.textContent = i + 1;
+                    btn.className = (i === currentPage) ? 'active' : '';
+                    btn.addEventListener('click', () => {
+                        if (i !== currentPage) {
+                            currentPage = i;
+                            loadReviewsData(planId);  // ← planId 유지 필요
+                        }
+                    });
+                    pagination.appendChild(btn);
+                }
+            }
+
+            // Create review element
+            function createReviewElement(review) {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review-item';
+                reviewDiv.setAttribute('data-review-id', review.id);
+
+                const avatar = review.userName ? review.userName.charAt(0) : '?';
+                const formattedDate = formatDate(review.createdAt);
+
+                reviewDiv.innerHTML = `
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">${avatar}</div>
+                        <div class="reviewer-details">
+                            <h4>${review.userName || '익명'}</h4>
+                            <span class="review-date">${formattedDate}</span>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        ${'<span class="star">★</span>'.repeat(review.rating)}
+                        ${'<span class="star empty">★</span>'.repeat(5 - review.rating)}
+                    </div>
+                </div>
+                <div class="review-content">
+                    <br>${review.content}
+                </div>
+                <div class="review-helpful">
+                    <button class="helpful-btn" onclick="toggleHelpful(this, true)">
+                        👍 도움됨 <span>${review.helpful || 0}</span>
+                    </button>
+                </div>
+            `;
+
+                return reviewDiv;
+            }
+
+            // Format date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+
+            // Initialize rating system
+            function initializeRatingSystem() {
                 const ratingStars = document.querySelectorAll('.rating-star');
 
                 ratingStars.forEach(star => {
@@ -347,8 +596,9 @@
                 document.getElementById('ratingInput').addEventListener('mouseleave', function () {
                     updateRatingDisplay();
                 });
-            });
+            }
 
+            // Highlight stars
             function highlightStars(rating) {
                 const stars = document.querySelectorAll('.rating-star');
                 stars.forEach((star, index) => {
@@ -360,109 +610,155 @@
                 });
             }
 
+            // Update rating display
             function updateRatingDisplay() {
                 highlightStars(selectedRating);
             }
 
-            // 리뷰 제출
+            // Toggle review form
+            function toggleReviewForm() {
+                const form = document.getElementById('reviewForm');
+                form.classList.toggle('active');
+            }
+
+            // Submit review
             function submitReview(event) {
                 event.preventDefault();
+
+                const content = document.getElementById('reviewContent').value;
 
                 if (selectedRating === 0) {
                     alert('평점을 선택해주세요.');
                     return;
                 }
 
-                const title = document.getElementById('reviewTitle').value;
-                const content = document.getElementById('reviewContent').value;
+                if (!content.trim()) {
+                    alert('리뷰 내용을 입력해주세요.');
+                    return;
+                }
 
-                // 새 리뷰 생성
-                const newReview = createReviewElement({
-                    name: '사용자',
-                    avatar: '사',
-                    date: new Date().toLocaleDateString('ko-KR'),
+                // Create new review object
+                const newReview = {
                     rating: selectedRating,
-                    title: title,
                     content: content,
-                    helpful: 0,
-                    notHelpful: 0
-                });
+                };
 
-                // 리뷰 목록에 추가
-                const reviewsList = document.getElementById('reviewsList');
-                reviewsList.insertBefore(newReview, reviewsList.firstChild);
+                insertReview(newReview);
 
-                // 폼 초기화
-                document.getElementById('reviewTitle').value = '';
+                // Reset form
                 document.getElementById('reviewContent').value = '';
                 selectedRating = 0;
                 updateRatingDisplay();
                 toggleReviewForm();
-
-                alert('리뷰가 등록되었습니다!');
             }
 
-            function createReviewElement(review) {
-                const reviewDiv = document.createElement('div');
-                reviewDiv.className = 'review-item';
-
-                const stars = '★'.repeat(review.rating) + '★'.repeat(5 - review.rating).replace(/★/g, '<span class="star empty">★</span>');
-
-                reviewDiv.innerHTML = `
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar">${review.avatar}</div>
-                        <div class="reviewer-details">
-                            <h4>${review.name}</h4>
-                            <span class="review-date">${review.date}</span>
-                        </div>
-                    </div>
-                    <div class="review-rating">
-                        ${'<span class="star">★</span>'.repeat(review.rating)}
-                        ${'<span class="star empty">★</span>'.repeat(5 - review.rating)}
-                    </div>
-                </div>
-                <div class="review-content">
-                    ${review.content}
-                </div>
-                <div class="review-helpful">
-                    <button class="helpful-btn" onclick="toggleHelpful(this)">
-                        👍 도움됨 <span>${review.helpful}</span>
-                    </button>
-                    <span>|</span>
-                    <button class="helpful-btn" onclick="toggleHelpful(this)">
-                        👎 도움안됨 <span>${review.notHelpful}</span>
-                    </button>
-                </div>
-            `;
-
-                return reviewDiv;
-            }
-
-            // 도움됨/도움안됨 토글
             function toggleHelpful(button) {
                 const span = button.querySelector('span');
                 const currentCount = parseInt(span.textContent);
+                const reviewItem = button.closest('.review-item');
+                const reviewId = reviewItem.getAttribute('data-review-id');
 
-                if (button.classList.contains('active')) {
+                const isActive = button.classList.contains('active');
+
+                if (isActive) {
+                    // 비활성화
                     button.classList.remove('active');
                     span.textContent = currentCount - 1;
-                } else {
-                    // 같은 리뷰의 다른 버튼 비활성화
-                    const reviewItem = button.closest('.review-item');
-                    const otherButtons = reviewItem.querySelectorAll('.helpful-btn');
-                    otherButtons.forEach(btn => {
-                        if (btn !== button && btn.classList.contains('active')) {
-                            btn.classList.remove('active');
-                            const otherSpan = btn.querySelector('span');
-                            otherSpan.textContent = parseInt(otherSpan.textContent) - 1;
-                        }
-                    });
 
+                    // 로컬 데이터 업데이트
+                    const review = reviewsData.find(r => r.id == reviewId);
+                    if (review) {
+                        review.helpful = Math.max(0, review.helpful - 1);
+                    }
+
+                    handleLikeClick(reviewId, false); // false = 제거
+                } else {
+                    // 활성화
                     button.classList.add('active');
                     span.textContent = currentCount + 1;
+
+                    // 로컬 데이터 업데이트
+                    const review = reviewsData.find(r => r.id == reviewId);
+                    if (review) {
+                        review.helpful = (review.helpful || 0) + 1;
+                    }
+
+                    handleLikeClick(reviewId, true); // true = 추가
                 }
             }
+
+            function handleLikeClick(reviewId, isAdd) {
+                fetch(`/review/like/${reviewId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isAdd }) // 상태 정보 포함
+                })
+                    .then(response => {
+                        if (response.status === 401) {
+                            alert("로그인이 필요합니다.");
+                            window.location.href = "/login";
+                            return;
+                        }
+                        if (!response.ok) throw new Error('도움 투표 실패');
+                    })
+                    .catch(error => {
+                        console.error('도움됨 처리 실패:', error);
+                    });
+            }
+
+            async function insertReview(newReview) {
+                try {
+                    const response = await fetch(`/review/${planId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            content: newReview.content,
+                            star: newReview.rating
+                        })
+                    });
+
+                    if (response.status === 401) {
+                        alert("로그인이 필요합니다.");
+                        window.location.href = "/login";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        const result = await response.json().catch(() => ({}));
+                        alert(result.message || "리뷰 등록 실패");
+                        return;
+                    }
+
+                    alert("리뷰가 등록되었습니다.");
+
+                    await loadReviewsData(planId); // 등록 후 목록 갱신
+
+                } catch (error) {
+                    console.error("리뷰 등록 중 오류:", error);
+                    alert("리뷰 등록에 실패했습니다.");
+                }
+            }
+
+            // 맨 위로 스크롤
+            function scrollToTop() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > 800) {
+                    scrollTopBtn.style.display = 'flex';
+                } else {
+                    scrollTopBtn.style.display = 'none';
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', scrollToTop);
         </script>
     </body>
 

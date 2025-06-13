@@ -8,6 +8,8 @@ import lombok.Getter;
 @Builder
 public class DetailPlanResponse {
     private Long planId;
+    private String name;
+    private String planCategory;
     private String networkType;
     private Integer basePrice;
     private Integer dataAllowance;
@@ -18,6 +20,8 @@ public class DetailPlanResponse {
     public static DetailPlanResponse fromPlan(Plan plan) {
         return DetailPlanResponse.builder()
                 .planId(plan.getId())
+                .name(plan.getName())
+                .planCategory(plan.getPlanCategory().name())
                 .networkType(plan.getNetworkType().name())
                 .basePrice(plan.getBasePrice())
                 .dataAllowance(plan.getDataAllowance())
