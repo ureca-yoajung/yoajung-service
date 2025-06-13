@@ -1,12 +1,11 @@
 package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
+import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import java.io.IOException;
 import java.util.List;
-
-import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
-import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -31,7 +30,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .call()
                 .entity(PlanKeywordResponse.class);
 
-        System.out.println(planKeywordResponse);
+        log.info("planKeyword : {}", planKeywordResponse);
         // 필수 필드 검증
         return chatbotRepository.recommendPlans(planKeywordResponse);
     }
