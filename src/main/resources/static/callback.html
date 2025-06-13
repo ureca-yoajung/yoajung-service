@@ -2,41 +2,117 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>카카오 콜백</title>
+    <title>카카오 소셜 로그인 처리 중...</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .callback-container {
+            background: #fff;
+            border-radius: 16px;
+            padding: 44px 32px 36px;
+            box-shadow: 0 8px 32px #0001;
+            text-align: center;
+            min-width: 330px;
+        }
+
+        .callback-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .spinner {
+            margin: 16px auto 18px;
+            width: 38px;
+            height: 38px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #e6007e;
+            border-radius: 50%;
+            animation: spin 1.1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .callback-message {
+            color: #333;
+            font-size: 1.05rem;
+            margin-top: 8px;
+        }
+
+        .callback-error {
+            color: #e6007e;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+    </style>
 </head>
 <body>
-<h2>카카오 소셜 로그인 처리 중...</h2>
-<div id="result"></div>
+<div class="callback-container">
+    <div class="callback-title">카카오 소셜 로그인 처리 중...</div>
+    <div class="spinner" id="spinner"></div>
+    <div class="callback-message" id="result">잠시만 기다려 주세요...</div>
+</div>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    if (code) {
-        // 1. 인가코드로 액세스토큰 발급
-        fetch(`/api/oauth/kakao/token?code=${code}`)
-            .then(r => r.json())
-            .then(({accessToken}) => {
-                // 2. 액세스토큰으로 로그인(회원조회)
-                fetch(`/api/oauth/kakao/login?accessToken=${accessToken}`)
-                    .then(r => r.json())
-                    .then(d => {
-                        if (d && d.data && d.data.user) {
-                            document.getElementById('result').innerText = "로그인 완료!";
-                            setTimeout(() => window.location.href = "main.html", 1500);
-                        } else if (d && d.data && d.data.email && d.data.name) {
-                            document.getElementById('result').innerText = "추가정보 필요, 추가정보 입력 페이지로 이동";
-                            setTimeout(() =>
-                                    window.location.href = "additional-info.html?email=" + encodeURIComponent(d.data.email)
-                                        + "&name=" + encodeURIComponent(d.data.name)
-                                        + "&accessToken=" + encodeURIComponent(d.data.accessToken),
-                                1500);
-                        } else {
-                            document.getElementById('result').innerText = "예상치 못한 응답";
-                        }
-                    });
-            });
-    } else {
-        document.getElementById('result').innerText = "인가 코드가 없습니다";
+    const resultDiv = document.getElementById('result');
+    const spinner = document.getElementById('spinner');
+
+    async function socialCallbackFlow() {
+        if (!code) {
+            spinner.style.display = "none";
+            resultDiv.innerHTML = "<span class='callback-error'>인가 코드가 없습니다.<br>다시 시도해 주세요.</span>";
+            return;
+        }
+        try {
+            // 1. 인가코드로 액세스토큰 발급
+            const tokenRes = await fetch(`/api/oauth/kakao/token?code=${code}`);
+            const {accessToken} = await tokenRes.json();
+            if (!accessToken) throw new Error("액세스토큰 발급 실패");
+
+            // 2. 액세스토큰으로 로그인(회원조회)
+            const loginRes = await fetch(`/api/oauth/kakao/login?accessToken=${accessToken}`);
+            const d = await loginRes.json();
+
+            if (d && d.data && d.data.user) {
+                spinner.style.display = "none";
+                resultDiv.textContent = "로그인 완료! 메인화면으로 이동합니다.";
+                setTimeout(() => window.location.href = "main.html", 1200);
+            } else if (d && d.data && d.data.email && d.data.name) {
+                spinner.style.display = "none";
+                resultDiv.innerHTML = "추가 정보가 필요합니다.<br>추가 정보 입력 화면으로 이동합니다.";
+                setTimeout(() =>
+                        window.location.href =
+                            "additional-info.html?email=" + encodeURIComponent(d.data.email)
+                            + "&name=" + encodeURIComponent(d.data.name)
+                            + "&accessToken=" + encodeURIComponent(d.data.accessToken),
+                    1400
+                );
+            } else {
+                spinner.style.display = "none";
+                resultDiv.innerHTML = "<span class='callback-error'>예상치 못한 응답입니다.<br>다시 시도해 주세요.</span>";
+            }
+        } catch (e) {
+            spinner.style.display = "none";
+            resultDiv.innerHTML = "<span class='callback-error'>오류가 발생했습니다.<br>다시 시도해 주세요.</span>";
+        }
     }
+
+    socialCallbackFlow();
 </script>
 </body>
 </html>
