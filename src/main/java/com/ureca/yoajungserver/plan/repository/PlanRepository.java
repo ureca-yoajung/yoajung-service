@@ -16,4 +16,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
     Page<Plan> findByIdNotIn(List<Long> popularPlanIds, Pageable normalPageable);
     Page<Plan> findByPlanCategoryAndIdNotIn(PlanCategory planCategory, List<Long> popularPlanIds, Pageable normalPageable);
+
+    long countByPlanCategory(PlanCategory category);
 }
