@@ -51,7 +51,7 @@
         </form>
         <div class="divider"><span>또는</span></div>
         <div class="social-login">
-            <button id="kakao-login-btn" class="kakao-login-btn">
+            <button id="kakao-login-btn" class="login-button kakao-login-btn">
                 <img src="assets/image/kakao_login_large_wide.png" alt="카카오 로그인"/>
             </button>
         </div>
@@ -109,7 +109,7 @@
         hideError();
         const loginBtn = document.getElementById('login-btn');
         loginBtn.disabled = true;
-        loginBtn.textContent = "로그인 중...";
+        loginBtn.innerHTML = `로그인 중...<span class=\"spinner\"></span>`;
 
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-pw').value;
