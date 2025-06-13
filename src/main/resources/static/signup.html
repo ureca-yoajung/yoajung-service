@@ -2,46 +2,98 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>회원가입</title>
+    <title>회원가입 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/signup.css"/>
 </head>
 <body>
-<h2>회원가입</h2>
-<form id="signup-form">
-    <input type="email" name="email" id="email" placeholder="이메일" required>
-    <button type="button" id="send-code-btn">인증코드 발송</button>
-    <br>
-    <input type="text" name="code" id="code" placeholder="인증코드 입력">
-    <button type="button" id="verify-code-btn">코드확인</button>
-    <br>
-    <input type="text" name="name" id="name" placeholder="이름" required><br>
-    <input type="password" name="password" id="password" placeholder="비밀번호" required><br>
-    <input name="phoneNumber" id="phoneNumber" placeholder="전화번호" required><br>
-    <select name="gender" id="gender" required>
-        <option value="">성별</option>
-        <option value="MALE">남자</option>
-        <option value="FEMALE">여자</option>
-    </select><br>
-    <select name="ageGroup" id="ageGroup" required>
-        <option value="">연령</option>
-        <option value="TEN_S">10대</option>
-        <option value="TWENTY_S">20대</option>
-        <option value="THIRTY_S">30대</option>
-        <option value="FORTY_S">40대</option>
-        <option value="FIFTY_S">50대</option>
-        <option value="SIXTY_S_PLUS">60대 이상</option>
-    </select><br>
-    <input name="familyCount" id="familyCount" placeholder="가족수" type="number" required><br>
-    <button type="submit" id="signup-btn">회원가입</button>
-</form>
-<div id="signup-result"></div>
+<div id="navbar"></div>
+<main class="main-content">
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1 class="signup-title">회원가입</h1>
+            <p class="signup-subtitle">YOAJUNG과 함께 시작하세요</p>
+        </div>
+
+        <form id="signup-form" autocomplete="off">
+            <div class="form-group">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="이메일을 입력하세요" required>
+                <button type="button" id="send-code-btn" class="btn btn-primary" style="margin-top:8px;">인증코드 발송
+                </button>
+            </div>
+            <div class="form-group">
+                <input type="text" id="code" name="code" class="form-input" placeholder="인증코드 입력">
+                <button type="button" id="verify-code-btn" class="btn btn-primary" style="margin-top:8px;">코드확인</button>
+            </div>
+            <div class="form-group">
+                <label for="name" class="form-label">이름</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="이름" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="비밀번호" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber" class="form-label">전화번호</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" class="form-input" placeholder="전화번호" required>
+            </div>
+            <div class="form-group">
+                <label for="gender" class="form-label">성별</label>
+                <select id="gender" name="gender" class="form-input" required>
+                    <option value="">성별</option>
+                    <option value="MALE">남자</option>
+                    <option value="FEMALE">여자</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ageGroup" class="form-label">연령</label>
+                <select id="ageGroup" name="ageGroup" class="form-input" required>
+                    <option value="">연령</option>
+                    <option value="TEN_S">10대</option>
+                    <option value="TWENTY_S">20대</option>
+                    <option value="THIRTY_S">30대</option>
+                    <option value="FORTY_S">40대</option>
+                    <option value="FIFTY_S">50대</option>
+                    <option value="SIXTY_S_PLUS">60대 이상</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="familyCount" class="form-label">가족수</label>
+                <input type="number" id="familyCount" name="familyCount" class="form-input" placeholder="가족수" required>
+            </div>
+            <div id="signup-result" class="error-message" style="display:none"></div>
+            <button type="submit" class="signup-button btn btn-primary" id="signup-btn">회원가입</button>
+        </form>
+
+        <div class="login-link">
+            이미 계정이 있으신가요? <a href="login.html">로그인</a>
+        </div>
+    </div>
+</main>
 <script>
+    // navbar.html ajax 로딩
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/assets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('navbar').innerHTML = html;
+            });
+    });
+
+    function showResult(msg, isError = true) {
+        const result = document.getElementById('signup-result');
+        result.textContent = msg;
+        result.style.display = msg ? 'block' : 'none';
+        result.style.background = isError ? '#fee2e2' : '#dcfce7';
+        result.style.color = isError ? '#dc2626' : '#15803d';
+        result.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
+    }
+
     // 이메일 인증코드 발송
     document.getElementById('send-code-btn').onclick = async function () {
-        const email = document.getElementById('email').value;
-        if (!email) {
-            alert('이메일을 입력하세요!');
-            return;
-        }
+        const email = document.getElementById('email').value.trim();
+        if (!email) return showResult('이메일을 입력하세요!');
         const res = await fetch('/api/auth/send-code', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -49,17 +101,14 @@
             credentials: 'include'
         });
         const data = await res.json();
-        document.getElementById('signup-result').innerText = data.message;
+        showResult(data.message, !res.ok || data.code?.includes('FAIL'));
     };
 
     // 이메일 인증코드 확인
     document.getElementById('verify-code-btn').onclick = async function () {
-        const email = document.getElementById('email').value;
-        const code = document.getElementById('code').value;
-        if (!email || !code) {
-            alert('이메일/코드를 입력하세요!');
-            return;
-        }
+        const email = document.getElementById('email').value.trim();
+        const code = document.getElementById('code').value.trim();
+        if (!email || !code) return showResult('이메일/코드를 입력하세요!');
         const res = await fetch('/api/auth/verify-code', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -67,10 +116,10 @@
             credentials: 'include'
         });
         const data = await res.json();
-        document.getElementById('signup-result').innerText = data.message;
+        showResult(data.message, !res.ok || data.code?.includes('FAIL'));
     };
 
-    // 회원가입
+    // 회원가입 submit (feature/52-oauth API 방식)
     document.getElementById('signup-form').onsubmit = async function (e) {
         e.preventDefault();
         const form = e.target;
@@ -82,8 +131,10 @@
             credentials: 'include'
         });
         const data = await res.json();
-        document.getElementById('signup-result').innerText = data.message;
-        if (res.ok) location.href = "login.html";
+        showResult(data.message, !res.ok || data.code?.includes('FAIL'));
+        if (res.ok && (data.code?.includes('SUCCESS') || data.code?.includes('OK'))) {
+            setTimeout(() => window.location.href = "login.html", 1000);
+        }
     };
 </script>
 </body>

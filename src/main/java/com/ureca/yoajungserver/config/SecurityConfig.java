@@ -25,14 +25,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .invalidSessionUrl("/login.html")
                         .maximumSessions(1)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login.html", "/signup.html", "/reset-password.html"
-                                , "/reset-request.html", "main.html",
-                                "/api/oauth/**", "/api/auth/**", "callback.html"
+                                , "/reset-request.html", "/main.html",
+                                "/api/oauth/**", "/api/auth/**", "/callback.html", "/additional-info.html"
+                                , "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico"
+                                , "/api/user/signup"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/user/**",

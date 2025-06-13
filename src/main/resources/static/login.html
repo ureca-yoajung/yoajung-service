@@ -2,53 +2,144 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>로그인/회원가입</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/login.css"/>
 </head>
 <body>
-<h2>로그인</h2>
-<input id="login-email" placeholder="이메일"><br>
-<input id="login-pw" type="password" placeholder="비밀번호"><br>
-<button id="login-btn">로그인</button>
-<button id="goto-signup-btn">회원가입</button>
-<button id="goto-reset-btn">비밀번호 재설정</button>
-<button id="kakao-login-btn">카카오 로그인</button>
+<!-- Navigation -->
+<div id="navbar"></div>
+<main class="main-content">
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">로그인</h1>
+            <p class="login-subtitle">YOAJUNG에 오신 것을 환영합니다</p>
+        </div>
+        <form id="loginForm" autocomplete="on">
+            <div class="form-group">
+                <label for="login-email" class="form-label">이메일</label>
+                <input
+                        type="email"
+                        id="login-email"
+                        name="email"
+                        class="form-input"
+                        placeholder="이메일을 입력하세요"
+                        required
+                >
+            </div>
+            <div class="form-group">
+                <label for="login-pw" class="form-label">비밀번호</label>
+                <input
+                        type="password"
+                        id="login-pw"
+                        name="password"
+                        class="form-input"
+                        placeholder="비밀번호를 입력하세요"
+                        required
+                >
+            </div>
+            <div class="form-options">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="remember" class="checkbox">
+                    <label for="remember">로그인 상태 유지</label>
+                </div>
+                <a href="reset-request.html" class="forgot-password">비밀번호 재설정</a>
+            </div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <button type="submit" class="login-button" id="login-btn">로그인</button>
+        </form>
+        <div class="divider"><span>또는</span></div>
+        <div class="social-login">
+            <button id="kakao-login-btn" style="padding:0; border:none; background:transparent;">
+                <img src="assets/image/kakao_login_large_wide.png" alt="카카오 로그인"
+                     style="height:45px; width:300px; display:block;"/>
+            </button>
+        </div>
+        <div class="signup-link">
+            아직 계정이 없으신가요? <a href="signup.html" id="goto-signup-btn">회원가입</a>
+        </div>
+    </div>
+</main>
 
 <script>
-    document.getElementById('login-btn').onclick = async function () {
-        const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            credentials: 'include',
-            body: JSON.stringify({
-                email: document.getElementById('login-email').value,
-                password: document.getElementById('login-pw').value
+    // 네비게이션 동적 로딩
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/assets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('navbar').innerHTML = html;
             })
-        });
-        const d = await res.json();
-        if (res.ok && d.code === "USER_LOGIN_SUCCESS_200") {
-            location.href = "main.html";
-        } else {
-            alert(d.message || "로그인 실패");
+            .catch(err => console.error('navbar 로딩 실패:', err));
+    });
+
+    // 로그인 폼 submit 이벤트 처리 (실제 API 연동)
+    document.getElementById('loginForm').onsubmit = async function (event) {
+        event.preventDefault();
+        hideError();
+        const loginBtn = document.getElementById('login-btn');
+        loginBtn.disabled = true;
+        loginBtn.textContent = "로그인 중...";
+
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-pw').value;
+        const remember = document.getElementById('remember').checked;
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({email, password, remember})
+            });
+            const d = await res.json();
+            let userMessage;
+            switch (d.code) {
+                case 'USER_LOGIN_FAIL_401':
+                    userMessage = '이메일 또는 비밀번호가 올바르지 않습니다.';
+                    break;
+                default:
+                    userMessage = d.message || '일시적인 오류입니다. 잠시 후 다시 시도해 주세요.';
+            }
+            if (res.ok && d.code === "USER_LOGIN_SUCCESS_200") {
+                location.href = "main.html";
+            } else {
+                showError(userMessage);
+            }
+        } catch (e) {
+            showError("네트워크 오류입니다. 잠시 후 다시 시도해 주세요.");
         }
+        loginBtn.disabled = false;
+        loginBtn.textContent = "로그인";
     };
 
+    // 회원가입/비밀번호 재설정 버튼
     document.getElementById('goto-signup-btn').onclick = function () {
         window.location.href = "signup.html";
     };
-
-    document.getElementById('goto-reset-btn').onclick = function () {
-        window.location.href = "reset-request.html";
-    };
-
     document.getElementById('kakao-login-btn').onclick = function () {
         const KAKAO_AUTH_URL =
             "https://kauth.kakao.com/oauth/authorize"
             + "?response_type=code"
             + "&client_id=10cc850d322121f04dadc24d7a60a11a"
-            + "&redirect_uri=http://localhost:8080/callback.html"
+            + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/callback.html")
             + "&scope=profile_nickname,account_email";
         window.location.href = KAKAO_AUTH_URL;
     };
+
+    function showError(message) {
+        const errorElement = document.getElementById('errorMessage');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    function hideError() {
+        const errorElement = document.getElementById('errorMessage');
+        errorElement.style.display = 'none';
+    }
+
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('focus', hideError);
+    });
 </script>
 </body>
 </html>
