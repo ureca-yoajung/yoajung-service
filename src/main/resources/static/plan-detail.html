@@ -128,7 +128,7 @@
                             <div class="stars" id="averageStars"></div>
                             <span class="review-count" id="reviewCount">(0개 리뷰)</span>
                         </div>
-                        <button class="write-review-btn" onclick="toggleReviewForm()">
+                        <button id="write-review-btn" class="write-review-btn" onclick="toggleReviewForm()"  style="display: none;">
                             리뷰 작성
                         </button>
                     </div>
@@ -276,6 +276,12 @@
                     if (result.status === 'OK' && result.data) {
                         responseReview = result.data;
                         totalPages = result.data.totalPages;
+
+                        const isPlanUser = result.data.isPlanUser;
+                        const reviewWriteBtn = document.getElementById('write-review-btn');
+                        if (reviewWriteBtn) {
+                            reviewWriteBtn.style.display = isPlanUser ? 'inline-block' : 'none';
+                        }
                     }
                     updateReviewsInfo();
                 } catch (error) {
@@ -469,7 +475,9 @@
                     rating: review.star,
                     helpful: review.likeCnt,
                     notHelpful: 0,
-                    createdAt: review.createDate
+                    createdAt: review.createDate,
+                    isAuthor: review.author,
+                    isLiked: review.liked
                 }));
 
                 updateReviewsStats();
@@ -558,10 +566,18 @@
                     <br>${review.content}
                 </div>
                 <div class="review-helpful">
-                    <button class="helpful-btn" onclick="toggleHelpful(this, true)">
+                    <button class="helpful-btn ${review.isLiked ? 'active' : ''}" onclick="toggleHelpful(this, true)">
                         👍 도움됨 <span>${review.helpful || 0}</span>
                     </button>
                 </div>
+
+            ${review.isAuthor ? `
+                <div class="review-actions">
+                    <button class="edit-btn" onclick="editReview(${review.id})">✏️ 수정</button>
+                    <button class="delete-btn" onclick="deleteReview(${review.id})">🗑 삭제</button>
+                </div>
+            ` : ''}
+
             `;
 
                 return reviewDiv;
