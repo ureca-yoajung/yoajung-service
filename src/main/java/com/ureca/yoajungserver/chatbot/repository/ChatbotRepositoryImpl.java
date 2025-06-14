@@ -159,6 +159,16 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return null;
         }
 
+        // 사잇값 처리
+        if(price.contains("사이")){
+            Optional<int[]> opt = safeParseRange(price);
+            if(opt.isPresent()){
+                int min = opt.get()[0];
+                int max = opt.get()[1];
+                return plan.basePrice.between(min, max);
+            }
+        }
+
         Optional<Integer> opt = safeParse(price);
         int priceInt;
         if (opt.isPresent()) {
@@ -252,6 +262,16 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                 return null;
         }
 
+        // 사잇값 처리
+        if(data.contains("사이")){
+            Optional<int[]> opt = safeParseRange(data);
+            if(opt.isPresent()){
+                int min = opt.get()[0];
+                int max = opt.get()[1];
+                return plan.dataAllowance.between(min, max);
+            }
+        }
+
         Optional<Integer> opt = safeParse(data);
         int dataInt;
 
@@ -280,6 +300,16 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
     private BooleanExpression afterLimitCondition(String afterLimit) {
         if (isNull(afterLimit)) {
             return null;
+        }
+
+        // 사잇값 처리
+        if(afterLimit.contains("사이")){
+            Optional<int[]> opt = safeParseRange(afterLimit);
+            if(opt.isPresent()){
+                int min = opt.get()[0];
+                int max = opt.get()[1];
+                return plan.speedAfterLimit.between(min, max);
+            }
         }
 
         Optional<Integer> opt = safeParse(afterLimit);
@@ -355,6 +385,24 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             log.warn("잘못된 숫자 포맷: {}", input);
             return Optional.empty();
         }
+    }
+
+    private Optional<int[]> safeParseRange(String input) {
+        String[] parse = input.split(",");
+
+        if(parse[0].contains("무제한")) parse[0] = "9999";
+        if(parse[1].contains("무제한")) parse[1] = "9999";
+
+        if(parse.length != 2)
+            return Optional.empty();
+
+        Optional<Integer> min = safeParse(parse[0]);
+        Optional<Integer> max = safeParse(parse[1]);
+
+        if(min.isPresent() && max.isPresent())
+            return Optional.of(new int[]{min.get(), max.get()});
+
+        return Optional.empty();
     }
 
 }
