@@ -179,6 +179,8 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
 
         if (price.contains("이상")) {
             return plan.basePrice.goe(priceInt);
+        }else if (price.contains("정확")) {
+            return plan.basePrice.eq(priceInt);
         } else if (price.contains("이하")) {
             return plan.basePrice.loe(priceInt);
         } else if (price.contains("초과")) {
