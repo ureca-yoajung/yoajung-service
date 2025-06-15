@@ -9,7 +9,6 @@ import com.ureca.yoajungserver.user.exception.EmailNotVerifiedException;
 import com.ureca.yoajungserver.user.exception.UserDuplicatedEmailException;
 import com.ureca.yoajungserver.user.exception.UserNotFoundException;
 import com.ureca.yoajungserver.user.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,12 +26,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void signup(SignupRequest request, HttpSession httpSession) {
+    public void signup(SignupRequest request, String verifiedEmail) {
         String email = request.getEmail();
 
-        // 세션에 저장된 인증된 이메일 확인
-        Object verified = httpSession.getAttribute(VERIFIED_EMAIL);
-        if (verified == null || !verified.equals(email)) {
+        if (verifiedEmail == null || !verifiedEmail.equals(email)) {
             throw new EmailNotVerifiedException();
         }
 
@@ -57,8 +54,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
-
-        httpSession.removeAttribute(VERIFIED_EMAIL);
     }
 
     @Transactional(readOnly = true)
