@@ -1,0 +1,293 @@
+:root {
+    --primary: #e6007e;
+    --primary-dark: #d10070;
+    --primary-light: #ff7a8a;
+    --gradient: linear-gradient(135deg, #e6007e 0%, #ff7a8a 100%);
+    --text-primary: #1a1a1a;
+    --text-secondary: #64748b;
+    --bg-main: #fafaff;
+    --bg-card: #fff;
+    --border-radius: 22px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: rgb(250, 250, 250);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e5e5e5;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    height: 64px;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 32px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+    background: #f1f5f9;
+    color: var(--text-primary);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.main-content {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 65px 0 32px 0; /* ← 위 여백만 65px로 줄임 */
+}
+
+.mypage-container {
+    background: var(--bg-card);
+    box-shadow: 0 10px 32px rgba(230, 0, 126, 0.06);
+    border-radius: var(--border-radius);
+    width: 100%;
+    max-width: 800px; /* 카드 크기 확 키움 */
+    padding: 0 0 50px 0;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background: var(--gradient);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    padding: 38px 44px 22px 44px;
+    color: white;
+    box-shadow: 0 4px 24px #e6007e22;
+    position: relative;
+}
+
+.profile-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -1px;
+}
+
+.profile-email {
+    font-size: 1.05rem;
+    color: #ffe5f8;
+    margin-bottom: 8px;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 13px;
+    margin-top: 8px;
+}
+
+.main-btn, .logout-btn {
+    background: #fff;
+    color: var(--primary);
+    border: none;
+    padding: 8px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+
+.main-btn:hover, .logout-btn:hover {
+    background: #ffe1ef;
+    color: var(--primary-dark);
+}
+
+.tab-row {
+    display: flex;
+    justify-content: center;
+    background: #fff;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    box-shadow: 0 1px 0 #f7d5eb inset;
+    gap: 0;
+}
+
+.tab {
+    flex: 1 1 0;
+    cursor: pointer;
+    padding: 16px 0 12px 0;
+    font-weight: 600;
+    font-size: 1.13rem;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0 0 12px 12px;
+    transition: color 0.2s, border 0.2s, background 0.17s;
+}
+
+.tab.active {
+    color: var(--primary);
+    border-bottom: 2.5px solid var(--primary);
+    background: #fff0fa;
+}
+
+.section {
+    display: none;
+    padding: 44px 54px 0 54px; /* 카드 내부 여백 넉넉, 가독성 */
+    min-height: 260px;
+}
+
+.section.active {
+    display: block;
+    animation: fadein .3s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.info-list, .tendency-list {
+    margin-bottom: 32px;
+}
+
+.info-list > div, .tendency-list > div {
+    margin-bottom: 17px;
+    font-size: 1.16rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 110px;
+}
+
+.edit-btn, .save-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 9px 19px;
+    border-radius: 7px;
+    font-weight: 600;
+    margin-top: 13px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+
+.edit-btn:hover, .save-btn:hover {
+    background: var(--primary-dark);
+}
+
+input, select {
+    padding: 8px 11px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    width: 68%;
+    font-size: 1.08rem;
+}
+
+input:disabled {
+    background: #f1f1f1;
+    color: #888;
+}
+
+form > div {
+    margin-bottom: 17px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+@media (max-width: 700px) {
+    .mypage-container {
+        max-width: 99vw;
+    }
+
+    .profile-header, .section {
+        padding: 20px 8px 10px 8px;
+    }
+}

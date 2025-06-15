@@ -218,11 +218,11 @@ body {
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    margin-bottom: 24px;
+    margin-bottom: 2px;
 }
 
 
@@ -279,10 +279,9 @@ body {
 
 .divider {
     text-align: center;
-    margin: 24px 0;
+    margin: 20px 0;
     position: relative;
     color: var(--text-secondary);
-    font-size: 14px;
 }
 
 .divider::before {
@@ -298,6 +297,7 @@ body {
 
 .divider span {
     background: rgba(255, 255, 255, 0.95);
+    font-size: 16px;
     padding: 0 16px;
     position: relative;
     z-index: 2;
@@ -328,6 +328,17 @@ body {
     font-size: 14px;
     margin-bottom: 16px;
     border: 1px solid #fecaca;
+}
+
+/* 성공 메시지 */
+.success-message {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    border: 1px solid #bbf7d0;
 }
 
 /* Responsive */

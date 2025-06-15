@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="assets/css/login.css"/>
 </head>
 <body>
-<!-- Navigation -->
 <div id="navbar"></div>
 <main class="main-content">
     <div class="login-container">
@@ -63,12 +62,24 @@
 
 <script>
     // 네비게이션 동적 로딩
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                // 이미 로그인 → 메인 or 마이페이지로
+                location.href = "main.html"; // 또는 "mypage.html"
+                return;
+            }
+        } catch (e) {
+            // 네트워크 에러 등은 무시
+        }
+
+        // 2. 로그인 상태가 아니면 navbar를 불러옴
         fetch('/assets/navbar.html')
             .then(res => res.text())
             .then(html => {
                 document.getElementById('navbar').innerHTML = html;
-                renderNavButtons()
+                renderNavButtons && renderNavButtons();
             })
             .catch(err => console.error('navbar 로딩 실패:', err));
     });
@@ -109,7 +120,7 @@
         hideError();
         const loginBtn = document.getElementById('login-btn');
         loginBtn.disabled = true;
-        loginBtn.innerHTML = `로그인 중...<span class=\"spinner\"></span>`;
+        loginBtn.innerHTML = `<span class=\"spinner\"></span>`;
 
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-pw').value;

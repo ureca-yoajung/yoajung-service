@@ -20,23 +20,67 @@
             <input id="reset-email" type="email" class="form-input" placeholder="이메일을 입력하세요" required>
         </div>
         <div id="reset-result" class="error-message" style="display:none;"></div>
-        <button id="reset-request-btn" class="login-button" style="margin-bottom: 12px;">재설정 메일 보내기</button>
+        <button id="reset-request-btn" class="login-button" style="margin-bottom: 12px; font-size:18px;">재설정 메일 보내기
+        </button>
+        <span id="reset-timer" style="margin-left:8px;color:var(--primary);font-size:13px"></span>
+        <div class="divider"><span>또는</span></div>
         <button onclick="location.href='login.html'" class="login-button"
-                style="background:#f1f1f1; color: var(--primary);">로그인으로 돌아가기
+                style="background:#f1f1f1; font-size:18px; color: var(--primary);">로그인으로 돌아가기
         </button>
     </div>
 </main>
 <script>
-    // 네비게이션 동적 로딩
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                // 이미 로그인 → 메인 or 마이페이지로
+                location.href = "main.html"; // 또는 "mypage.html"
+                return;
+            }
+        } catch (e) {
+            // 네트워크 에러 등은 무시
+        }
+
+        // 2. 로그인 상태가 아니면 navbar를 불러옴
         fetch('/assets/navbar.html')
             .then(res => res.text())
             .then(html => {
                 document.getElementById('navbar').innerHTML = html;
+                renderNavButtons && renderNavButtons();
             })
-            .catch(err => {
-            });
+            .catch(err => console.error('navbar 로딩 실패:', err));
     });
+
+    async function renderNavButtons() {
+        const navBtns = document.getElementById('nav-auth-buttons');
+        if (!navBtns) return;
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                // 로그인 상태
+                navBtns.innerHTML = `
+                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
+                <button id="logout-btn" class="btn btn-primary">로그아웃</button>
+            `;
+                document.getElementById('logout-btn').onclick = async function () {
+                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+                    location.href = "login.html";
+                };
+            } else {
+                // 비로그인 상태
+                navBtns.innerHTML = `
+                <a href="login.html" class="btn btn-ghost">로그인</a>
+                <a href="signup.html" class="btn btn-primary">시작하기</a>
+            `;
+            }
+        } catch {
+            navBtns.innerHTML = `
+            <a href="login.html" class="btn btn-ghost">로그인</a>
+            <a href="signup.html" class="btn btn-primary">시작하기</a>
+        `;
+        }
+    }
 
     document.getElementById('reset-request-btn').onclick = async function () {
         const email = document.getElementById('reset-email').value;
@@ -44,6 +88,7 @@
         if (!email) {
             result.textContent = "이메일을 입력해주세요.";
             result.style.display = "block";
+            result.className = "error-message";
             return;
         }
         const res = await fetch('/api/auth/reset-request', {
@@ -54,7 +99,11 @@
         const d = await res.json();
         result.textContent = d.message || JSON.stringify(d);
         result.style.display = "block";
-        result.style.color = res.ok ? "#10b981" : "#dc2626";
+        if (res.ok) {
+            result.className = "success-message";
+        } else {
+            result.className = "error-message";
+        }
     };
 </script>
 </body>

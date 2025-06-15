@@ -2,60 +2,111 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>메인 페이지</title>
-    <style>
-        #modal-bg {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        #tendency-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff;
-            padding: 2em;
-            border-radius: 10px;
-        }
-    </style>
+    <title>메인 페이지 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css"/>
 </head>
 <body>
-<h2>메인 페이지</h2>
-<button onclick="window.location.href='mypage.html'">내 정보 보기</button>
-<button onclick="logout()">로그아웃</button>
-<div id="result"></div>
+<div id="navbar"></div>
+<main class="main-content">
+    <section class="main-hero">
+        <div class="main-hero-title">나에게 꼭 맞는 <span class="highlight">요금제</span>를 추천받으세요!</div>
+        <div class="main-hero-desc">데이터, 통화, 가격까지 맞춤형 컨설팅</div>
+        <div class="main-actions">
+            <button onclick="showTendencyModal()" class="btn btn-primary">성향 등록/수정</button>
+            <a href="plan-list.html" class="btn btn-ghost">요금제 전체보기</a>
+        </div>
+    </section>
+    <section class="main-cards">
+        <div class="card">
+            <div class="card-title">내 성향</div>
+            <div class="card-content" id="tendency-summary">
+                아직 입력된 성향 정보가 없습니다.<br> [성향 등록/수정] 버튼을 눌러보세요!
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">내 정보</div>
+            <div class="card-content">
+                <a href="mypage.html" class="btn btn-primary">마이페이지 바로가기</a>
+            </div>
+        </div>
+    </section>
+</main>
 
 <!-- 성향 입력 모달 -->
 <div id="modal-bg"></div>
 <div id="tendency-modal">
     <h3>성향 정보 입력</h3>
     <form id="tendency-form">
-        <label>월평균 데이터 사용량(GB): <input name="avgMonthlyDataGB" type="number" required></label><br>
-        <label>월평균 통화량(분): <input name="avgMonthlyVoiceMin" type="number" required></label><br>
-        <label>희망 요금제 가격(원): <input name="preferencePrice" type="number" required></label><br>
-        <label>기타(주요 사용 목적 등): <input name="comment" required></label><br>
+        <label>월평균 데이터 사용량(GB)
+            <input name="avgMonthlyDataGB" type="number" required>
+        </label>
+        <label>월평균 통화량(분)
+            <input name="avgMonthlyVoiceMin" type="number" required>
+        </label>
+        <label>희망 요금제 가격(원)
+            <input name="preferencePrice" type="number" required>
+        </label>
+        <label>기타(주요 사용 목적 등)
+            <input name="comment" required>
+        </label>
         <button type="submit">등록</button>
         <button type="button" id="tendency-later">다음에 하기</button>
     </form>
 </div>
+
 <script>
-    function logout() {
-        fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'include'
-        })
+    // 네비게이션 및 로그인/로그아웃 상태 렌더링
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/assets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('navbar').innerHTML = html;
+                renderNavButtons();
+            });
+
+        // 내 성향 요약 표시
+        fetch('/api/tendency/me', {credentials: 'include'})
             .then(res => res.json())
             .then(data => {
-                alert(data.message || "로그아웃 완료");
-                window.location.href = "login.html";
+                const el = document.getElementById('tendency-summary');
+                if (data && data.data) {
+                    el.innerHTML = `
+                        <b>데이터:</b> ${data.data.avgMonthlyDataGB}GB<br>
+                        <b>통화:</b> ${data.data.avgMonthlyVoiceMin}분<br>
+                        <b>희망가격:</b> ${data.data.preferencePrice}원<br>
+                        <b>비고:</b> ${data.data.comment || '-'}
+                    `;
+                }
             });
+    });
+
+    async function renderNavButtons() {
+        const navBtns = document.getElementById('nav-auth-buttons');
+        if (!navBtns) return;
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                navBtns.innerHTML = `
+                    <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
+                    <button id="logout-btn" class="btn btn-primary">로그아웃</button>
+                `;
+                document.getElementById('logout-btn').onclick = async function () {
+                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+                    location.href = "login.html";
+                };
+            } else {
+                navBtns.innerHTML = `
+                    <a href="login.html" class="btn btn-ghost">로그인</a>
+                    <a href="signup.html" class="btn btn-primary">시작하기</a>
+                `;
+            }
+        } catch {
+            navBtns.innerHTML = `
+                <a href="login.html" class="btn btn-ghost">로그인</a>
+                <a href="signup.html" class="btn btn-primary">시작하기</a>
+            `;
+        }
     }
 
     // 모달 표시/숨김
@@ -69,14 +120,8 @@
         document.getElementById('tendency-modal').style.display = "none";
     }
 
-    // 진입 시 성향 등록여부 확인
-    window.onload = function () {
-        fetch('/api/tendency/me', {credentials: 'include'})
-            .then(res => res.json())
-            .then(data => {
-                if (!data.data) showTendencyModal();
-            });
-    }
+    document.getElementById('modal-bg').onclick = hideTendencyModal;
+
     // 성향 등록
     document.getElementById('tendency-form').onsubmit = function (e) {
         e.preventDefault();
@@ -90,12 +135,19 @@
             .then(data => {
                 alert(data.message || "등록 완료");
                 hideTendencyModal();
+                location.reload();
             });
     };
-    // 다음에 하기
-    document.getElementById('tendency-later').onclick = function () {
-        hideTendencyModal();
-    };
+    document.getElementById('tendency-later').onclick = hideTendencyModal;
+
+    // 진입 시 성향 등록여부 확인
+    window.onload = function () {
+        fetch('/api/tendency/me', {credentials: 'include'})
+            .then(res => res.json())
+            .then(data => {
+                if (!data.data) showTendencyModal();
+            });
+    }
 </script>
 </body>
 </html>
