@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,11 +23,11 @@ public class TendencyServiceImpl implements TendencyService {
 
     @Transactional(readOnly = true)
     @Override
-    public Tendency getMyTendency(String email) {
+    public Optional<Tendency> getMyTendency(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
 
-        return tendencyRepository.findByUser(user).orElse(null);
+        return tendencyRepository.findByUser(user);
     }
 
     @Override
