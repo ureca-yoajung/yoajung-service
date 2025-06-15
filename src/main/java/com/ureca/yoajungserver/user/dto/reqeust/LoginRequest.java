@@ -18,4 +18,6 @@ public class LoginRequest {
     @NotBlank(message = "비밀번호")
     @Size(min = 1, message = "비밀번호는 1자이상")
     private String password;
+
+    private Boolean remember;
 }
