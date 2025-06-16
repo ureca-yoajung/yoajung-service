@@ -25,9 +25,6 @@ public class UserServiceImpl implements UserService {
     private final PlanRepository planRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private static final String VERIFIED_EMAIL = "verifiedEmail";
-
-
     @Override
     public void signup(SignupRequest request, String verifiedEmail) {
         String email = request.getEmail();
