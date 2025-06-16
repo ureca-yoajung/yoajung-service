@@ -38,7 +38,7 @@ public class PlanController {
         PlanSortType planSortType = PlanSortType.fromType(sortedType.toUpperCase())
                     .orElseThrow(() -> new InvalidPlanSortTypeException(INVALID_PLAN_SORT_TYPE));
 
-        List<ListPlanResponse> responses = (planSortType == PlanSortType.POPULAR)
+        ListPlanResponse responses = (planSortType == PlanSortType.POPULAR)
                 ? planService.getPopularPlans(page, size, category, planSortType)
                 : planService.getListPlan(page, size, category, planSortType);
 

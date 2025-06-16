@@ -7,46 +7,53 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="plan")
+@SQLDelete(sql = "UPDATE plan SET deletedAt = NOW() WHERE id = ?")
+@SQLRestriction("deletedAt is NULL")
 public class Plan extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name",nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name="networkType", nullable = false)
     @Enumerated(EnumType.STRING)
     private NetworkType networkType;
 
-    @Column(nullable = false)
+    @Column(name="planCategory", nullable = false)
     @Enumerated(EnumType.STRING)
     private PlanCategory planCategory;
 
-    @Column(nullable = false)
+    @Column(name="basePrice", nullable = false)
     private Integer basePrice;
 
-    @Column(nullable = false)
+    @Column(name="dataAllowance", nullable = false)
     private Integer dataAllowance;
 
-    @Column(nullable = false)
+    @Column(name="tetheringSharingAllowance", nullable = false)
     private Integer tetheringSharingAllowance;
 
-    @Column(nullable = false)
+    @Column(name="speedAfterLimit", nullable = false)
     private Integer speedAfterLimit;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
+
+    @Column(name = "deletedAt")
+    private LocalDateTime deletedAt;
 
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "plan", fetch = FetchType.LAZY)

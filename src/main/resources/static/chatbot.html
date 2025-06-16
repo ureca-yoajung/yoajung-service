@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 요금제 추천 - YOAJUNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e6007e;
+            --primary-dark: #d10070;
+            --primary-light: #ff7a8a;
+            --gradient: linear-gradient(135deg, #e6007e 0%, #ff7a8a 100%);
+            --text-primary: #1a1a1a;
+            --text-secondary: #64748b;
+            --border-color: #e5e5e5;
+            --bg-gray: #fafafa;
+            --bg-white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --chat-bg: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-gray);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            height: 64px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 48px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding-top: 64px;
+            padding: 64px 24px 0;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 1200px;
+            height: calc(100vh - 64px);
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-white);
+            box-shadow: var(--shadow);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-white);
+        }
+
+        .bot-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .bot-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bot-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .bot-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .status-indicator.online {
+            background: #10b981;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover {
+            background: var(--bg-gray);
+            color: var(--text-primary);
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: var(--chat-bg);
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .bot-message .message-avatar {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .user-message .message-avatar {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .message-content {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .user-message .message-content {
+            align-items: flex-end;
+        }
+
+        .message-bubble {
+            background: var(--bg-white);
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .message-bubble p {
+            margin-bottom: 8px;
+        }
+
+        .message-bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 0 4px;
+        }
+
+        /* Typing Indicator */
+        .typing-bubble {
+            background: var(--bg-white);
+            padding: 16px 20px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            padding: 20px 24px;
+            background: var(--bg-white);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--chat-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 8px 12px;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus-within {
+            border-color: var(--primary);
+        }
+
+        #messageInput {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px 12px;
+            font-size: 16px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        #messageInput::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(230, 0, 126, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Input Suggestions */
+        .input-suggestions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 16px;
+            }
+
+            .nav-left {
+                gap: 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 64px 8px 0;
+            }
+
+            .chat-container {
+                border-radius: 0;
+                height: calc(100vh - 64px);
+            }
+
+            .chat-header {
+                padding: 16px;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .chat-input-container {
+                padding: 16px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .input-suggestions {
+                flex-direction: column;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* 카드 렌더링 */
+        .cards-container {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .plan-card {
+            flex: 0 0 220px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .plan-header {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .plan-header h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+        }
+
+        .plan-price {
+            margin: 0;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .plan-body {
+            flex: 1;
+            padding: 12px;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            color: var(--text-secondary);
+        }
+
+        .detail-btn {
+            margin: 8px;
+            padding: 8px 0;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .detail-btn:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-left">
+            <a href="index.html" class="logo">YOAJUNG</a>
+            <ul class="nav-links">
+                <li><a href="index.html">홈</a></li>
+                <li><a href="plans.html">요금제</a></li>
+                <li><a href="#about">서비스 소개</a></li>
+            </ul>
+        </div>
+        <div class="nav-buttons">
+            <a href="login.html" class="btn btn-ghost">로그인</a>
+            <a href="signup.html" class="btn btn-primary">회원가입</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="chat-container">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                    <span class="bot-icon">🤖</span>
+                </div>
+                <div class="bot-details">
+                    <h2 class="bot-name">요아정 AI</h2>
+                    <p class="bot-status">
+                        <span class="status-indicator online"></span>
+                        온라인 - 요금제 추천 전문가
+                    </p>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <button class="action-btn" onclick="clearChat()" title="대화 초기화">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome Message -->
+            <div class="message bot-message">
+                <div class="message-avatar">
+                    <span class="bot-icon">🤖</span>
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <p>안녕하세요! 요아정 AI입니다. 🎉</p>
+                        <p>당신에게 딱 맞는 요금제를 찾아드릴게요!</p>
+                        <p>먼저 몇 가지 질문을 통해 사용 패턴을 알려주세요.</p>
+                    </div>
+                    <div class="message-time">오후 2:30</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <div class="message bot-message">
+                <div class="message-avatar">
+                    <span class="bot-icon">🤖</span>
+                </div>
+                <div class="message-content">
+                    <div class="typing-bubble">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." onkeypress="handleKeyPress(event)"
+                       autocomplete="off">
+                <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-suggestions" id="inputSuggestions">
+                <button class="suggestion-btn" onclick="applySuggestion('무제한 요금제 추천해주세요')">
+                    무제한 요금제 추천해주세요
+                </button>
+                <button class="suggestion-btn" onclick="applySuggestion('OTT 요금제 추천해주세요')">
+                    OTT 요금제 추천해주세요
+                </button>
+                <button class="suggestion-btn" onclick="applySuggestion('가전 구독 요금제 추천해주세요')">
+                    가전 구독 요금제 추천해주세요
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // 채팅 상태 관리
+    let chatHistory = []
+    let userInfo = {
+        dataUsage: null,
+        callPattern: null,
+        budget: null,
+    }
+
+    let userId = null;
+    // DOM 요소
+    let isTyping = false;
+    const chatMessages = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/assets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('navbar').innerHTML = html;
+            })
+            .catch(err => console.error('navbar 로딩 실패:', err));
+        updateSendButtonState();
+        scrollToBottom();
+        userId = getOrCreateUserId();
+    });
+
+    // 메시지 입력 이벤트
+    messageInput.addEventListener('input', updateSendButtonState);
+
+    // 엔터키 처리
+    function handleKeyPress(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault()
+            sendMessage()
+        }
+    }
+
+    // 전송 버튼 상태 업데이트
+    function updateSendButtonState() {
+        sendBtn.disabled = !messageInput.value.trim() || isTyping;
+    }
+
+    function getOrCreateUserId() {
+        // 이미 로컬에 userId가 있으면 바로 리턴
+        let localUserId = localStorage.getItem('userId');
+        if (!localUserId) {
+            // 없으면 UUID 생성 (modern 브라우저) 또는 fallback
+            if (crypto && crypto.randomUUID) {
+                userId = crypto.randomUUID();
+            } else {
+                userId = 'u_' + Math.random().toString(36).substr(2, 9);
+            }
+            localStorage.setItem('userId', userId);
+        }
+        return userId;
+    }
+
+    // 메시지 전송
+    async function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text || isTyping) return;
+        addMessage('user', text);
+        messageInput.value = '';
+        updateSendButtonState();
+        showTypingIndicator();
+
+        try {
+            // 하드코딩 테스트용 JSON 파싱 예시
+            // const userId = getOrCreateUserId();
+            console.log(userId);
+            const response = await fetch(`/chat?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`);
+            const data = await response.json();
+
+            hideTypingIndicator();
+
+            if (Array.isArray(data.data) && data.data.length) {
+                renderCards(data.data);
+            } else {
+                addMessage('bot', '죄송해요. 추천할 요금제가 없습니다.');
+            }
+        } catch (err) {
+            hideTypingIndicator();
+            console.error('sendMessage 오류:', err);
+            addMessage('bot', '오류: 서버 통신에 실패했습니다.');
+        }
+    }
+
+    // 메시지 추가
+    function addMessage(sender, content, isCard = false) {
+        const messageDiv = document.createElement("div")
+        messageDiv.className = `message ${sender}-message`
+
+        const currentTime = new Date().toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+        })
+
+        if (sender === "user") {
+            messageDiv.innerHTML = `
+            <div class="message-avatar">👤</div>
+            <div class="message-content">
+                <div class="message-bubble">
+                    <p>${content}</p>
+                </div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        `
+        } else {
+            messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <span class="bot-icon">🤖</span>
+            </div>
+            <div class="message-content">
+                <div class="message-bubble">
+                    ${isCard ? content : `<p>${content}</p>`}
+                </div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        `
+        }
+
+        chatMessages.appendChild(messageDiv)
+        chatHistory.push({sender, content, timestamp: currentTime})
+        scrollToBottom()
+    }
+
+    function renderCards(items) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message bot-message';
+        const time = new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+
+        const cardsHtml = items.map(item => {
+            const p = item.response;
+            const dataText = p.dataAllowance === 9999 ? '무제한' : p.dataAllowance + 'GB';
+            const callText = item.callAllowance === 9999 ? '무제한' : item.callAllowance + '분';
+            const smsText = item.smsAllowance === 9999 ? '무제한' : item.smsAllowance + '건';
+            const speedLimitText = p.speedAfterLimit === 9999 ? '속도 제한 없음' : p.speedAfterLimit + 'Mbps';
+            return `
+                  <div class="plan-card">
+                    <div class="plan-header">
+                      <h3>${p.planName}</h3>
+                      <p class="plan-price">월 ${p.price.toLocaleString()}원</p>
+                    </div>
+                    <div class="plan-body">
+                      <p>데이터: ${dataText}</p>
+                      <p>속도제한 후: ${speedLimitText}</p>
+                      <p>테더링: ${p.tetheringSharing}GB</p>
+                      <p>음성: ${callText}</p>
+                      <p>문자: ${smsText}</p>
+                    </div>
+                    <button class="detail-btn" onclick="window.open('/plan/${p.id}', '_blank')">
+                      요금제 자세히 보기
+                    </button>
+                  </div>`;
+        }).join('');
+
+        msgDiv.innerHTML = `
+              <div class="message-avatar"><span class="bot-icon">🤖</span></div>
+              <div class="message-content">
+                <div class="message-bubble">
+                  <div class="cards-container">
+                    ${cardsHtml}
+                  </div>
+                </div>
+                <div class="message-time">${time}</div>
+              </div>`;
+        chatMessages.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    // 타이핑 인디케이터 표시
+    function showTypingIndicator() {
+        isTyping = true
+        typingIndicator.style.display = "block"
+        updateSendButtonState()
+        scrollToBottom()
+    }
+
+    // 타이핑 인디케이터 숨김
+    function hideTypingIndicator() {
+        isTyping = false
+        typingIndicator.style.display = "none"
+        updateSendButtonState()
+    }
+
+    // 스크롤을 맨 아래로
+    function scrollToBottom() {
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight
+        }, 100)
+    }
+
+    // 제안 적용
+    function applySuggestion(suggestion) {
+        messageInput.value = suggestion
+        messageInput.focus()
+        updateSendButtonState()
+    }
+
+    // 채팅 초기화
+    function clearChat() {
+        if (confirm("대화 내용을 모두 삭제하시겠습니까?")) {
+            chatMessages.innerHTML = `
+            <div class="message bot-message">
+                <div class="message-avatar">
+                    <span class="bot-icon">🤖</span>
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <p>안녕하세요! 요아정 AI입니다. 🎉</p>
+                        <p>당신에게 딱 맞는 요금제를 찾아드릴게요!</p>
+                        <p>먼저 몇 가지 질문을 통해 사용 패턴을 알려주세요.</p>
+                    </div>
+                    <div class="message-time">오후 2:30</div>
+                </div>
+            </div>
+        `
+            chatHistory = []
+            userInfo = {dataUsage: null, callPattern: null, budget: null}
+        }
+    }
+
+    // ESC 키 처리
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            messageInput.blur()
+        }
+    })
+
+</script>
+</body>
+
+</html>

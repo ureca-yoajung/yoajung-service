@@ -46,7 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewPageResponse reviewList(Long planId, Pageable pageable) {
 
         // 로그인한 유저
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = "alice@example.com"; //SecurityContextHolder.getContext().getAuthentication().getName();
 
         Optional<User> user = userRepository.findByEmail(email);
 
@@ -75,7 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewCreateResponse insertReview(Long planId, ReviewCreateRequest request) {
 
         // 로그인한 유저
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = "alice@example.com"; //SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
@@ -117,7 +117,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewUpdateResponse updateReview(Long reviewId, ReviewUpdateRequest request) {
 
         // 로그인한 유저
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = "alice@example.com"; //SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
@@ -147,7 +147,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDeleteResponse deleteReview(Long reviewId) {
 
         // 로그인한 유저
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = "alice@example.com"; //SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 
@@ -172,7 +172,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewLikeResponse reviewLike(Long reviewId) {
 
         // 로그인한 유저
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = "alice@example.com"; //SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->  new UserNotFoundException(USER_NOT_FOUND));
 

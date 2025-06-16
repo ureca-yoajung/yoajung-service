@@ -20,12 +20,12 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new GptBadWordInterceptor(gptBadWordComponent))
                 .order(1)
-                .addPathPatterns("/test")
+                .addPathPatterns("/chat")
                 .excludePathPatterns("/css/**", "/*.ico", "/error");
 
         registry.addInterceptor(new LocalBadWordInterceptor(localBadWordComponent))
                 .order(2)
-                .addPathPatterns("/test")
+                .addPathPatterns("/chat")
                 .excludePathPatterns("/css/**", "/*.ico", "/error");
     }
 }

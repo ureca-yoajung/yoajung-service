@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>요금제 검색 테스트</title>
+</head>
+<body>
+<h1>LG U⁺ 요금제 필터</h1>
+
+<section>
+    <label>정렬:
+      <select id="sort">
+        <option value="POPULAR">인기순</option>
+        <option value="LOW_PRICE">낮은가격순</option>
+        <option value="HIGH_PRICE">높은가격순</option>
+        <option value="DATA">데이터 많은 순</option>
+      </select>
+    </label>
+    <br><br>
+    <fieldset id="ageFieldset">
+      <legend>연령대</legend>
+      <label><input type="radio" name="ageGroup" value="ALL" checked>전체</label>
+      <label><input type="radio" name="ageGroup" value="TWENTY_S">20대</label>
+      <label><input type="radio" name="ageGroup" value="THIRTY_S">30대</label>
+      <label><input type="radio" name="ageGroup" value="FORTY_S">40대</label>
+      <label><input type="radio" name="ageGroup" value="FIFTY_S">50대</label>
+      <label><input type="radio" name="ageGroup" value="SIXTY_S_PLUS">60대+</label>
+    </fieldset>
+    <label>카테고리:
+        <select id="category">
+            <option value="ALL">전체</option>
+            <option value="LTE_FIVE_G">5G/LTE</option>
+            <option value="ONLINE_ONLY">온라인 전용</option>
+        </select>
+    </label>
+    <br>
+    <br>
+    <fieldset>
+      <legend>데이터</legend>
+      <label><input type="radio" name="dataType" value="UNLIMITED">무제한</label>
+      <label><input type="radio" name="dataType" value="FIXED">정량</label>
+      <label><input type="radio" name="dataType" value="THROTTLED">속도제한</label>
+      <label><input type="radio" name="dataType" value="" checked>상관없음</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>요금 범위</legend>
+      <label><input type="radio" name="priceRange" value="UNDER5">~5만원</label>
+      <label><input type="radio" name="priceRange" value="BETWEEN6_8">6~8만원</label>
+      <label><input type="radio" name="priceRange" value="ABOVE9">9만원~</label>
+      <label><input type="radio" name="priceRange" value="" checked>상관없음</label>
+    </fieldset>
+
+    <fieldset>
+        <legend>프로덕트</legend>
+        <label><input type="checkbox" id="noProduct">혜택은 필요없어요</label><br>
+        <label><input type="checkbox" name="product" value="아이들나라">아이들나라</label>
+        <label><input type="checkbox" name="product" value="넷플릭스">NETFLIX</label>
+        <label><input type="checkbox" name="product" value="바이브">바이브</label>
+    </fieldset>
+    <button id="searchBtn">검색</button>
+    <button id="moreBtn">더보기</button>
+</section>
+
+<hr>
+<ul id="result"></ul>
+
+<script>
+    let pageIdx = 0;
+    const PAGE_SIZE = 9;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        ageFieldset.style.display = 'block';
+        pageIdx = 0;
+        fetchPlans(false);
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        pageIdx = 0;
+        fetchPlans(false);
+    });
+
+    document.getElementById('moreBtn').addEventListener('click', () => {
+        pageIdx += 1;
+        fetchPlans(true);
+    });
+
+    async function fetchPlans(append = false) {
+        //  폼 값 수집
+        const category   = document.getElementById('category').value;
+        const dataType   = document.querySelector('input[name="dataType"]:checked').value;
+        const priceRange = document.querySelector('input[name="priceRange"]:checked').value;
+        const sort     = document.getElementById('sort').value;
+
+        let ageGroup = '';
+        if (sort === 'POPULAR') {
+            ageGroup = document.querySelector('input[name="ageGroup"]:checked').value;
+        }
+
+        let productNames = '';
+        if (!document.getElementById('noProduct').checked) {
+            productNames = [...document.querySelectorAll('input[name="product"]:checked')]
+                            .map(cb => cb.value)
+                            .join(',');
+        }
+
+        //  쿼리스트링 빌드
+        const params = new URLSearchParams();
+        params.append('category', category);
+        if (dataType)    params.append('dataType', dataType);
+        if (priceRange)  params.append('priceRange', priceRange);
+        if (productNames)  params.append('productNames', productNames);
+        if (ageGroup) params.append('ageGroup', ageGroup);
+        if (sort)     params.append('sort', sort);
+        params.append('page', pageIdx);
+        params.append('size', PAGE_SIZE);
+
+        //  API 호출
+        const res  = await fetch(`/api/plans?${params.toString()}`);
+        const json = await res.json();          // {code, message, data}
+
+        //  결과 렌더링
+        const ul = document.getElementById('result');
+        if (!append) ul.innerHTML = '';
+
+        json.data.forEach(p => {
+            const li = document.createElement('li');
+            li.textContent = `[${p.name}]  ${p.basePrice.toLocaleString()}원  (${p.dataAllowance >= 9999 ? '무제한' : p.dataAllowance+'GB'})`;
+            ul.appendChild(li);
+            if (p.benefits && p.benefits.length) {
+                const benefitsUl = document.createElement('ul');
+                p.benefits.forEach(b => {
+                    const bLi = document.createElement('li');
+                    bLi.textContent = `${b.name} : ${b.description}`;
+                    benefitsUl.appendChild(bLi);
+                });
+                ul.appendChild(benefitsUl);
+            }
+        });
+    }
+// 연령대 필터는 '인기순'일 때만 표시
+const ageFieldset = document.getElementById('ageFieldset');
+document.getElementById('sort').addEventListener('change', () => {
+    ageFieldset.style.display = (document.getElementById('sort').value === 'POPULAR') ? 'block' : 'none';
+});
+</script>
+</body>
+</html>

@@ -1,15 +1,16 @@
 package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ureca.yoajungserver.chatbot.dto.ChatbotResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.List;
+
+import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
+import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,29 +20,20 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
-    private final ResourceLoader resourceLoader;
+    private final ChatbotRepository chatbotRepository;
 
     @Override
-    public ChatbotResponse keywordMapper(String input, String userId) throws IOException {
-
-        // ChatClient 에 Prompt 전달 → LLM 호출 → ChatResponse 획득
-        String llmOutput = Objects.requireNonNull(chatClient.prompt()
-                        .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-                        .user(input)
-                        .call()
-                        .content())
-                .strip();
-
-        log.info("LLM JSON 응답: {}", llmOutput);
-
-        // JSON 시작/끝이 확실한지 검사
-        checkJsonForm(llmOutput);
-
+    public List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) throws IOException {
         // 실제 파싱 시도
-        PlanKeywordResponse planKeywordResponse = parseLlmOutput(llmOutput);
+        PlanKeywordResponse planKeywordResponse = chatClient.prompt()
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .user(input)
+                .call()
+                .entity(PlanKeywordResponse.class);
 
+        System.out.println(planKeywordResponse);
         // 필수 필드 검증
-        return validateAndAskMissing(planKeywordResponse);
+        return chatbotRepository.recommendPlans(planKeywordResponse);
     }
 
     private void checkJsonForm(String trimmed) {
@@ -60,29 +52,10 @@ public class ChatbotServiceImpl implements ChatbotService {
         return planKeywordResponse;
     }
 
-    private ChatbotResponse validateAndAskMissing(PlanKeywordResponse plan) {
-        if (plan.getPrice() == null) {
-            return ChatbotResponse.question("월 청구액(price)을 알려주세요.");
-        }
-        if (plan.getCallAllowance() == null || plan.getCallAllowance().isBlank()) {
-            return ChatbotResponse.question("음성 통화량(callAllowance)을 알려주세요.");
-        }
-        if (plan.getSmsAllowance() == null || plan.getSmsAllowance().isBlank()) {
-            return ChatbotResponse.question("문자 메시지 사용량(smsAllowance)을 알려주세요.");
-        }
-        if (plan.getDataAllowance() == null || plan.getDataAllowance().isBlank()) {
-            return ChatbotResponse.question("데이터 사용량(dataAllowance)을 알려주세요.");
-        }
-        if (plan.getTetheringSharing() == null || plan.getTetheringSharing().isBlank()) {
-            return ChatbotResponse.question("테더링/공유(tetheringSharing) 여부를 알려주세요.");
-        }
-        if (plan.getMediaService() == null || plan.getMediaService().isBlank()) {
-            return ChatbotResponse.question("미디어 서비스(mediaService) 선호 여부를 알려주세요.");
-        }
-        if (plan.getPremiumService() == null || plan.getPremiumService().isBlank()) {
-            return ChatbotResponse.question("프리미엄 서비스(premiumService) 이용 여부를 알려주세요.");
-        }
-        // 모든 필드가 유효하면 완료 응답 반환
-        return ChatbotResponse.result(plan);
+    // 요금제 조회
+    @Override
+    public List<PersonalPlanRecommendResponse> planList(PlanKeywordResponse keywordResponse) {
+
+        return chatbotRepository.recommendPlans(keywordResponse);
     }
 }

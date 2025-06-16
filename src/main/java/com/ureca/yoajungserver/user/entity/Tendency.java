@@ -11,25 +11,28 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "tendency")
 public class Tendency extends BaseTimeEntity {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "avgMonthlyDataGB", nullable = false)
     private Integer avgMonthlyDataGB;
 
-    @Column(nullable = false)
+    @Column(name = "avgMonthlyVoiceMin", nullable = false)
     private Integer avgMonthlyVoiceMin;
 
-    @Column(nullable = false)
+    @Column(name = "comment", nullable = false)
     private String comment;
 
-    @Column(nullable = false)
+    @Column(name = "preferencePrice", nullable = false)
     private Integer preferencePrice;
 
     @Builder
