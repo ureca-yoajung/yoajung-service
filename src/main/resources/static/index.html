@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="hero-image">
-            <img src="/assets/image/yoajung.png" alt="요아정 AI 요금제 추천 서비스 마스코트"/>
+            <img src="/assets/image/yoajung.png" alt="요아정 AI 요금제 추천 서비스 마스코트" loading="lazy"/>
             <!--            loading="lazy"-->
         </div>
     </div>
@@ -196,7 +196,7 @@
         fetch('/api/user/me', {credentials: 'include'})
             .then(res => {
                 if (!res.ok) return null; // 비로그인(401 등): null 반환
-                return fetch('/api/tendency/me', {credentials: 'include'});
+                return fetch('/api/tendency', {credentials: 'include'});
             })
             .then(res => {
                 if (!res) return; // 비로그인: 아무 것도 안함
@@ -224,7 +224,6 @@
             .then(data => {
                 alert(data.message || "등록 완료");
                 hideTendencyModal();
-                renderNavButtons();
             })
             .catch(e => {
                 alert("등록 실패");
