@@ -52,8 +52,8 @@ spring:
       api-key: "${OPENAI_API_KEY}"
       chat:
         options:
-          model: o4-mini
-          temperature: 1
+          model: gpt-4.1
+          temperature: 0.5
     chat:
       system-prompt: classpath:prompt/prompt.txt
 
@@ -77,3 +77,4 @@ logging:
 kakao:
   client-id: ${REST_API_KEY}
   redirect-uri: ${REDIRECT_URI}
+
