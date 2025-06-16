@@ -9,7 +9,7 @@ spring:
     password: ${MYSQL_PASSWORD}
   jpa:
     hibernate:
-      #      ddl-auto: update
+#      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -52,10 +52,12 @@ spring:
       api-key: "${OPENAI_API_KEY}"
       chat:
         options:
-          model: gpt-4.1
+          model: gpt-4o
           temperature: 0.5
     chat:
-      system-prompt: classpath:prompt/prompt.txt
+      system-prompt1: classpath:prompt/prompt1.txt
+      system-prompt2: classpath:prompt/prompt2.txt
+      system-prompt3: classpath:prompt/prompt3.txt
 
       memory:
         repository:
@@ -69,12 +71,13 @@ server:
         name: JSESSIONID_USER
         http-only: true
 
-logging:
-  level:
-    org.hibernate.SQL: debug             # 실행되는 SQL 로그
-    org.hibernate.type.descriptor.sql: trace   # 바인딩된 파라미터 값도 출력됨
+#logging:
+#  level:
+#    org.hibernate.SQL: debug             # 실행되는 SQL 로그
+#    org.hibernate.type.descriptor.sql: trace   # 바인딩된 파라미터 값도 출력됨
 
 kakao:
   client-id: ${REST_API_KEY}
   redirect-uri: ${REDIRECT_URI}
+
 
