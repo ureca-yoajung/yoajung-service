@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 public class TendencyController {
@@ -23,12 +25,11 @@ public class TendencyController {
     public ResponseEntity<ApiResponse<TendencyResponse>> getMyTendency(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Tendency tendency = tendencyService.getMyTendency(userDetails.getUsername());
-        TendencyResponse response = null;
+        Optional<Tendency> tendency = tendencyService.getMyTendency(userDetails.getUsername());
 
-        if (tendency != null) {
-            response = TendencyResponse.fromEntity(tendency);
-        }
+        TendencyResponse response =
+                tendency.map(TendencyResponse::fromEntity)
+                        .orElse(null);
         return ResponseEntity.ok(ApiResponse.of(BaseCode.TENDENCY_FIND_SUCCESS, response));
     }
 

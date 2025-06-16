@@ -28,6 +28,7 @@ public enum BaseCode {
     USER_LOGIN_FAIL("USER_LOGIN_FAIL_401", HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
     USER_LOGOUT_SUCCESS("USER_LOGOUT_SUCCESS_200", HttpStatus.OK, "로그아웃에 성공했습니다."),
     USER_SESSION_EXPIRED("USER_SESSION_EXPIRED_401", HttpStatus.UNAUTHORIZED, "세션이 만료됐습니다. 다시 로그인해주세요."),
+    USER_ADDITIONAL_INFO_REQUIRED("USER_ADDITIONAL_INFO_REQUIRED_200", HttpStatus.OK, "로그인을 위한 추가 정보기입이 필요합니다"),
 
     // tendency
     TENDENCY_ALREADY_EXISTS("TENDENCY_ALREADY_EXISTS_409", HttpStatus.CONFLICT, "이미 등록된 성향입니다"),

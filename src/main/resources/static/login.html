@@ -8,137 +8,179 @@
     <link rel="stylesheet" href="assets/css/login.css"/>
 </head>
 <body>
-    <!-- Navigation -->
-    <div id="navbar"></div>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="login-container">
-            <div class="login-header">
-                <h1 class="login-title">로그인</h1>
-                <p class="login-subtitle">YOAJUNG에 오신 것을 환영합니다</p>
-            </div>
-
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="email" class="form-label">이메일</label>
-                    <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            class="form-input"
-                            placeholder="이메일을 입력하세요"
-                            required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="password" class="form-label">비밀번호</label>
-                    <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="form-input"
-                            placeholder="비밀번호를 입력하세요"
-                            required
-                    >
-                </div>
-
-                <div class="form-options">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="remember" class="checkbox">
-                        <label for="remember">로그인 상태 유지</label>
-                    </div>
-                    <a href="#" class="forgot-password">비밀번호 찾기</a>
-                </div>
-
-                <div id="errorMessage" class="error-message" style="display: none;"></div>
-
-                <button type="submit" class="login-button">로그인</button>
-            </form>
-
-            <div class="divider">
-                <span>또는</span>
-            </div>
-
-            <div class="social-login">
-                <button class="social-button" onclick="socialLogin('kakao')">
-                    카카오 로그인
-                </button>
-                <button class="social-button" onclick="socialLogin('naver')">
-                    네이버 로그인
-                </button>
-            </div>
-
-            <div class="signup-link">
-                아직 계정이 없으신가요? <a href="signup.html">회원가입</a>
-            </div>
+<div id="navbar"></div>
+<main class="main-content">
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">로그인</h1>
+            <p class="login-subtitle">YOAJUNG에 오신 것을 환영합니다</p>
         </div>
-    </main>
+        <form id="loginForm" autocomplete="on">
+            <div class="form-group">
+                <label for="login-email" class="form-label">이메일</label>
+                <input
+                        type="email"
+                        id="login-email"
+                        name="email"
+                        class="form-input"
+                        placeholder="이메일을 입력하세요"
+                        required
+                >
+            </div>
+            <div class="form-group">
+                <label for="login-pw" class="form-label">비밀번호</label>
+                <input
+                        type="password"
+                        id="login-pw"
+                        name="password"
+                        class="form-input"
+                        placeholder="비밀번호를 입력하세요"
+                        required
+                >
+            </div>
+            <div class="form-options">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="remember" class="checkbox">
+                    <label for="remember">로그인 상태 유지</label>
+                </div>
+                <a href="reset-request.html" class="forgot-password">비밀번호 재설정</a>
+            </div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <button type="submit" class="login-button" id="login-btn">로그인</button>
+        </form>
+        <div class="divider"><span>또는</span></div>
+        <div class="social-login">
+            <button id="kakao-login-btn" class="login-button kakao-login-btn">
+                <img src="assets/image/kakao_login_large_wide.png" alt="카카오 로그인"/>
+            </button>
+        </div>
+        <div class="signup-link">
+            아직 계정이 없으신가요? <a href="signup.html" id="goto-signup-btn">회원가입</a>
+        </div>
+    </div>
+</main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('/assets/navbar.html')
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('navbar').innerHTML = html;
-                })
-                .catch(err => console.error('navbar 로딩 실패:', err));
-        });
-        
-        function handleLogin(event) {
-            event.preventDefault();
-
-            const form = event.target;
-            const email = form.email.value;
-            const password = form.password.value;
-            const remember = form.remember.checked;
-
-            // 로딩 상태 시작
-            form.classList.add('loading');
-            hideError();
-
-            // 간단한 유효성 검사
-            if (!email || !password) {
-                showError('이메일과 비밀번호를 모두 입력해주세요.');
-                form.classList.remove('loading');
+<script>
+    // 네비게이션 동적 로딩
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                // 이미 로그인 → 메인 or 마이페이지로
+                location.href = "main.html"; // 또는 "mypage.html"
                 return;
             }
-
-            // 실제 로그인 로직 시뮬레이션
-            setTimeout(() => {
-                // 데모용 로그인 (실제로는 서버 API 호출)
-                if (email === 'test@yoajung.com' && password === 'password') {
-                    alert('로그인 성공!');
-                    // 실제로는 토큰 저장 후 리다이렉트
-                    window.location.href = 'index.html';
-                } else {
-                    showError('이메일 또는 비밀번호가 올바르지 않습니다.');
-                }
-
-                form.classList.remove('loading');
-            }, 1500);
+        } catch (e) {
+            // 네트워크 에러 등은 무시
         }
 
-        function socialLogin(provider) {
-            alert(`${provider} 로그인 기능은 준비 중입니다.`);
-        }
+        // 2. 로그인 상태가 아니면 navbar를 불러옴
+        fetch('/assets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('navbar').innerHTML = html;
+                renderNavButtons && renderNavButtons();
+            })
+            .catch(err => console.error('navbar 로딩 실패:', err));
+    });
 
-        function showError(message) {
-            const errorElement = document.getElementById('errorMessage');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
+    async function renderNavButtons() {
+        const navBtns = document.getElementById('nav-auth-buttons');
+        if (!navBtns) return;
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                // 로그인 상태
+                navBtns.innerHTML = `
+                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
+                <button id="logout-btn" class="btn btn-primary">로그아웃</button>
+            `;
+                document.getElementById('logout-btn').onclick = async function () {
+                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+                    location.href = "login.html";
+                };
+            } else {
+                // 비로그인 상태
+                navBtns.innerHTML = `
+                <a href="login.html" class="btn btn-ghost">로그인</a>
+                <a href="signup.html" class="btn btn-primary">시작하기</a>
+            `;
+            }
+        } catch {
+            navBtns.innerHTML = `
+            <a href="login.html" class="btn btn-ghost">로그인</a>
+            <a href="signup.html" class="btn btn-primary">시작하기</a>
+        `;
         }
+    }
 
-        function hideError() {
-            const errorElement = document.getElementById('errorMessage');
-            errorElement.style.display = 'none';
+    // 로그인 폼 submit 이벤트 처리 (실제 API 연동)
+    document.getElementById('loginForm').onsubmit = async function (event) {
+        event.preventDefault();
+        hideError();
+        const loginBtn = document.getElementById('login-btn');
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = `<span class=\"spinner\"></span>`;
+
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-pw').value;
+        const remember = document.getElementById('remember').checked;
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({email, password, remember})
+            });
+            const d = await res.json();
+            let userMessage;
+            switch (d.code) {
+                case 'USER_LOGIN_FAIL_401':
+                    userMessage = '이메일 또는 비밀번호가 올바르지 않습니다.';
+                    break;
+                default:
+                    userMessage = d.message || '일시적인 오류입니다. 잠시 후 다시 시도해 주세요.';
+            }
+            if (res.ok && d.code === "USER_LOGIN_SUCCESS_200") {
+                location.href = "main.html";
+            } else {
+                showError(userMessage);
+            }
+        } catch (e) {
+            showError("네트워크 오류입니다. 잠시 후 다시 시도해 주세요.");
         }
+        loginBtn.disabled = false;
+        loginBtn.textContent = "로그인";
+    };
 
-        // 입력 필드 포커스 시 에러 메시지 숨기기
-        document.querySelectorAll('.form-input').forEach(input => {
-            input.addEventListener('focus', hideError);
-        });
-    </script>
+    // 회원가입/비밀번호 재설정 버튼
+    document.getElementById('goto-signup-btn').onclick = function () {
+        window.location.href = "signup.html";
+    };
+    document.getElementById('kakao-login-btn').onclick = function () {
+        const KAKAO_AUTH_URL =
+            "https://kauth.kakao.com/oauth/authorize"
+            + "?response_type=code"
+            + "&client_id=10cc850d322121f04dadc24d7a60a11a"
+            + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/callback.html")
+            + "&scope=profile_nickname,account_email";
+        window.location.href = KAKAO_AUTH_URL;
+    };
+
+    function showError(message) {
+        const errorElement = document.getElementById('errorMessage');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    function hideError() {
+        const errorElement = document.getElementById('errorMessage');
+        errorElement.style.display = 'none';
+    }
+
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('focus', hideError);
+    });
+</script>
 </body>
 </html>

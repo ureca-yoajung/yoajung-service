@@ -44,6 +44,8 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'

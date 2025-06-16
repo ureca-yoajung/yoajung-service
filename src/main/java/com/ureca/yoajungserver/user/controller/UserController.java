@@ -23,8 +23,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request, HttpSession session) {
-        userService.signup(request, session);
+    public ResponseEntity<ApiResponse<Void>> signup(
+            @Valid @RequestBody SignupRequest request, HttpSession session) {
+        String verifiedEmail = (String) session.getAttribute("verifiedEmail");
+        userService.signup(request, verifiedEmail);
+        session.removeAttribute("verifiedEmail");
         return ResponseEntity.ok(ApiResponse.ok(BaseCode.USER_SIGNUP_SUCCESS));
     }
 

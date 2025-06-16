@@ -49,11 +49,14 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        httpServletRequest.getSession().setAttribute(
+        HttpSession session = httpServletRequest.getSession();
+        session.setAttribute(
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext()
         );
-
+        if (Boolean.TRUE.equals(request.getRemember())) {
+            session.setMaxInactiveInterval(60 * 60 * 24 * 30);
+        }
         return ResponseEntity.ok(ApiResponse.ok(USER_LOGIN_SUCCESS));
     }
 
