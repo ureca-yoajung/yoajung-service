@@ -11,14 +11,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlanKeywordResponse {
-    private String category;
-
-    private String planTarget;
-
-    private String networkType;
-
-    private String planTarget;
+public class PlanKeywordSecond {
 
     private String price;
 
@@ -31,9 +24,5 @@ public class PlanKeywordResponse {
     private String dataAllowance;
 
     private String tetheringSharing;
-
-    private String mediaService;
-
-    private String premiumService;
 
 }
