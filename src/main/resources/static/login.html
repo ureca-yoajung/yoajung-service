@@ -67,7 +67,7 @@
             const res = await fetch('/api/user/me', {credentials: 'include'});
             if (res.ok) {
                 // 이미 로그인 → 메인 or 마이페이지로
-                location.href = "main.html"; // 또는 "mypage.html"
+                location.href = "index.html"; // 또는 "mypage.html"
                 return;
             }
         } catch (e) {
@@ -142,7 +142,7 @@
                     userMessage = d.message || '일시적인 오류입니다. 잠시 후 다시 시도해 주세요.';
             }
             if (res.ok && d.code === "USER_LOGIN_SUCCESS_200") {
-                location.href = "main.html";
+                location.href = "index.html";
             } else {
                 showError(userMessage);
             }

@@ -418,6 +418,17 @@ body {
     border: 1px solid #fecaca;
 }
 
+/* 성공 메시지 */
+.success-message {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    border: 1px solid #bbf7d0;
+}
+
 /* Loading State */
 .loading {
     opacity: 0.7;

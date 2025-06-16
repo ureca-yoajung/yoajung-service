@@ -15,10 +15,6 @@
         <div class="profile-header">
             <div class="profile-name" id="profile-name">이름</div>
             <div class="profile-email" id="profile-email">이메일</div>
-            <div class="profile-actions">
-                <button class="main-btn" onclick="window.location.href='main.html'">메인으로</button>
-                <button class="logout-btn" onclick="logout()">로그아웃</button>
-            </div>
         </div>
         <!-- 탭 -->
         <div class="tab-row">
@@ -36,27 +32,30 @@
     </div>
 </main>
 <script>
-    // 네비게이션 동적 로딩
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. 로그인 상태 체크 (비로그인 → login.html로)
+        const res = await fetch('/api/user/me', {credentials: 'include'});
+        if (!res.ok) {
+            location.href = "login.html";
+            return;
+        }
+        const userResult = await res.json();
+        if (userResult && userResult.data) {
+            userData = userResult.data;
+            userEditMode = false;
+            renderUserInfo();
+        }
 
-        fetch('/assets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('navbar').innerHTML = html;
-                renderNavButtons()
-            })
-            .catch(err => console.error('navbar 로딩 실패:', err));
-    });
-
-    async function renderNavButtons() {
-        const navBtns = document.getElementById('nav-auth-buttons');
-        if (!navBtns) return;
+        // 2. 네비게이션 바 (메인, 로그아웃만 노출)
         try {
-            const res = await fetch('/api/user/me', {credentials: 'include'});
-            if (res.ok) {
-                // 로그인 상태
+            const res = await fetch('/assets/navbar.html');
+            const html = await res.text();
+            document.getElementById('navbar').innerHTML = html;
+
+            const navBtns = document.getElementById('nav-auth-buttons');
+            if (navBtns) {
                 navBtns.innerHTML = `
-                <a href="main.html" class="btn btn-ghost">메인페이지</a>
+                <a href="index.html" class="btn btn-ghost">메인페이지</a>
                 <button id="logout-btn" class="btn btn-primary">로그아웃</button>
             `;
                 document.getElementById('logout-btn').onclick = async function () {
@@ -64,21 +63,25 @@
                     location.href = "login.html";
                 };
             }
-        } catch {
-            navBtns.innerHTML = `
-            <a href="login.html" class="btn btn-ghost">로그인</a>
-            <a href="signup.html" class="btn btn-primary">시작하기</a>
-        `;
+        } catch (err) {
+            console.error('navbar 로딩 실패:', err);
         }
-    }
 
-    // 탭 전환
-    document.getElementById('tab-info').onclick = function () {
-        setTab('info');
-    };
-    document.getElementById('tab-tendency').onclick = function () {
-        setTab('tendency');
-    };
+        // 3. 탭 이벤트 등록
+        const tabInfo = document.getElementById('tab-info');
+        const tabTendency = document.getElementById('tab-tendency');
+        if (tabInfo && tabTendency) {
+            tabInfo.onclick = () => setTab('info');
+            tabTendency.onclick = () => setTab('tendency');
+        }
+
+        // 4. 초기 정보 로딩
+        loadMyInfo();
+    });
+
+    // --- 내 정보/성향 상태 및 함수 ---
+    let userData = null, userEditMode = false;
+    let tendencyData = null, tendencyEditMode = false;
 
     function setTab(tab) {
         document.getElementById('tab-info').classList.toggle('active', tab === 'info');
@@ -88,9 +91,6 @@
         if (tab === 'info') loadMyInfo();
         if (tab === 'tendency') loadTendency();
     }
-
-    // 내 정보
-    let userData = null, userEditMode = false;
 
     function renderUserInfo() {
         const d = userData;
@@ -103,30 +103,30 @@
         }
         if (userEditMode) {
             el.innerHTML = `
-                <form id="user-edit-form">
-                    <div><span class="label">이메일</span><input type="email" name="email" value="${d.email}" disabled></div>
-                    <div><span class="label">이름</span><input type="text" name="name" value="${d.name}" disabled></div>
-                    <div><span class="label">전화번호</span><input type="text" name="phoneNumber" value="${d.phoneNumber || ''}" required></div>
-                    <div><span class="label">성별</span>
-                        <select name="gender" required>
-                            <option value="MALE" ${d.gender === 'MALE' ? 'selected' : ''}>남자</option>
-                            <option value="FEMALE" ${d.gender === 'FEMALE' ? 'selected' : ''}>여자</option>
-                        </select>
-                    </div>
-                    <div><span class="label">연령대</span>
-                        <select name="ageGroup" required>
-                            <option value="TEN_S" ${d.ageGroup === 'TEN_S' ? 'selected' : ''}>10대</option>
-                            <option value="TWENTY_S" ${d.ageGroup === 'TWENTY_S' ? 'selected' : ''}>20대</option>
-                            <option value="THIRTY_S" ${d.ageGroup === 'THIRTY_S' ? 'selected' : ''}>30대</option>
-                            <option value="FORTY_S" ${d.ageGroup === 'FORTY_S' ? 'selected' : ''}>40대</option>
-                            <option value="FIFTY_S" ${d.ageGroup === 'FIFTY_S' ? 'selected' : ''}>50대</option>
-                            <option value="SIXTY_S_PLUS" ${d.ageGroup === 'SIXTY_S_PLUS' ? 'selected' : ''}>60대 이상</option>
-                        </select>
-                    </div>
-                    <div><span class="label">가족수</span><input type="number" name="familyCount" value="${d.familyCount || ''}" required></div>
-                    <button class="save-btn" type="submit">수정 완료</button>
-                </form>
-            `;
+            <form id="user-edit-form">
+                <div><span class="label">이메일</span><input type="email" name="email" value="${d.email}" disabled></div>
+                <div><span class="label">이름</span><input type="text" name="name" value="${d.name}" disabled></div>
+                <div><span class="label">전화번호</span><input type="text" name="phoneNumber" value="${d.phoneNumber || ''}" required></div>
+                <div><span class="label">성별</span>
+                    <select name="gender" required>
+                        <option value="MALE" ${d.gender === 'MALE' ? 'selected' : ''}>남자</option>
+                        <option value="FEMALE" ${d.gender === 'FEMALE' ? 'selected' : ''}>여자</option>
+                    </select>
+                </div>
+                <div><span class="label">연령대</span>
+                    <select name="ageGroup" required>
+                        <option value="TEN_S" ${d.ageGroup === 'TEN_S' ? 'selected' : ''}>10대</option>
+                        <option value="TWENTY_S" ${d.ageGroup === 'TWENTY_S' ? 'selected' : ''}>20대</option>
+                        <option value="THIRTY_S" ${d.ageGroup === 'THIRTY_S' ? 'selected' : ''}>30대</option>
+                        <option value="FORTY_S" ${d.ageGroup === 'FORTY_S' ? 'selected' : ''}>40대</option>
+                        <option value="FIFTY_S" ${d.ageGroup === 'FIFTY_S' ? 'selected' : ''}>50대</option>
+                        <option value="SIXTY_S_PLUS" ${d.ageGroup === 'SIXTY_S_PLUS' ? 'selected' : ''}>60대 이상</option>
+                    </select>
+                </div>
+                <div><span class="label">가족수</span><input type="number" name="familyCount" value="${d.familyCount || ''}" required></div>
+                <button class="save-btn" type="submit">수정 완료</button>
+            </form>
+        `;
             document.getElementById('user-edit-form').onsubmit = function (e) {
                 e.preventDefault();
                 const obj = Object.fromEntries(new FormData(e.target));
@@ -140,17 +140,16 @@
                         userData = data.data;
                         userEditMode = false;
                         renderUserInfo();
-                        alert(data.message || "수정 완료");
                     } else alert(data.message || "실패");
                 });
             }
         } else {
             el.innerHTML = `
-                <div><span class="label">이메일</span> <b>${d.email}</b></div>
-                <div><span class="label">이름</span> ${d.name}</div>
-                <div><span class="label">전화번호</span> ${d.phoneNumber || ''}</div>
-                <div><span class="label">성별</span> ${d.gender === 'MALE' ? '남자' : d.gender === 'FEMALE' ? '여자' : ''}</div>
-                <div><span class="label">연령대</span> ${
+            <div><span class="label">이메일</span> <b>${d.email}</b></div>
+            <div><span class="label">이름</span> ${d.name}</div>
+            <div><span class="label">전화번호</span> ${d.phoneNumber || ''}</div>
+            <div><span class="label">성별</span> ${d.gender === 'MALE' ? '남자' : d.gender === 'FEMALE' ? '여자' : ''}</div>
+            <div><span class="label">연령대</span> ${
                 d.ageGroup === 'TEN_S' ? '10대'
                     : d.ageGroup === 'TWENTY_S' ? '20대'
                         : d.ageGroup === 'THIRTY_S' ? '30대'
@@ -158,9 +157,9 @@
                                 : d.ageGroup === 'FIFTY_S' ? '50대'
                                     : d.ageGroup === 'SIXTY_S_PLUS' ? '60대 이상' : ''
             }</div>
-                <div><span class="label">가족수</span> ${d.familyCount || ''}</div>
-                <button class="edit-btn" id="user-edit-btn">내 정보 수정</button>
-            `;
+            <div><span class="label">가족수</span> ${d.familyCount || ''}</div>
+            <button class="edit-btn" id="user-edit-btn">내 정보 수정</button>
+        `;
             document.getElementById('user-edit-btn').onclick = () => {
                 userEditMode = true;
                 renderUserInfo();
@@ -174,7 +173,7 @@
                 if (res.status === 401) {
                     alert("로그인 필요");
                     location.href = "login.html";
-                    return
+                    return;
                 }
                 return res.json();
             })
@@ -186,9 +185,6 @@
                 }
             });
     }
-
-    // 내 성향
-    let tendencyData = null, tendencyEditMode = false;
 
     function renderTendency() {
         const d = tendencyData;
@@ -203,14 +199,14 @@
         }
         if (tendencyEditMode) {
             el.innerHTML = `
-                <form id="tendency-edit-form">
-                    <div><span class="label">월평균 데이터 사용량(GB)</span><input name="avgMonthlyDataGB" type="number" value="${d ? d.avgMonthlyDataGB : ''}" required></div>
-                    <div><span class="label">월평균 통화량(분)</span><input name="avgMonthlyVoiceMin" type="number" value="${d ? d.avgMonthlyVoiceMin : ''}" required></div>
-                    <div><span class="label">희망 요금제 가격(원)</span><input name="preferencePrice" type="number" value="${d ? d.preferencePrice : ''}" required></div>
-                    <div><span class="label">기타</span><input name="comment" value="${d ? d.comment : ''}" required></div>
-                    <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
-                </form>
-            `;
+            <form id="tendency-edit-form">
+                <div><span class="label">월평균 데이터 사용량(GB)</span><input name="avgMonthlyDataGB" type="number" value="${d ? d.avgMonthlyDataGB : ''}" required></div>
+                <div><span class="label">월평균 통화량(분)</span><input name="avgMonthlyVoiceMin" type="number" value="${d ? d.avgMonthlyVoiceMin : ''}" required></div>
+                <div><span class="label">희망 요금제 가격(원)</span><input name="preferencePrice" type="number" value="${d ? d.preferencePrice : ''}" required></div>
+                <div><span class="label">기타</span><input name="comment" value="${d ? d.comment : ''}" required></div>
+                <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
+            </form>
+        `;
             document.getElementById('tendency-edit-form').onsubmit = function (e) {
                 e.preventDefault();
                 const obj = Object.fromEntries(new FormData(e.target));
@@ -224,18 +220,17 @@
                         tendencyData = data.data;
                         tendencyEditMode = false;
                         renderTendency();
-                        alert(data.message || "저장 완료");
                     } else alert(data.message || "실패");
                 });
             }
         } else if (d) {
             el.innerHTML = `
-                <div><span class="label">월평균 데이터 사용량(GB)</span> ${d.avgMonthlyDataGB}</div>
-                <div><span class="label">월평균 통화량(분)</span> ${d.avgMonthlyVoiceMin}</div>
-                <div><span class="label">희망 요금제 가격(원)</span> ${d.preferencePrice}</div>
-                <div><span class="label">기타</span> ${d.comment}</div>
-                <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>
-            `;
+            <div><span class="label">월평균 데이터 사용량(GB)</span> ${d.avgMonthlyDataGB} GB</div>
+            <div><span class="label">월평균 통화량(분)</span> ${d.avgMonthlyVoiceMin} 분</div>
+            <div><span class="label">희망 요금제 가격(원)</span> ${d.preferencePrice} 원</div>
+            <div><span class="label">기타</span> ${d.comment}</div>
+            <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>
+        `;
             document.getElementById('tendency-edit-btn').onclick = () => {
                 tendencyEditMode = true;
                 renderTendency();
@@ -244,7 +239,7 @@
     }
 
     function loadTendency() {
-        fetch('/api/tendency/me', {method: 'GET', credentials: 'include'})
+        fetch('/api/tendency', {method: 'GET', credentials: 'include'})
             .then(res => {
                 if (res.status === 401) {
                     alert("로그인 필요");
@@ -264,19 +259,6 @@
                     renderTendency();
                 }
             });
-    }
-
-    function logout() {
-        fetch('/api/auth/logout', {method: 'POST', credentials: 'include'})
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || "로그아웃");
-                location.href = "login.html";
-            });
-    }
-
-    window.onload = function () {
-        loadMyInfo();
     }
 </script>
 </body>

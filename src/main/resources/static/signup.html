@@ -83,71 +83,72 @@
     </div>
 </main>
 <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    // DOMContentLoaded 내에서 이벤트 리스너 등록
+    document.addEventListener('DOMContentLoaded', async function () {
+        // 로그인 상태면 회원가입 불가 - 메인으로 리다이렉트
         try {
             const res = await fetch('/api/user/me', {credentials: 'include'});
             if (res.ok) {
-                // 이미 로그인 → 메인 or 마이페이지로
-                location.href = "main.html"; // 또는 "mypage.html"
+                location.href = "index.html";
                 return;
             }
         } catch (e) {
             // 네트워크 에러 등은 무시
         }
 
-        // 2. 로그인 상태가 아니면 navbar를 불러옴
-        fetch('/assets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('navbar').innerHTML = html;
-                renderNavButtons && renderNavButtons();
-            })
-            .catch(err => console.error('navbar 로딩 실패:', err));
-    });
-
-    async function renderNavButtons() {
-        const navBtns = document.getElementById('nav-auth-buttons');
-        if (!navBtns) return;
+        //  비로그인 상태에서만 navbar 불러와서 렌더링
         try {
-            const res = await fetch('/api/user/me', {credentials: 'include'});
-            if (res.ok) {
-                // 로그인 상태
-                navBtns.innerHTML = `
-                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
-                <button id="logout-btn" class="btn btn-primary">로그아웃</button>
-            `;
-                document.getElementById('logout-btn').onclick = async function () {
-                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
-                    location.href = "login.html";
-                };
-            } else {
-                // 비로그인 상태
+            const res = await fetch('/assets/navbar.html');
+            const html = await res.text();
+            document.getElementById('navbar').innerHTML = html;
+
+            // 항상 로그인/시작하기 버튼만 노출
+            const navBtns = document.getElementById('nav-auth-buttons');
+            if (navBtns) {
                 navBtns.innerHTML = `
                 <a href="login.html" class="btn btn-ghost">로그인</a>
                 <a href="signup.html" class="btn btn-primary">시작하기</a>
             `;
             }
-        } catch {
-            navBtns.innerHTML = `
-            <a href="login.html" class="btn btn-ghost">로그인</a>
-            <a href="signup.html" class="btn btn-primary">시작하기</a>
-        `;
+        } catch (err) {
+            console.error('navbar 로딩 실패:', err);
         }
+        registerSignupEventListeners();
+    });
+
+
+    function registerSignupEventListeners() {
+        // 이메일 인증코드 발송
+        document.getElementById('send-code-btn').addEventListener('click', sendCode);
+        // 이메일 인증코드 확인
+        document.getElementById('verify-code-btn').addEventListener('click', verifyCode);
+        // 회원가입 폼 제출
+        document.getElementById('signup-form').addEventListener('submit', submitSignup);
+        // 요금제 검색
+        const planSearch = document.getElementById('plan-search');
+        planSearch.addEventListener('input', debounce(searchPlan, 300));
+        planSearch.addEventListener('blur', function () {
+            setTimeout(() => {
+                document.getElementById('plan-list').style.display = 'none';
+            }, 200);
+        });
+        planSearch.addEventListener('change', function () {
+            if (!this.value) {
+                document.getElementById('planId').value = "";
+            }
+        });
     }
 
-    function showResult(msg, isError = true) {
-        const result = document.getElementById('signup-result');
-        result.textContent = msg;
-        result.style.display = msg ? 'block' : 'none';
-        result.style.background = isError ? '#fee2e2' : '#dcfce7';
-        result.style.color = isError ? '#dc2626' : '#15803d';
-        result.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
-    }
 
-    // 이메일 인증코드 발송
-    document.getElementById('send-code-btn').onclick = async function () {
+    async function sendCode() {
+        const btn = document.getElementById('send-code-btn');
+        btn.disabled = true;
         const email = document.getElementById('email').value.trim();
-        if (!email) return showResult('이메일을 입력하세요!');
+        if (!email) {
+            showResult('이메일을 입력하세요!');
+            btn.disabled = false;
+            return;
+        }
         const res = await fetch('/api/auth/send-code', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -156,13 +157,20 @@
         });
         const data = await res.json();
         showResult(data.message, !res.ok || data.code?.includes('FAIL'));
-    };
+        btn.disabled = false;
+    }
 
     // 이메일 인증코드 확인
-    document.getElementById('verify-code-btn').onclick = async function () {
+    async function verifyCode() {
+        const btn = document.getElementById('verify-code-btn');
+        btn.disabled = true;
         const email = document.getElementById('email').value.trim();
         const code = document.getElementById('code').value.trim();
-        if (!email || !code) return showResult('이메일/코드를 입력하세요!');
+        if (!email || !code) {
+            showResult('이메일/코드를 입력하세요!');
+            btn.disabled = false;
+            return;
+        }
         const res = await fetch('/api/auth/verify-code', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -171,11 +179,14 @@
         });
         const data = await res.json();
         showResult(data.message, !res.ok || data.code?.includes('FAIL'));
-    };
+        btn.disabled = false;
+    }
 
-    // 회원가입 submit (feature/52-oauth API 방식)
-    document.getElementById('signup-form').onsubmit = async function (e) {
+    // 회원가입 폼 제출
+    async function submitSignup(e) {
         e.preventDefault();
+        const btn = document.getElementById('signup-btn');
+        btn.disabled = true;
         const form = e.target;
         const obj = Object.fromEntries(new FormData(form));
         const res = await fetch('/api/user/signup', {
@@ -187,20 +198,27 @@
         const data = await res.json();
         showResult(data.message, !res.ok || data.code?.includes('FAIL'));
         if (res.ok && (data.code?.includes('SUCCESS') || data.code?.includes('OK'))) {
-            setTimeout(() => window.location.href = "login.html", 1000);
+            setTimeout(() => window.location.href = "login.html", 1000);  // 성공 시 로그인 페이지로
         }
-    };
-    // 요금제 검색 자동완성
-    const planSearch = document.getElementById('plan-search');
-    const planList = document.getElementById('plan-list');
-    const planIdInput = document.getElementById('planId');
+        btn.disabled = false;
+    }
 
-    // 검색 입력시 API 요청 및 드롭다운
-    planSearch.addEventListener('input', async function () {
+    function debounce(func, wait) {
+        let timeout;
+        return function () {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
+    async function searchPlan() {
         const keyword = this.value.trim();
+        const planList = document.getElementById('plan-list');
+        const planIdInput = document.getElementById('planId');
         if (!keyword) {
             planList.style.display = 'none';
-            planIdInput.value = ""; // 아무것도 없으면 요금제 없음
+            planIdInput.value = "";
             return;
         }
         try {
@@ -213,7 +231,7 @@
                     div.textContent = plan.name;
                     div.style.cursor = "pointer";
                     div.onclick = () => {
-                        planSearch.value = plan.name;
+                        this.value = plan.name;
                         planIdInput.value = plan.planId;
                         planList.style.display = 'none';
                     };
@@ -228,21 +246,14 @@
             planList.innerHTML = '<div>요금제 로딩 실패</div>';
             planList.style.display = 'block';
         }
-    });
+    }
 
-    // 입력창 밖 클릭시 드롭다운 닫기
-    planSearch.addEventListener('blur', function () {
-        setTimeout(() => {
-            planList.style.display = 'none';
-        }, 200);
-    });
-
-    // 인풋 값 지워지면 요금제 없음 처리
-    planSearch.addEventListener('change', function () {
-        if (!this.value) {
-            planIdInput.value = "";
-        }
-    });
+    function showResult(msg, isError = true) {
+        const result = document.getElementById('signup-result');
+        result.textContent = msg;
+        result.style.display = msg ? 'block' : 'none';
+        result.className = isError ? 'error-message' : 'success-message';
+    }
 </script>
 </body>
 </html>
