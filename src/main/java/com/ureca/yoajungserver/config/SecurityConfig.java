@@ -29,11 +29,15 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/index.html", "/login.html", "/signup.html", "/reset-password.html"
-                                , "/reset-request.html", "/api/oauth/**", "/api/auth/**", "/callback.html", "/additional-info.html"
-                                , "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico"
+                                "/", "/index.html",
+                                "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
+                                "/api/oauth/**", "/api/auth/**", "/additional-info.html"
                                 , "/api/user/signup", "/api/plan/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/login.html", "/signup.html",
+                                "/reset-password.html", "/reset-request.html", "/callback.html")
+                        .anonymous()
                         .requestMatchers(
                                 "/api/user/**",
                                 "/api/tendency/**"
