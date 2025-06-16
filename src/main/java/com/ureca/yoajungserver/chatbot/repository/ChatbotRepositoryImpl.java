@@ -80,7 +80,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                 .leftJoin(planBenefit).on(planBenefit.plan.id.eq(plan.id))
                 .leftJoin(benefit).on(planBenefit.benefit.id.eq(benefit.id))
                 .where(
-//                        planTargetCondition(keyword.getPlanTarget()),
+                        planTargetCondition(keyword.getPlanTarget()),
                         categoryCondition(keyword.getCategory()),
                         priceCondition(keyword.getPrice()),
                         networkCondition(keyword.getNetworkType()),
@@ -142,13 +142,13 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
         return recommendResult;
     }
 
-    // 분류 조건(ALL, YOUTH, SOLDIER, ...) // 프롬프트에서 enum 이름 그대로 반환하기.
-//    private BooleanExpression planTargetCondition(String target) {
-//        if (isNull(target)) {
-//            return null;
-//        }
-//        return plan.planTarget.eq(PlanTarget.valueOf(target));
-//    }
+    // 분류 조건(ALL, YOUTH, SOLDIER, ...)
+    private BooleanExpression planTargetCondition(String target) {
+        if (isNull(target)) {
+            return null;
+        }
+        return plan.planTarget.eq(PlanTarget.valueOf(target));
+    }
 
     // 카테고리 조건
     private BooleanExpression categoryCondition(String category) {
