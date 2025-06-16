@@ -12,12 +12,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlanKeywordResponse {
-
-    private String price;
-
     private String category;
 
+    private String planTarget;
+
     private String networkType;
+
+    private String price;
 
     private String speedAfterLimit;
 
