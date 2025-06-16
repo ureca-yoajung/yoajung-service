@@ -32,25 +32,81 @@
             <div class="plans-header">
                 <div class="plans-count" id="plansCount">총 0개의 요금제</div>
                 <div class="plans-filter">
-                    <select class="sort-select" onchange="sortPlans()">
+                    <select class="sort-select" id="mainSortSelect">
                         <option value="POPULAR">인기순</option>
                         <option value="LOW_PRICE">가격 낮은순</option>
                         <option value="HIGH_PRICE">가격 높은순</option>
-                        <option value="HIGH_DATA">데이터 많은순</option>
+                        <option value="DATA">데이터 많은순</option>
                     </select>
-                    <select class="sort-select" onchange="">
-                        <option value="">전체</option>
-                        <option value="">20대</option>
-                        <option value="">30대</option>
-                        <option value="">40대</option>
-                        <option value="">50대</option>
-                        <option value="">60대 이상</option>
+                    <select class="sort-select" id="mainAgeSelect" style="display: block;">
+                        <option value="ALL">전체</option>
+                        <option value="TWENTY_S">20대</option>
+                        <option value="THIRTY_S">30대</option>
+                        <option value="FORTY_S">40대</option>
+                        <option value="FIFTY_S">50대</option>
+                        <option value="SIXTY_S_PLUS">60대 이상</option>
                     </select>
-                    <div class="plan-user-filter">
+                    <div class="plan-user-filter" id="openFilterModalBtn" style="cursor:pointer;">
                         <i class="fa-solid fa-filter"></i>
                         <p>필터</p>
                     </div>
                 </div>
+    <!-- Filter Modal -->
+    <div id="planFilterModal" class="plan-filter-modal" style="display:none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>어떤 요금제를 찾으세요?</h2>
+                <button class="modal-close-btn" id="closeFilterModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="planFilterForm">
+                    <!-- 정렬 행 제거됨 -->
+                    <div class="filter-row" id="modalAgeFieldset">
+                        <legend>연령대</legend>
+                        <div class="chip-group" data-target="ageGroup">
+                          <button type="button" class="filter-chip active" data-value="ALL">전체</button>
+                          <button type="button" class="filter-chip" data-value="TWENTY_S">20대</button>
+                          <button type="button" class="filter-chip" data-value="THIRTY_S">30대</button>
+                          <button type="button" class="filter-chip" data-value="FORTY_S">40대</button>
+                          <button type="button" class="filter-chip" data-value="FIFTY_S">50대</button>
+                          <button type="button" class="filter-chip" data-value="SIXTY_S_PLUS">60대+</button>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <fieldset>
+                            <legend>데이터</legend>
+                            <div class="chip-group" data-target="dataType">
+                              <button type="button" class="filter-chip" data-value="UNLIMITED">무제한</button>
+                              <button type="button" class="filter-chip" data-value="FIXED">정량</button>
+                              <button type="button" class="filter-chip" data-value="THROTTLED">속도제한</button>
+                              <button type="button" class="filter-chip active" data-value="">상관없음</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="filter-row">
+                        <fieldset>
+                            <legend>요금 범위</legend>
+                            <div class="chip-group" data-target="priceRange">
+                              <button type="button" class="filter-chip" data-value="UNDER5">~5만원</button>
+                              <button type="button" class="filter-chip" data-value="BETWEEN6_8">6~8만원</button>
+                              <button type="button" class="filter-chip" data-value="ABOVE9">9만원~</button>
+                              <button type="button" class="filter-chip active" data-value="">상관없음</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="filter-row">
+                      <legend>혜택</legend>
+                      <div id="productCardGrid" class="product-card-grid" data-target="product"></div>
+                      <button type="button" id="modalNoProductCard" class="filter-chip" style="margin-top:8px;">혜택은 필요없어요</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="applyFilterBtn" type="button">검색</button>
+            </div>
+        </div>
+    </div>
             </div>
 
             <div class="detailed-plans-grid" id="plans-grid">
@@ -83,13 +139,20 @@
         // State management
         let currentPage = 0;
         let pageSize = 9;
-        let currentCategory = '';
-        let currentSortType = 'POPULAR';
         let totalPlans = 0;
         let loadedPlans = [];
         let hasMoreData = true;
 
-        // 상태 초기화 함수 추가
+        // --- Filter State
+        let filterState = {
+            category: 'ALL',
+            dataType: '',
+            priceRange: '',
+            productNames: '',
+            ageGroup: 'ALL',
+            sort: 'POPULAR'
+        };
+
         function resetState() {
             currentPage = 0;
             loadedPlans = [];
@@ -97,23 +160,40 @@
             totalPlans = 0;
         }
 
-        // API call function
-        async function fetchPlans(page = 0, size = 9, planType = '', sortedType = 'POPULAR') {
+        // Unified API call function for /api/plans (filtering)
+        async function fetchPlans(page = 0, size = 9, filter = {}) {
             try {
-                const params = new URLSearchParams({
-                    page: page.toString(),
-                    size: size.toString(),
-                    planType: planType,
-                    sortedType: sortedType
-                });
+                const params = new URLSearchParams();
+                params.append('page', page);
+                params.append('size', size);
+                if (filter.category && filter.category !== 'ALL') params.append('category', filter.category);
+                if (filter.dataType) params.append('dataType', filter.dataType);
+                if (filter.priceRange) params.append('priceRange', filter.priceRange);
+                if (filter.productNames) params.append('productNames', filter.productNames);
+                if (filter.ageGroup && filter.sort === 'POPULAR' && filter.ageGroup !== 'ALL') params.append('ageGroup', filter.ageGroup);
+                if (filter.sort) params.append('sort', filter.sort);
 
-                const response = await fetch(`api/plan?${params}`);
+                const response = await fetch(`/api/plans?${params}`);
                 const data = await response.json();
-
-                if (data.status === 'OK') {
+                if (data.code === 'READ_PLAN_LIST_200') {
+                    // New backend response: { plans: [...], totalCount: N }
+                    const plans = (data.data && data.data.plans) ? data.data.plans : [];
+                    const totalCount = (data.data && typeof data.data.totalCount === 'number') ? data.data.totalCount : 0;
+                    // Normalize backend PlanFilterResponse[] to frontend plan format
                     return {
-                        plans: data.data.plans,
-                        totalCount: data.data.count
+                        plans: plans.map(item => ({
+                            planId: item.id,
+                            name: item.name,
+                            basePrice: item.basePrice,
+                            dataAllowance: item.dataAllowance,
+                            speedAfterLimit: item.speedAfterLimit,
+                            planCategory: item.planCategory || '기타', // fallback if missing
+                            networkType: item.networkType || '기타', // fallback if missing
+                            tetheringSharingAllowance: item.tetheringSharingAllowance !== undefined ? item.tetheringSharingAllowance : 0,
+                            products: (item.productNames || []).map(name => ({ name })),
+                            description: (item.benefits || []).map(b => b.name).join(', ')
+                        })),
+                        totalCount: totalCount
                     };
                 } else {
                     throw new Error(data.message || '요금제 조회에 실패했습니다.');
@@ -146,10 +226,14 @@
             plans.forEach(plan => {
                 const planCard = document.createElement('div');
                 planCard.className = 'detailed-plan-card';
+                // Defensively handle undefined fields
+                const planCategory = plan.planCategory !== undefined ? plan.planCategory : '기타';
+                const networkType = plan.networkType !== undefined ? plan.networkType : '기타';
+                const tetheringSharingAllowance = plan.tetheringSharingAllowance !== undefined ? plan.tetheringSharingAllowance : 0;
                 planCard.innerHTML = `
                     <div class="plan-header">
                         <h3 class="plan-name">${plan.name}</h3>
-                        <span class="network-badge ${plan.networkType.toLowerCase()}">${plan.networkType}</span>
+                        <span class="network-badge ${networkType.toLowerCase()}">${networkType}</span>
                     </div>
                     <div class="plan-price">월 ${plan.basePrice.toLocaleString()}원</div>
                     <div class="plan-details">
@@ -157,26 +241,25 @@
                             <span class="detail-label">데이터</span>
                             <span class="detail-value">${plan.dataAllowance === 9999 ? '무제한' : plan.dataAllowance + 'GB'}</span>
                         </div>
+                        ${tetheringSharingAllowance !== 0 ? `
                         <div class="detail-row">
                             <span class="detail-label">테더링</span>
-                            <span class="detail-value">${plan.tetheringSharingAllowance === 9999 ? '무제한' : plan.tetheringSharingAllowance + 'GB'}</span>
-                        </div>
+                            <span class="detail-value">${tetheringSharingAllowance === 9999 ? '무제한' : tetheringSharingAllowance + 'GB'}</span>
+                        </div>` : ''}
+                        ${plan.speedAfterLimit !== 9999 ? `
                         <div class="detail-row">
                             <span class="detail-label">속도제한 후</span>
                             <span class="detail-value">${plan.speedAfterLimit}Mbps</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">카테고리</span>
-                            <span class="detail-value">${getCategoryName(plan.planCategory)}</span>
-                        </div>
+                        </div>` : ''}
+
                     </div>
                     <div class="services-section">
                         <div class="services-title">포함 서비스</div>
                         <div class="services-list">
-                            ${plan.products.map(product => `<span class="service-tag">${product.name}</span>`).join('')}
+                            ${(plan.products || []).map(product => `<span class="service-tag">${product.name}</span>`).join('')}
                         </div>
                     </div>
-                    <p class="plan-description">${plan.description}</p>
+                    <p class="plan-description">${plan.description || ''}</p>
                     <button class="btn btn-primary btn-large" style="width: 100%;" onclick="goToDetail(${plan.planId})">자세히 보기</button>
                 `;
                 plansGrid.appendChild(planCard);
@@ -212,7 +295,7 @@
             `;
         }
 
-        // Category filter function - 수정됨
+        // Category filter function
         async function filterByCategory(category) {
             // Update active state of buttons
             document.querySelectorAll('.category-btn').forEach(btn => {
@@ -220,23 +303,32 @@
             });
             event.target.classList.add('active');
 
-            currentCategory = category === 'all' ? '' : category;
-
-            // 상태 완전 초기화
+            filterState.category = category === 'all' ? 'ALL' : category;
             resetState();
-
-            await loadPlans(false); // false = replace mode
+            await loadPlans(false);
         }
 
-        // Sort function - 수정됨
+        // Sort function (main bar)
         async function sortPlans() {
-            const sortSelect = document.querySelector('.sort-select');
-            currentSortType = sortSelect.value;
-
-            // 상태 완전 초기화
+            const sortValue = document.getElementById('mainSortSelect').value;
+            filterState.sort = sortValue;
+            // Show/hide age group select
+            document.getElementById('mainAgeSelect').style.display = (sortValue === 'POPULAR') ? 'block' : 'none';
+            // If not 인기순, reset age group to ALL
+            if (sortValue !== 'POPULAR') {
+                filterState.ageGroup = 'ALL';
+                document.getElementById('mainAgeSelect').value = 'ALL';
+            }
             resetState();
+            await loadPlans(false);
+        }
 
-            await loadPlans(false); // false = replace mode
+        // Age select function (main bar)
+        async function ageGroupChanged() {
+            const ageValue = document.getElementById('mainAgeSelect').value;
+            filterState.ageGroup = ageValue;
+            resetState();
+            await loadPlans(false);
         }
 
         // Load more function
@@ -287,20 +379,43 @@
             }
         }
 
-        // Main load function - 수정됨
+        // Main load function (uses filterState)
         async function loadPlans(append = false) {
-            const { plans, totalCount } = await fetchPlans(currentPage, pageSize, currentCategory, currentSortType);
+            const { plans, totalCount } = await fetchPlans(currentPage, pageSize, filterState);
 
-            // totalPlans 업데이트
+            // 1) 총 개수 저장
             totalPlans = totalCount;
 
-            // Check if we have more data
-            hasMoreData = plans.length === pageSize;
-
+            // 2) 화면에 렌더링 (renderPlans 내부에서 loadedPlans가 갱신됨)
             renderPlans(plans, append);
 
-            // 현재 로드된 플랜 수와 전체 수로 버튼 업데이트
+            // 3) loadedPlans 길이를 기준으로 hasMoreData 및 버튼 텍스트 계산
+            hasMoreData = loadedPlans.length < totalPlans;
             updateLoadMoreButton(loadedPlans.length, totalPlans);
+        }
+
+        async function loadProductCards(){
+            const grid = document.getElementById('productCardGrid');
+            if (!grid || grid.childElementCount > 0) return;
+
+            try{
+                const res  = await fetch('/api/products');
+                const json = await res.json();
+                const list = Array.isArray(json) ? json : (json.data || []);
+
+                list.forEach(p=>{
+                    const card = document.createElement('div');
+                    card.className   = 'product-card';
+                    card.dataset.value = p.name;
+                    card.innerHTML = `
+                <img src="${p.productImage}" alt="${p.name}">
+                <span>${p.name}</span>
+            `;
+                    grid.appendChild(card);
+                });
+            }catch(e){
+                console.error('상품 로딩 실패', e);
+            }
         }
 
         function goToDetail(planId) {
@@ -325,18 +440,125 @@
 
         scrollTopBtn.addEventListener('click', scrollToTop);
 
-        // Initialize page
+        // --- FILTER MODAL LOGIC ---
+        function openFilterModal() {
+            loadProductCards();
+            document.getElementById('planFilterModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            // Age group chip
+            const ageGroupChips = document.querySelectorAll('[data-target="ageGroup"] .filter-chip');
+            ageGroupChips.forEach(chip => chip.classList.remove('active'));
+            const foundAge = Array.from(ageGroupChips).find(chip => chip.dataset.value === filterState.ageGroup);
+            if (foundAge) foundAge.classList.add('active');
+            // DataType chip
+            const dataTypeChips = document.querySelectorAll('[data-target="dataType"] .filter-chip');
+            dataTypeChips.forEach(chip => chip.classList.remove('active'));
+            const foundData = Array.from(dataTypeChips).find(chip => chip.dataset.value === filterState.dataType);
+            if (foundData) foundData.classList.add('active');
+            // PriceRange chip
+            const priceRangeChips = document.querySelectorAll('[data-target="priceRange"] .filter-chip');
+            priceRangeChips.forEach(chip => chip.classList.remove('active'));
+            const foundPrice = Array.from(priceRangeChips).find(chip => chip.dataset.value === filterState.priceRange);
+            if (foundPrice) foundPrice.classList.add('active');
+            // Product cards & 혜택없음 chip
+            document.getElementById('modalNoProductCard').classList.remove('active');
+            document.querySelectorAll('.product-card').forEach(card => card.classList.remove('active'));
+            if (!filterState.productNames) {
+                // 혜택없음 active
+                document.getElementById('modalNoProductCard').classList.add('active');
+            } else {
+                const prods = filterState.productNames.split(',');
+                document.querySelectorAll('.product-card').forEach(card => {
+                    if (prods.includes(card.dataset.value)) card.classList.add('active');
+                });
+            }
+            // Show/hide age group in modal
+            document.getElementById('modalAgeFieldset').style.display = (filterState.sort === 'POPULAR') ? 'block' : 'none';
+        }
+        function closeFilterModal() {
+            document.getElementById('planFilterModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        // chip toggle
+        document.addEventListener('click', e=>{
+          const chip=e.target.closest('.filter-chip');
+          if(!chip) return;
+          const group=chip.parentElement;
+          if(!group.classList.contains('chip-group')) return;
+          group.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+          chip.classList.add('active');
+        });
+        // product-card toggle
+        document.addEventListener('click', e=>{
+          const card=e.target.closest('.product-card');
+          if(card){
+            card.classList.toggle('active');
+            if(card.classList.contains('active')){
+              document.getElementById('modalNoProductCard').classList.remove('active');
+            }
+          }
+          if(e.target.id==='modalNoProductCard'){
+            e.target.classList.toggle('active');
+            if(e.target.classList.contains('active')){
+              document.querySelectorAll('.product-card.active').forEach(c=>c.classList.remove('active'));
+            }
+          }
+        });
+        // Modal events
         document.addEventListener('DOMContentLoaded', function () {
-            loadPlans(false); // false = replace mode for initial load
+            // Initial load
+            loadPlans(false);
 
+            // Main sort select
+            document.getElementById('mainSortSelect').addEventListener('change', sortPlans);
+            document.getElementById('mainAgeSelect').addEventListener('change', ageGroupChanged);
+
+            // Load more
             const loadMoreBtn = document.getElementById('loadMoreBtn');
-
             if (loadMoreBtn) {
                 loadMoreBtn.addEventListener('click', function(event) {
                     event.preventDefault();
                     loadMorePlans();
                 });
             }
+
+            // Filter modal open/close
+            document.getElementById('openFilterModalBtn').addEventListener('click', openFilterModal);
+            document.getElementById('closeFilterModalBtn').addEventListener('click', closeFilterModal);
+            document.querySelector('#planFilterModal .modal-overlay').addEventListener('click', closeFilterModal);
+
+            // 검색 버튼
+            document.getElementById('applyFilterBtn').addEventListener('click', function() {
+                // Collect filter values from modal
+                // 카테고리는 모달 외부에서 유지
+                const category = filterState.category;   // 카테고리는 모달 외부에서 유지
+                const ageGroup = document.querySelector('[data-target="ageGroup"] .filter-chip.active').dataset.value;
+                const dataType = document.querySelector('[data-target="dataType"] .filter-chip.active').dataset.value;
+                const priceRange = document.querySelector('[data-target="priceRange"] .filter-chip.active').dataset.value;
+                let productNames='';
+                if(!document.getElementById('modalNoProductCard').classList.contains('active')){
+                    productNames=[...document.querySelectorAll('.product-card.active')].map(c=>c.dataset.value).join(',');
+                }
+                // Use previous sort (main bar), or keep POPULAR
+                const sort = filterState.sort || 'POPULAR';
+                // Update filterState
+                filterState = {
+                    category,
+                    dataType,
+                    priceRange,
+                    productNames,
+                    ageGroup,
+                    sort
+                };
+                // Sync main bar
+                document.getElementById('mainSortSelect').value = sort;
+                document.getElementById('mainAgeSelect').style.display = (sort === 'POPULAR') ? 'block' : 'none';
+                document.getElementById('mainAgeSelect').value = ageGroup;
+                // Apply filter & close modal
+                resetState();
+                loadPlans(false);
+                closeFilterModal();
+            });
         });
     </script>
 </body>

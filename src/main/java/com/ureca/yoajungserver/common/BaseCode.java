@@ -80,6 +80,11 @@ public enum BaseCode {
     KEYWORD_MAPPING_FAIL("MAPPING_KEYWORD_400", HttpStatus.BAD_REQUEST, "키워드 맵핑에 실패했습니다."),
     CHAT_BAD_WORD_DETECTED("BAD_WORD_CHAT_400", HttpStatus.BAD_REQUEST, "상담원에게 폭언이나 욕설을 하시면 안 됩니다."),
 
+
+    // Product
+    PRODUCT_LIST_SUCCESS("PRODUCT_LIST_SUCCESS_200", HttpStatus.OK, "상품 목록 조회에 성공했습니다."),
+
+
     REDIS_UNAVAILABLE("REDIS_UNAVAILABLE_503", HttpStatus.SERVICE_UNAVAILABLE, "세션 저장소 레디스 이용 불가 ");
     private final String code;
     private final HttpStatus status;

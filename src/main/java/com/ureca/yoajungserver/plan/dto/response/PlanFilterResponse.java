@@ -23,6 +23,7 @@ public class PlanFilterResponse {
     private String name;
     private Integer basePrice;
     private Integer dataAllowance;
+    private Integer tetheringSharingAllowance;
     private Integer speedAfterLimit;
     private Set<String> productNames;
     private List<BenefitSummary> benefits;
@@ -33,6 +34,7 @@ public class PlanFilterResponse {
                 .name(plan.getName())
                 .basePrice(plan.getBasePrice())
                 .dataAllowance(plan.getDataAllowance())
+                .tetheringSharingAllowance(plan.getTetheringSharingAllowance())
                 .speedAfterLimit(plan.getSpeedAfterLimit())
                 .productNames(
                         plan.getPlanProducts().stream()
