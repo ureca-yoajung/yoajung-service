@@ -1,289 +1,512 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지 - YOAJUNG</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/mypage.css">
+    <link rel="stylesheet" href="assets/css/myPage.css"/>
 </head>
+
 <body>
-<div id="navbar"></div>
-<main class="main-content">
-    <div class="mypage-container">
-        <!-- 프로필 헤더 -->
-        <div class="profile-header">
-            <div class="profile-name" id="profile-name">이름</div>
-            <div class="profile-email" id="profile-email">이메일</div>
-            <div class="profile-actions">
-                <button class="main-btn" onclick="window.location.href='main.html'">메인으로</button>
-                <button class="logout-btn" onclick="logout()">로그아웃</button>
+    <!-- Navigation -->
+    <div id="navbar"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>마이페이지</h1>
+                <p>내 정보와 사용 성향을 관리하세요</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="userInfo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    내 정보
+                </button>
+                <button class="tab-btn" data-tab="tendency">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    사용 성향
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- 내 정보 Tab -->
+                <div class="tab-panel active" id="userInfoPanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title-section">
+                                <div class="icon-wrapper user-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <h2>내 정보</h2>
+                            </div>
+                            <button class="btn btn-outline edit-btn" data-section="userInfo">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                <span class="edit-text">수정</span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-grid">
+                                <!-- 이름 (읽기 전용) -->
+                                <div class="form-group">
+                                    <label for="name">이름</label>
+                                    <input type="text" id="name" value="김요아" disabled class="input-disabled">
+                                </div>
+
+                                <!-- 이메일 (읽기 전용) -->
+                                <div class="form-group">
+                                    <label for="email">이메일</label>
+                                    <input type="email" id="email" value="yoajung@example.com" disabled
+                                           class="input-disabled">
+                                </div>
+
+                                <!-- 전화번호 -->
+                                <div class="form-group">
+                                    <label for="phoneNumber">전화번호</label>
+                                    <input type="text" id="phoneNumber" value="01012345678" disabled maxlength="11">
+                                </div>
+
+                                <!-- 성별 -->
+                                <div class="form-group">
+                                    <label for="gender">성별</label>
+                                    <select id="gender" disabled>
+                                        <option value="">성별을 선택하세요</option>
+                                        <option value="Male">남성</option>
+                                        <option value="Female" selected>여성</option>
+                                    </select>
+                                </div>
+
+                                <!-- 나이대 -->
+                                <div class="form-group">
+                                    <label for="age_group">나이대</label>
+                                    <select id="age_group" disabled>
+                                        <option value="">나이대를 선택하세요</option>
+                                        <option value="10S">10대</option>
+                                        <option value="20S" selected>20대</option>
+                                        <option value="30S">30대</option>
+                                        <option value="40S">40대</option>
+                                        <option value="50S">50대</option>
+                                        <option value="60S+">60대 이상</option>
+                                    </select>
+                                </div>
+
+                                <!-- 가족 수 -->
+                                <div class="form-group">
+                                    <label for="familyCount">가족 수</label>
+                                    <input type="number" id="familyCount" value="3" disabled min="1" max="10">
+                                </div>
+
+                                <!-- 통신 요금제 -->
+                                <div class="form-group full-width">
+                                    <label for="plan_id">현재 요금제</label>
+                                    <select id="plan_id" disabled>
+                                        <option value="">요금제를 선택하세요</option>
+                                        <option value="1">라이트 (35,000원)</option>
+                                        <option value="2" selected>스탠다드 (55,000원)</option>
+                                        <option value="3">프리미엄 (75,000원)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="save-section" id="userInfoSave" style="display: none;">
+                                <button class="btn btn-primary save-btn" data-section="userInfo">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z">
+                                        </path>
+                                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                        <polyline points="7,3 7,8 15,8"></polyline>
+                                    </svg>
+                                    저장
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 성향 Tab -->
+                <div class="tab-panel" id="tendencyPanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title-section">
+                                <div class="icon-wrapper tendency-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path
+                                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h2>사용 성향</h2>
+                            </div>
+                            <button class="btn btn-outline edit-btn" data-section="tendency">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                <span class="edit-text">수정</span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-grid">
+                                <!-- 월평균 데이터 사용량 -->
+                                <div class="form-group">
+                                    <label for="avgMonthlyDataGB">월평균 데이터 사용량 (GB)</label>
+                                    <input type="number" id="avgMonthlyDataGB" value="50" disabled min="0" max="1000">
+                                </div>
+
+                                <!-- 월평균 통화 시간 -->
+                                <div class="form-group">
+                                    <label for="avgMonthlyVoiceMin">월평균 통화 시간 (분)</label>
+                                    <input type="number" id="avgMonthlyVoiceMin" value="300" disabled min="0"
+                                           max="10000">
+                                </div>
+
+                                <!-- 희망 요금 -->
+                                <div class="form-group full-width">
+                                    <label for="PreferencePrice">희망 월 요금 (원)</label>
+                                    <input type="number" id="PreferencePrice" value="50000" disabled min="0"
+                                           step="1000">
+                                </div>
+
+                                <!-- 사용자 코멘트 -->
+                                <div class="form-group full-width">
+                                    <label for="comment">사용 패턴 및 요구사항</label>
+                                    <textarea id="comment" disabled rows="4"
+                                              placeholder="사용 패턴이나 특별한 요구사항을 입력해주세요">주로 동영상 시청과 SNS를 많이 사용합니다.</textarea>
+                                </div>
+                            </div>
+
+                            <div class="save-section" id="tendencySave" style="display: none;">
+                                <button class="btn btn-primary save-btn" data-section="tendency">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z">
+                                        </path>
+                                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                        <polyline points="7,3 7,8 15,8"></polyline>
+                                    </svg>
+                                    저장
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- 탭 -->
-        <div class="tab-row">
-            <button class="tab active" id="tab-info">내 정보</button>
-            <button class="tab" id="tab-tendency">내 성향</button>
-        </div>
-        <!-- 내 정보 -->
-        <div class="section active" id="section-info">
-            <div class="info-list" id="userinfo"></div>
-        </div>
-        <!-- 내 성향 -->
-        <div class="section" id="section-tendency">
-            <div class="tendency-list" id="tendency"></div>
-        </div>
-    </div>
-</main>
-<script>
-    // 네비게이션 동적 로딩
-    document.addEventListener('DOMContentLoaded', () => {
+    </main>
 
-        fetch('/assets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('navbar').innerHTML = html;
-                renderNavButtons()
+    <!-- Chat Button -->
+    <button class="chat-button" title="AI 추천 받기">💬</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/assets/navbar.html')
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('navbar').innerHTML = html;
+                })
+                .catch(err => console.error('navbar 로딩 실패:', err));
+        });
+
+        // 편집 상태 관리
+        const editingStates = {
+            userInfo: false,
+            tendency: false,
+        }
+
+        // 현재 활성 탭
+        let currentTab = "userInfo"
+
+        // 사용자 데이터 (실제로는 서버에서 가져올 데이터)
+        const userData = {
+            userInfo: {
+                name: "김요아",
+                email: "yoajung@example.com",
+                phoneNumber: "01012345678",
+                gender: "Female",
+                age_group: "20S",
+                familyCount: 3,
+                plan_id: "2",
+            },
+            tendency: {
+                avgMonthlyDataGB: 50,
+                avgMonthlyVoiceMin: 300,
+                comment: "주로 동영상 시청과 SNS를 많이 사용합니다.",
+                PreferencePrice: 50000,
+            },
+        }
+
+        // DOM이 로드된 후 실행
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeEventListeners()
+            loadUserData()
+            showTab("userInfo") // 기본적으로 내 정보 탭 표시
+        })
+
+        // 이벤트 리스너 초기화
+        function initializeEventListeners() {
+            // 탭 버튼 이벤트
+            document.querySelectorAll(".tab-btn").forEach((btn) => {
+                btn.addEventListener("click", function () {
+                    const tabName = this.getAttribute("data-tab")
+                    showTab(tabName)
+                })
             })
-            .catch(err => console.error('navbar 로딩 실패:', err));
-    });
 
-    async function renderNavButtons() {
-        const navBtns = document.getElementById('nav-auth-buttons');
-        if (!navBtns) return;
-        try {
-            const res = await fetch('/api/user/me', {credentials: 'include'});
-            if (res.ok) {
-                // 로그인 상태
-                navBtns.innerHTML = `
-                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
-                <button id="logout-btn" class="btn btn-primary">로그아웃</button>
-            `;
-                document.getElementById('logout-btn').onclick = async function () {
-                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
-                    location.href = "login.html";
-                };
-            } else {
-                // 비로그인 상태
-                navBtns.innerHTML = `
-                <a href="login.html" class="btn btn-ghost">로그인</a>
-                <a href="signup.html" class="btn btn-primary">시작하기</a>
-            `;
-            }
-        } catch {
-            navBtns.innerHTML = `
-            <a href="login.html" class="btn btn-ghost">로그인</a>
-            <a href="signup.html" class="btn btn-primary">시작하기</a>
-        `;
-        }
-    }
-
-    // 탭 전환
-    document.getElementById('tab-info').onclick = function () {
-        setTab('info');
-    };
-    document.getElementById('tab-tendency').onclick = function () {
-        setTab('tendency');
-    };
-
-    function setTab(tab) {
-        document.getElementById('tab-info').classList.toggle('active', tab === 'info');
-        document.getElementById('tab-tendency').classList.toggle('active', tab === 'tendency');
-        document.getElementById('section-info').classList.toggle('active', tab === 'info');
-        document.getElementById('section-tendency').classList.toggle('active', tab === 'tendency');
-        if (tab === 'info') loadMyInfo();
-        if (tab === 'tendency') loadTendency();
-    }
-
-    // 내 정보
-    let userData = null, userEditMode = false;
-
-    function renderUserInfo() {
-        const d = userData;
-        const el = document.getElementById('userinfo');
-        document.getElementById('profile-name').textContent = d?.name || "";
-        document.getElementById('profile-email').textContent = d?.email || "";
-        if (!d) {
-            el.innerHTML = "정보 없음";
-            return;
-        }
-        if (userEditMode) {
-            el.innerHTML = `
-                <form id="user-edit-form">
-                    <div><span class="label">이메일</span><input type="email" name="email" value="${d.email}" disabled></div>
-                    <div><span class="label">이름</span><input type="text" name="name" value="${d.name}" disabled></div>
-                    <div><span class="label">전화번호</span><input type="text" name="phoneNumber" value="${d.phoneNumber || ''}" required></div>
-                    <div><span class="label">성별</span>
-                        <select name="gender" required>
-                            <option value="MALE" ${d.gender === 'MALE' ? 'selected' : ''}>남자</option>
-                            <option value="FEMALE" ${d.gender === 'FEMALE' ? 'selected' : ''}>여자</option>
-                        </select>
-                    </div>
-                    <div><span class="label">연령대</span>
-                        <select name="ageGroup" required>
-                            <option value="TEN_S" ${d.ageGroup === 'TEN_S' ? 'selected' : ''}>10대</option>
-                            <option value="TWENTY_S" ${d.ageGroup === 'TWENTY_S' ? 'selected' : ''}>20대</option>
-                            <option value="THIRTY_S" ${d.ageGroup === 'THIRTY_S' ? 'selected' : ''}>30대</option>
-                            <option value="FORTY_S" ${d.ageGroup === 'FORTY_S' ? 'selected' : ''}>40대</option>
-                            <option value="FIFTY_S" ${d.ageGroup === 'FIFTY_S' ? 'selected' : ''}>50대</option>
-                            <option value="SIXTY_S_PLUS" ${d.ageGroup === 'SIXTY_S_PLUS' ? 'selected' : ''}>60대 이상</option>
-                        </select>
-                    </div>
-                    <div><span class="label">가족수</span><input type="number" name="familyCount" value="${d.familyCount || ''}" required></div>
-                    <button class="save-btn" type="submit">수정 완료</button>
-                </form>
-            `;
-            document.getElementById('user-edit-form').onsubmit = function (e) {
-                e.preventDefault();
-                const obj = Object.fromEntries(new FormData(e.target));
-                fetch('/api/user/me', {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    body: JSON.stringify(obj)
-                }).then(r => r.json()).then(data => {
-                    if (data && data.data) {
-                        userData = data.data;
-                        userEditMode = false;
-                        renderUserInfo();
-                        alert(data.message || "수정 완료");
-                    } else alert(data.message || "실패");
-                });
-            }
-        } else {
-            el.innerHTML = `
-                <div><span class="label">이메일</span> <b>${d.email}</b></div>
-                <div><span class="label">이름</span> ${d.name}</div>
-                <div><span class="label">전화번호</span> ${d.phoneNumber || ''}</div>
-                <div><span class="label">성별</span> ${d.gender === 'MALE' ? '남자' : d.gender === 'FEMALE' ? '여자' : ''}</div>
-                <div><span class="label">연령대</span> ${
-                d.ageGroup === 'TEN_S' ? '10대'
-                    : d.ageGroup === 'TWENTY_S' ? '20대'
-                        : d.ageGroup === 'THIRTY_S' ? '30대'
-                            : d.ageGroup === 'FORTY_S' ? '40대'
-                                : d.ageGroup === 'FIFTY_S' ? '50대'
-                                    : d.ageGroup === 'SIXTY_S_PLUS' ? '60대 이상' : ''
-            }</div>
-                <div><span class="label">가족수</span> ${d.familyCount || ''}</div>
-                <button class="edit-btn" id="user-edit-btn">내 정보 수정</button>
-            `;
-            document.getElementById('user-edit-btn').onclick = () => {
-                userEditMode = true;
-                renderUserInfo();
-            }
-        }
-    }
-
-    function loadMyInfo() {
-        fetch('/api/user/me', {method: 'GET', credentials: 'include'})
-            .then(res => {
-                if (res.status === 401) {
-                    alert("로그인 필요");
-                    location.href = "login.html";
-                    return
-                }
-                return res.json();
+            // 편집 버튼 이벤트
+            document.querySelectorAll(".edit-btn").forEach((btn) => {
+                btn.addEventListener("click", function () {
+                    const section = this.getAttribute("data-section")
+                    toggleEdit(section)
+                })
             })
-            .then(data => {
-                if (data && data.data) {
-                    userData = data.data;
-                    userEditMode = false;
-                    renderUserInfo();
-                }
-            });
-    }
 
-    // 내 성향
-    let tendencyData = null, tendencyEditMode = false;
-
-    function renderTendency() {
-        const d = tendencyData;
-        const el = document.getElementById('tendency');
-        if (!d && !tendencyEditMode) {
-            el.innerHTML = `<div>성향 정보가 없습니다.</div><button class="edit-btn" id="tendency-reg-btn">성향 등록</button>`;
-            document.getElementById('tendency-reg-btn').onclick = () => {
-                tendencyEditMode = true;
-                renderTendency();
-            }
-            return;
-        }
-        if (tendencyEditMode) {
-            el.innerHTML = `
-                <form id="tendency-edit-form">
-                    <div><span class="label">월평균 데이터 사용량(GB)</span><input name="avgMonthlyDataGB" type="number" value="${d ? d.avgMonthlyDataGB : ''}" required></div>
-                    <div><span class="label">월평균 통화량(분)</span><input name="avgMonthlyVoiceMin" type="number" value="${d ? d.avgMonthlyVoiceMin : ''}" required></div>
-                    <div><span class="label">희망 요금제 가격(원)</span><input name="preferencePrice" type="number" value="${d ? d.preferencePrice : ''}" required></div>
-                    <div><span class="label">기타</span><input name="comment" value="${d ? d.comment : ''}" required></div>
-                    <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
-                </form>
-            `;
-            document.getElementById('tendency-edit-form').onsubmit = function (e) {
-                e.preventDefault();
-                const obj = Object.fromEntries(new FormData(e.target));
-                fetch('/api/tendency', {
-                    method: d ? 'PUT' : 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    body: JSON.stringify(obj)
-                }).then(r => r.json()).then(data => {
-                    if (data && data.data) {
-                        tendencyData = data.data;
-                        tendencyEditMode = false;
-                        renderTendency();
-                        alert(data.message || "저장 완료");
-                    } else alert(data.message || "실패");
-                });
-            }
-        } else if (d) {
-            el.innerHTML = `
-                <div><span class="label">월평균 데이터 사용량(GB)</span> ${d.avgMonthlyDataGB}</div>
-                <div><span class="label">월평균 통화량(분)</span> ${d.avgMonthlyVoiceMin}</div>
-                <div><span class="label">희망 요금제 가격(원)</span> ${d.preferencePrice}</div>
-                <div><span class="label">기타</span> ${d.comment}</div>
-                <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>
-            `;
-            document.getElementById('tendency-edit-btn').onclick = () => {
-                tendencyEditMode = true;
-                renderTendency();
-            }
-        }
-    }
-
-    function loadTendency() {
-        fetch('/api/tendency/me', {method: 'GET', credentials: 'include'})
-            .then(res => {
-                if (res.status === 401) {
-                    alert("로그인 필요");
-                    location.href = "login.html";
-                    return
-                }
-                return res.json();
+            // 저장 버튼 이벤트
+            document.querySelectorAll(".save-btn").forEach((btn) => {
+                btn.addEventListener("click", function () {
+                    const section = this.getAttribute("data-section")
+                    saveData(section)
+                })
             })
-            .then(data => {
-                if (data && data.data) {
-                    tendencyData = data.data;
-                    tendencyEditMode = false;
-                    renderTendency();
+
+            // 채팅 버튼 이벤트
+            document.querySelector(".chat-button").addEventListener("click", () => {
+                alert("AI 추천 서비스를 시작합니다!")
+            })
+
+            // 네비게이션 스크롤 효과
+            window.addEventListener("scroll", () => {
+                const navbar = document.querySelector(".navbar")
+                if (window.scrollY > 50) {
+                    navbar.style.background = "rgba(255, 255, 255, 0.98)"
                 } else {
-                    tendencyData = null;
-                    tendencyEditMode = false;
-                    renderTendency();
+                    navbar.style.background = "rgba(255, 255, 255, 0.95)"
                 }
-            });
-    }
+            })
+        }
 
-    function logout() {
-        fetch('/api/auth/logout', {method: 'POST', credentials: 'include'})
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || "로그아웃");
-                location.href = "login.html";
-            });
-    }
+        // 탭 표시 함수
+        function showTab(tabName) {
+            // 이전 탭이 편집 중이면 편집 모드 종료
+            if (editingStates[currentTab]) {
+                toggleEdit(currentTab)
+            }
 
-    window.onload = function () {
-        loadMyInfo();
-    }
-</script>
+            currentTab = tabName
+
+            // 모든 탭 버튼에서 active 클래스 제거
+            document.querySelectorAll(".tab-btn").forEach((btn) => {
+                btn.classList.remove("active")
+            })
+
+            // 모든 탭 패널 숨기기
+            document.querySelectorAll(".tab-panel").forEach((panel) => {
+                panel.classList.remove("active")
+            })
+
+            // 선택된 탭 버튼에 active 클래스 추가
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add("active")
+
+            // 선택된 탭 패널 표시
+            document.getElementById(`${tabName}Panel`).classList.add("active")
+        }
+
+        // 사용자 데이터 로드
+        function loadUserData() {
+            // 내 정보 데이터 로드
+            Object.keys(userData.userInfo).forEach((key) => {
+                const element = document.getElementById(key)
+                if (element) {
+                    element.value = userData.userInfo[key]
+                }
+            })
+
+            // 성향 데이터 로드
+            Object.keys(userData.tendency).forEach((key) => {
+                const element = document.getElementById(key)
+                if (element) {
+                    element.value = userData.tendency[key]
+                }
+            })
+        }
+
+        // 편집 모드 토글
+        function toggleEdit(section) {
+            const isEditing = editingStates[section]
+            editingStates[section] = !isEditing
+
+            const editBtn = document.querySelector(`[data-section="${section}"].edit-btn`)
+            const saveSection = document.getElementById(`${section}Save`)
+            const editText = editBtn.querySelector(".edit-text")
+
+            if (editingStates[section]) {
+                // 편집 모드 활성화
+                enableFormFields(section)
+                editText.textContent = "취소"
+                saveSection.style.display = "block"
+            } else {
+                // 편집 모드 비활성화
+                disableFormFields(section)
+                editText.textContent = "수정"
+                saveSection.style.display = "none"
+                // 취소 시 원래 데이터로 복원
+                loadUserData()
+            }
+        }
+
+        // 폼 필드 활성화
+        function enableFormFields(section) {
+            const fields = getFieldsBySection(section)
+            fields.forEach((fieldId) => {
+                const element = document.getElementById(fieldId)
+                if (element && !element.classList.contains("input-disabled")) {
+                    element.disabled = false
+                }
+            })
+        }
+
+        // 폼 필드 비활성화
+        function disableFormFields(section) {
+            const fields = getFieldsBySection(section)
+            fields.forEach((fieldId) => {
+                const element = document.getElementById(fieldId)
+                if (element) {
+                    element.disabled = true
+                }
+            })
+        }
+
+        // 섹션별 필드 목록 반환
+        function getFieldsBySection(section) {
+            if (section === "userInfo") {
+                return ["phoneNumber", "gender", "age_group", "familyCount", "plan_id"]
+            } else if (section === "tendency") {
+                return ["avgMonthlyDataGB", "avgMonthlyVoiceMin", "comment", "PreferencePrice"]
+            }
+            return []
+        }
+
+        // 데이터 저장
+        function saveData(section) {
+            const fields = getFieldsBySection(section)
+            const updatedData = {}
+
+            // 폼에서 데이터 수집
+            fields.forEach((fieldId) => {
+                const element = document.getElementById(fieldId)
+                if (element) {
+                    let value = element.value
+
+                    // 숫자 필드 처리
+                    if (element.type === "number") {
+                        value = Number.parseInt(value) || 0
+                    }
+
+                    updatedData[fieldId] = value
+                }
+            })
+
+            // 유효성 검사
+            if (!validateData(section, updatedData)) {
+                return
+            }
+
+            // 데이터 업데이트
+            userData[section] = {...userData[section], ...updatedData}
+
+            // 서버에 저장 (실제로는 API 호출)
+            console.log(`${section} 데이터 저장:`, updatedData)
+
+            // 성공 메시지
+            showSuccessMessage(`${section === "userInfo" ? "내 정보" : "사용 성향"}가 성공적으로 저장되었습니다.`)
+
+            // 편집 모드 종료
+            toggleEdit(section)
+        }
+
+        // 데이터 유효성 검사
+        function validateData(section, data) {
+            if (section === "userInfo") {
+                // 전화번호 유효성 검사
+                if (data.phoneNumber && !/^01[0-9]{8,9}$/.test(data.phoneNumber)) {
+                    alert("올바른 전화번호 형식을 입력해주세요. (예: 01012345678)")
+                    return false
+                }
+
+                // 가족 수 유효성 검사
+                if (data.familyCount < 1 || data.familyCount > 10) {
+                    alert("가족 수는 1명 이상 10명 이하로 입력해주세요.")
+                    return false
+                }
+            } else if (section === "tendency") {
+                // 데이터 사용량 유효성 검사
+                if (data.avgMonthlyDataGB < 0 || data.avgMonthlyDataGB > 1000) {
+                    alert("월평균 데이터 사용량은 0GB 이상 1000GB 이하로 입력해주세요.")
+                    return false
+                }
+
+                // 통화 시간 유효성 검사
+                if (data.avgMonthlyVoiceMin < 0 || data.avgMonthlyVoiceMin > 10000) {
+                    alert("월평균 통화 시간은 0분 이상 10000분 이하로 입력해주세요.")
+                    return false
+                }
+
+                // 희망 요금 유효성 검사
+                if (data.PreferencePrice < 0) {
+                    alert("희망 월 요금은 0원 이상으로 입력해주세요.")
+                    return false
+                }
+            }
+
+            return true
+        }
+
+        // 성공 메시지 표시
+        function showSuccessMessage(message) {
+            // 간단한 알림 (실제로는 토스트 메시지나 모달을 사용할 수 있음)
+            alert(message)
+        }
+
+        // 부드러운 스크롤 효과 (앵커 링크용)
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+            anchor.addEventListener("click", function (e) {
+                e.preventDefault()
+                const target = document.querySelector(this.getAttribute("href"))
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    })
+                }
+            })
+        })
+
+    </script>
 </body>
+
 </html>
