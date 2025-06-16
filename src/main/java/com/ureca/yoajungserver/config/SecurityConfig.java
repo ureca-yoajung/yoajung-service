@@ -39,7 +39,7 @@ public class SecurityConfig {
                                 "/api/user/**",
                                 "/api/tendency/**"
                         ).authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()//authenticated()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
