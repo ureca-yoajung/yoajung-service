@@ -56,65 +56,63 @@
         <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2>요금제 상세 필터</h2>
+                <h2>어떤 요금제를 찾으세요?</h2>
                 <button class="modal-close-btn" id="closeFilterModalBtn">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="planFilterForm">
-                    <div class="filter-row">
-                        <label for="modalSortSelect">정렬:</label>
-                        <select id="modalSortSelect" name="sort">
-                            <option value="POPULAR">인기순</option>
-                            <option value="LOW_PRICE">낮은가격순</option>
-                            <option value="HIGH_PRICE">높은가격순</option>
-                            <option value="DATA">데이터 많은 순</option>
-                        </select>
-                    </div>
+                    <!-- 정렬 행 제거됨 -->
                     <div class="filter-row" id="modalAgeFieldset">
-                        <fieldset>
-                            <legend>연령대</legend>
-                            <label><input type="radio" name="ageGroup" value="ALL" checked>전체</label>
-                            <label><input type="radio" name="ageGroup" value="TWENTY_S">20대</label>
-                            <label><input type="radio" name="ageGroup" value="THIRTY_S">30대</label>
-                            <label><input type="radio" name="ageGroup" value="FORTY_S">40대</label>
-                            <label><input type="radio" name="ageGroup" value="FIFTY_S">50대</label>
-                            <label><input type="radio" name="ageGroup" value="SIXTY_S_PLUS">60대+</label>
-                        </fieldset>
-                    </div>
-                    <div class="filter-row">
-                        <label for="modalCategorySelect">카테고리:</label>
-                        <select id="modalCategorySelect" name="category">
-                            <option value="ALL">전체</option>
-                            <option value="LTE_FIVE_G">5G/LTE</option>
-                            <option value="ONLINE_ONLY">온라인 전용</option>
-                        </select>
+                        <legend>연령대</legend>
+                        <div class="chip-group" data-target="ageGroup">
+                          <button type="button" class="filter-chip active" data-value="ALL">전체</button>
+                          <button type="button" class="filter-chip" data-value="TWENTY_S">20대</button>
+                          <button type="button" class="filter-chip" data-value="THIRTY_S">30대</button>
+                          <button type="button" class="filter-chip" data-value="FORTY_S">40대</button>
+                          <button type="button" class="filter-chip" data-value="FIFTY_S">50대</button>
+                          <button type="button" class="filter-chip" data-value="SIXTY_S_PLUS">60대+</button>
+                        </div>
                     </div>
                     <div class="filter-row">
                         <fieldset>
                             <legend>데이터</legend>
-                            <label><input type="radio" name="dataType" value="UNLIMITED">무제한</label>
-                            <label><input type="radio" name="dataType" value="FIXED">정량</label>
-                            <label><input type="radio" name="dataType" value="THROTTLED">속도제한</label>
-                            <label><input type="radio" name="dataType" value="" checked>상관없음</label>
+                            <div class="chip-group" data-target="dataType">
+                              <button type="button" class="filter-chip" data-value="UNLIMITED">무제한</button>
+                              <button type="button" class="filter-chip" data-value="FIXED">정량</button>
+                              <button type="button" class="filter-chip" data-value="THROTTLED">속도제한</button>
+                              <button type="button" class="filter-chip active" data-value="">상관없음</button>
+                            </div>
                         </fieldset>
                     </div>
                     <div class="filter-row">
                         <fieldset>
                             <legend>요금 범위</legend>
-                            <label><input type="radio" name="priceRange" value="UNDER5">~5만원</label>
-                            <label><input type="radio" name="priceRange" value="BETWEEN6_8">6~8만원</label>
-                            <label><input type="radio" name="priceRange" value="ABOVE9">9만원~</label>
-                            <label><input type="radio" name="priceRange" value="" checked>상관없음</label>
+                            <div class="chip-group" data-target="priceRange">
+                              <button type="button" class="filter-chip" data-value="UNDER5">~5만원</button>
+                              <button type="button" class="filter-chip" data-value="BETWEEN6_8">6~8만원</button>
+                              <button type="button" class="filter-chip" data-value="ABOVE9">9만원~</button>
+                              <button type="button" class="filter-chip active" data-value="">상관없음</button>
+                            </div>
                         </fieldset>
                     </div>
                     <div class="filter-row">
-                        <fieldset>
-                            <legend>프로덕트</legend>
-                            <label><input type="checkbox" id="modalNoProduct">혜택은 필요없어요</label><br>
-                            <label><input type="checkbox" name="product" value="아이들나라">아이들나라</label>
-                            <label><input type="checkbox" name="product" value="넷플릭스">NETFLIX</label>
-                            <label><input type="checkbox" name="product" value="바이브">바이브</label>
-                        </fieldset>
+                      <legend>혜택</legend>
+                      <div class="product-card-grid" data-target="product">
+                        <div class="product-card" data-value="티빙">
+                          <img src="/assets/img/products/tving.svg" alt="티빙"><span>티빙</span>
+                        </div>
+                        <div class="product-card" data-value="넷플릭스">
+                          <img src="/assets/img/products/netflix.svg" alt="넷플릭스"><span>넷플릭스</span>
+                        </div>
+                        <div class="product-card" data-value="아이들나라">
+                          <img src="/assets/img/products/kids.svg" alt="아이들나라"><span>아이들나라</span>
+                        </div>
+                        <div class="product-card" data-value="바이브">
+                          <img src="/assets/img/products/vibe.svg" alt="바이브"><span>바이브</span>
+                        </div>
+                        <!-- 필요시 추가 카드 -->
+                      </div>
+                      <button type="button" id="modalNoProductCard" class="filter-chip" style="margin-top:8px;">혜택은 필요없어요</button>
                     </div>
                 </form>
             </div>
@@ -400,9 +398,6 @@
         async function loadPlans(append = false) {
             const { plans, totalCount } = await fetchPlans(currentPage, pageSize, filterState);
 
-            console.log(`📦 가져온 plans 개수: ${plans.length}`);
-            console.log(`📊 loadPlans 호출 시 loadedPlans: ${loadedPlans.length}개 append=${append}`);
-
             // 1) 총 개수 저장
             totalPlans = totalCount;
 
@@ -440,28 +435,31 @@
         function openFilterModal() {
             document.getElementById('planFilterModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
-            // Sync modal controls with filterState
-            document.getElementById('modalSortSelect').value = filterState.sort;
-            document.getElementById('modalCategorySelect').value = filterState.category;
-            // Age group radio
-            const ageGroupRadios = document.querySelectorAll('#modalAgeFieldset input[name="ageGroup"]');
-            ageGroupRadios.forEach(r => { r.checked = (r.value === filterState.ageGroup); });
-            // DataType, priceRange
-            document.querySelectorAll('#planFilterForm input[name="dataType"]').forEach(r => {
-                r.checked = (r.value === filterState.dataType);
-            });
-            document.querySelectorAll('#planFilterForm input[name="priceRange"]').forEach(r => {
-                r.checked = (r.value === filterState.priceRange);
-            });
-            // Products
+            // Age group chip
+            const ageGroupChips = document.querySelectorAll('[data-target="ageGroup"] .filter-chip');
+            ageGroupChips.forEach(chip => chip.classList.remove('active'));
+            const foundAge = Array.from(ageGroupChips).find(chip => chip.dataset.value === filterState.ageGroup);
+            if (foundAge) foundAge.classList.add('active');
+            // DataType chip
+            const dataTypeChips = document.querySelectorAll('[data-target="dataType"] .filter-chip');
+            dataTypeChips.forEach(chip => chip.classList.remove('active'));
+            const foundData = Array.from(dataTypeChips).find(chip => chip.dataset.value === filterState.dataType);
+            if (foundData) foundData.classList.add('active');
+            // PriceRange chip
+            const priceRangeChips = document.querySelectorAll('[data-target="priceRange"] .filter-chip');
+            priceRangeChips.forEach(chip => chip.classList.remove('active'));
+            const foundPrice = Array.from(priceRangeChips).find(chip => chip.dataset.value === filterState.priceRange);
+            if (foundPrice) foundPrice.classList.add('active');
+            // Product cards & 혜택없음 chip
+            document.getElementById('modalNoProductCard').classList.remove('active');
+            document.querySelectorAll('.product-card').forEach(card => card.classList.remove('active'));
             if (!filterState.productNames) {
-                document.getElementById('modalNoProduct').checked = false;
-                document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => { cb.checked = false; });
+                // 혜택없음 active
+                document.getElementById('modalNoProductCard').classList.add('active');
             } else {
-                document.getElementById('modalNoProduct').checked = false;
                 const prods = filterState.productNames.split(',');
-                document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => {
-                    cb.checked = prods.includes(cb.value);
+                document.querySelectorAll('.product-card').forEach(card => {
+                    if (prods.includes(card.dataset.value)) card.classList.add('active');
                 });
             }
             // Show/hide age group in modal
@@ -471,6 +469,31 @@
             document.getElementById('planFilterModal').style.display = 'none';
             document.body.style.overflow = '';
         }
+        // chip toggle
+        document.addEventListener('click', e=>{
+          const chip=e.target.closest('.filter-chip');
+          if(!chip) return;
+          const group=chip.parentElement;
+          if(!group.classList.contains('chip-group')) return;
+          group.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+          chip.classList.add('active');
+        });
+        // product-card toggle
+        document.addEventListener('click', e=>{
+          const card=e.target.closest('.product-card');
+          if(card){
+            card.classList.toggle('active');
+            if(card.classList.contains('active')){
+              document.getElementById('modalNoProductCard').classList.remove('active');
+            }
+          }
+          if(e.target.id==='modalNoProductCard'){
+            e.target.classList.toggle('active');
+            if(e.target.classList.contains('active')){
+              document.querySelectorAll('.product-card.active').forEach(c=>c.classList.remove('active'));
+            }
+          }
+        });
         // Modal events
         document.addEventListener('DOMContentLoaded', function () {
             // Initial load
@@ -494,41 +517,20 @@
             document.getElementById('closeFilterModalBtn').addEventListener('click', closeFilterModal);
             document.querySelector('#planFilterModal .modal-overlay').addEventListener('click', closeFilterModal);
 
-            // Modal sort change: show/hide age group
-            document.getElementById('modalSortSelect').addEventListener('change', function() {
-                document.getElementById('modalAgeFieldset').style.display = (this.value === 'POPULAR') ? 'block' : 'none';
-            });
-            // 혜택은 필요없어요 체크박스
-            document.getElementById('modalNoProduct').addEventListener('change', function() {
-                if (this.checked) {
-                    document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => { cb.checked = false; });
-                }
-            });
-            document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    if (this.checked) {
-                        document.getElementById('modalNoProduct').checked = false;
-                    }
-                });
-            });
-
             // 검색 버튼
             document.getElementById('applyFilterBtn').addEventListener('click', function() {
                 // Collect filter values from modal
-                const sort = document.getElementById('modalSortSelect').value;
-                const category = document.getElementById('modalCategorySelect').value;
-                let ageGroup = 'ALL';
-                if (sort === 'POPULAR') {
-                    const checkedAge = document.querySelector('#modalAgeFieldset input[name="ageGroup"]:checked');
-                    if (checkedAge) ageGroup = checkedAge.value;
+                // 카테고리는 모달 외부에서 유지
+                const category = filterState.category;   // 카테고리는 모달 외부에서 유지
+                const ageGroup = document.querySelector('[data-target="ageGroup"] .filter-chip.active').dataset.value;
+                const dataType = document.querySelector('[data-target="dataType"] .filter-chip.active').dataset.value;
+                const priceRange = document.querySelector('[data-target="priceRange"] .filter-chip.active').dataset.value;
+                let productNames='';
+                if(!document.getElementById('modalNoProductCard').classList.contains('active')){
+                    productNames=[...document.querySelectorAll('.product-card.active')].map(c=>c.dataset.value).join(',');
                 }
-                const dataType = document.querySelector('#planFilterForm input[name="dataType"]:checked').value;
-                const priceRange = document.querySelector('#planFilterForm input[name="priceRange"]:checked').value;
-                let productNames = '';
-                if (!document.getElementById('modalNoProduct').checked) {
-                    productNames = Array.from(document.querySelectorAll('#planFilterForm input[name="product"]:checked'))
-                        .map(cb => cb.value).join(',');
-                }
+                // Use previous sort (main bar), or keep POPULAR
+                const sort = filterState.sort || 'POPULAR';
                 // Update filterState
                 filterState = {
                     category,
@@ -552,91 +554,3 @@
 </body>
 
 </html>
-    </script>
-    <style>
-    .plan-filter-modal {
-        position: fixed;
-        z-index: 200;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .plan-filter-modal .modal-overlay {
-        position: absolute;
-        top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0,0,0,0.3);
-    }
-    .plan-filter-modal .modal-content {
-        position: relative;
-        background: #fff;
-        border-radius: 16px;
-        max-width: 420px;
-        width: 95vw;
-        padding: 32px 24px 16px 24px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-        z-index: 210;
-    }
-    .plan-filter-modal .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-    }
-    .plan-filter-modal .modal-header h2 {
-        font-size: 22px;
-        font-weight: 700;
-        margin: 0;
-    }
-    .modal-close-btn {
-        background: none;
-        border: none;
-        font-size: 26px;
-        cursor: pointer;
-        color: #aaa;
-        transition: color 0.2s;
-    }
-    .modal-close-btn:hover {
-        color: var(--primary);
-    }
-    .plan-filter-modal .modal-body {
-        max-height: 60vh;
-        overflow-y: auto;
-    }
-    .plan-filter-modal .filter-row {
-        margin-bottom: 16px;
-    }
-    .plan-filter-modal label {
-        font-size: 15px;
-        margin-right: 10px;
-    }
-    .plan-filter-modal fieldset {
-        border: none;
-        margin: 0;
-        padding: 0;
-        margin-bottom: 6px;
-    }
-    .plan-filter-modal legend {
-        font-weight: 600;
-        margin-bottom: 4px;
-        font-size: 15px;
-    }
-    .plan-filter-modal input[type="radio"],
-    .plan-filter-modal input[type="checkbox"] {
-        margin-right: 4px;
-    }
-    .plan-filter-modal .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 12px;
-    }
-    @media (max-width: 600px) {
-        .plan-filter-modal .modal-content {
-            max-width: 98vw;
-            padding: 16px 8px 8px 8px;
-        }
-    }
-    </style>
