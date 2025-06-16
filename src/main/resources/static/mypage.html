@@ -56,19 +56,13 @@
             if (res.ok) {
                 // 로그인 상태
                 navBtns.innerHTML = `
-                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
+                <a href="main.html" class="btn btn-ghost">메인페이지</a>
                 <button id="logout-btn" class="btn btn-primary">로그아웃</button>
             `;
                 document.getElementById('logout-btn').onclick = async function () {
                     await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
                     location.href = "login.html";
                 };
-            } else {
-                // 비로그인 상태
-                navBtns.innerHTML = `
-                <a href="login.html" class="btn btn-ghost">로그인</a>
-                <a href="signup.html" class="btn btn-primary">시작하기</a>
-            `;
             }
         } catch {
             navBtns.innerHTML = `

@@ -67,7 +67,17 @@
 
         // 내 성향 요약 표시
         fetch('/api/tendency/me', {credentials: 'include'})
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    // 로그인 안된 경우 버튼 비활성화
+                    document.querySelector('.btn.btn-primary').disabled = true;
+                    // showTendencyModal도 비활성화
+                    window.showTendencyModal = () => {
+                    }; // 빈 함수로 덮어씌움
+                    return null;
+                }
+                return res.json();
+            })
             .then(data => {
                 const el = document.getElementById('tendency-summary');
                 if (data && data.data) {
@@ -111,8 +121,15 @@
 
     // 모달 표시/숨김
     function showTendencyModal() {
-        document.getElementById('modal-bg').style.display = "block";
-        document.getElementById('tendency-modal').style.display = "block";
+        fetch('/api/user/me', {credentials: 'include'}).then(res => {
+            if (res.status === 401) {
+                alert("로그인이 필요합니다.");
+                window.location.href = "login.html";
+                return;
+            }
+            document.getElementById('modal-bg').style.display = "block";
+            document.getElementById('tendency-modal').style.display = "block";
+        });
     }
 
     function hideTendencyModal() {
