@@ -1,5 +1,7 @@
 package com.ureca.yoajungserver.user.service;
 
+import com.ureca.yoajungserver.plan.entity.Plan;
+import com.ureca.yoajungserver.plan.repository.PlanRepository;
 import com.ureca.yoajungserver.user.dto.reqeust.SignupRequest;
 import com.ureca.yoajungserver.user.dto.reqeust.UserUpdateRequest;
 import com.ureca.yoajungserver.user.dto.response.UserResponse;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PlanRepository planRepository;
     private final PasswordEncoder passwordEncoder;
 
     private static final String VERIFIED_EMAIL = "verifiedEmail";
@@ -38,6 +41,10 @@ public class UserServiceImpl implements UserService {
             throw new UserDuplicatedEmailException();
         });
 
+        Plan plan = null;
+        if (request.getPlanId() != null) {
+            plan = planRepository.findById(request.getPlanId()).orElse(null);
+        }
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -49,7 +56,7 @@ public class UserServiceImpl implements UserService {
                 .gender(request.getGender())
                 .ageGroup(request.getAgeGroup())
                 .familyCount(request.getFamilyCount())
-                .plan(null)
+                .plan(plan)
                 .role(Role.USER)
                 .build();
 

@@ -33,7 +33,7 @@ public class SecurityConfig {
                                 , "/reset-request.html", "/main.html",
                                 "/api/oauth/**", "/api/auth/**", "/callback.html", "/additional-info.html"
                                 , "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico"
-                                , "/api/user/signup"
+                                , "/api/user/signup", "/api/plan/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/user/**",
