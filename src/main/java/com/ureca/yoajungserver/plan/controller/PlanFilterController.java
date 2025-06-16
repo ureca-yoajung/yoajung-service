@@ -23,7 +23,6 @@ public class PlanFilterController {
 
     @GetMapping
     public ApiResponse<PlanFilterResultResponse> search(PlanFilterRequest filterRequest) {
-        // Return the new result response (plans + totalCount)
         return ApiResponse.of(BaseCode.PLAN_LIST_SUCCESS,
                               planFilterService.searchPlans(filterRequest));
     }

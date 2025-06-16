@@ -241,10 +241,11 @@
                             <span class="detail-label">데이터</span>
                             <span class="detail-value">${plan.dataAllowance === 9999 ? '무제한' : plan.dataAllowance + 'GB'}</span>
                         </div>
+                        ${tetheringSharingAllowance !== 0 ? `
                         <div class="detail-row">
                             <span class="detail-label">테더링</span>
                             <span class="detail-value">${tetheringSharingAllowance === 9999 ? '무제한' : tetheringSharingAllowance + 'GB'}</span>
-                        </div>
+                        </div>` : ''}
                         ${plan.speedAfterLimit !== 9999 ? `
                         <div class="detail-row">
                             <span class="detail-label">속도제한 후</span>
