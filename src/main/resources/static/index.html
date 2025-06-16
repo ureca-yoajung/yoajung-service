@@ -8,144 +8,233 @@
     <link rel="stylesheet" href="assets/css/index.css"/>
 </head>
 <body>
-    <!-- Navigation -->
-    <div id="navbar"></div>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>AI가 찾아주는<br>나만의 요금제</h1>
-                <p>사용 패턴을 분석해 가장 경제적인 요금제를 추천해드립니다</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary-hero btn-large" onclick="startRecommendation()">AI 추천 받기</button>
-                    <a href="#plans" class="btn btn-outline-hero btn-large">요금제 보기</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <img src="/assets/image/yoajung.png" alt="요아정 AI 요금제 추천 서비스 마스코트"/>
+<!-- Navigation -->
+<div id="navbar"></div>
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1>AI가 찾아주는<br>나만의 요금제</h1>
+            <p>사용 패턴을 분석해 가장 경제적인 요금제를 추천해드립니다</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary-hero btn-large" onclick="startRecommendation()">AI 추천 받기</button>
+                <a href="#plans" class="btn btn-outline-hero btn-large">요금제 보기</a>
             </div>
         </div>
-    </section>
+        <div class="hero-image">
+            <img src="/assets/image/yoajung.png" alt="요아정 AI 요금제 추천 서비스 마스코트"/>
+            <!--            loading="lazy"-->
+        </div>
+    </div>
+</section>
 
-    <!-- Features Section -->
-    <section class="features" id="about">
-        <div class="features-container">
-            <h2 class="section-title">간단하고 정확한 추천</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>AI 분석</h3>
-                    <p>사용 패턴과 예산을 분석하여 최적의 요금제를 찾아드립니다</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3>가격 비교</h3>
-                    <p>모든 통신사의 요금제를 비교하여 가장 저렴한 옵션을 제안합니다</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>빠른 추천</h3>
-                    <p>몇 가지 질문만으로 30초 안에 맞춤 요금제를 추천받으세요</p>
-                </div>
+<!-- Features Section -->
+<section class="features" id="about">
+    <div class="features-container">
+        <h2 class="section-title">간단하고 정확한 추천</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI 분석</h3>
+                <p>사용 패턴과 예산을 분석하여 최적의 요금제를 찾아드립니다</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>가격 비교</h3>
+                <p>모든 통신사의 요금제를 비교하여 가장 저렴한 옵션을 제안합니다</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>빠른 추천</h3>
+                <p>몇 가지 질문만으로 30초 안에 맞춤 요금제를 추천받으세요</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Plans Section -->
-    <section class="plans" id="plans">
-        <div class="plans-container">
-            <h2 class="section-title">인기 요금제</h2>
-            <div class="plans-grid">
-                <div class="plan-card">
-                    <h3 class="plan-name">라이트</h3>
-                    <div class="plan-price">35,000원</div>
-                    <ul class="plan-features">
-                        <li>데이터 8GB</li>
-                        <li>음성통화 기본</li>
-                        <li>문자 기본</li>
-                        <li>5G 지원</li>
-                    </ul>
-                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
-                </div>
-                <div class="plan-card popular">
-                    <div class="popular-badge">인기</div>
-                    <h3 class="plan-name">스탠다드</h3>
-                    <div class="plan-price">55,000원</div>
-                    <ul class="plan-features">
-                        <li>데이터 100GB</li>
-                        <li>음성통화 무제한</li>
-                        <li>문자 무제한</li>
-                        <li>5G 지원</li>
-                        <li>테더링 10GB</li>
-                    </ul>
-                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
-                </div>
-                <div class="plan-card">
-                    <h3 class="plan-name">프리미엄</h3>
-                    <div class="plan-price">75,000원</div>
-                    <ul class="plan-features">
-                        <li>데이터 무제한</li>
-                        <li>음성통화 무제한</li>
-                        <li>문자 무제한</li>
-                        <li>5G 지원</li>
-                        <li>테더링 무제한</li>
-                        <li>해외로밍 할인</li>
-                    </ul>
-                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
-                </div>
+<!-- Plans Section -->
+<section class="plans" id="plans">
+    <div class="plans-container">
+        <h2 class="section-title">인기 요금제</h2>
+        <div class="plans-grid">
+            <div class="plan-card">
+                <h3 class="plan-name">라이트</h3>
+                <div class="plan-price">35,000원</div>
+                <ul class="plan-features">
+                    <li>데이터 8GB</li>
+                    <li>음성통화 기본</li>
+                    <li>문자 기본</li>
+                    <li>5G 지원</li>
+                </ul>
+                <button class="btn btn-primary" style="width: 100%;">선택하기</button>
             </div>
-            <div style="text-align: center;">
-                <button class="btn btn-ghost btn-large">모든 요금제 보기</button>
+            <div class="plan-card popular">
+                <div class="popular-badge">인기</div>
+                <h3 class="plan-name">스탠다드</h3>
+                <div class="plan-price">55,000원</div>
+                <ul class="plan-features">
+                    <li>데이터 100GB</li>
+                    <li>음성통화 무제한</li>
+                    <li>문자 무제한</li>
+                    <li>5G 지원</li>
+                    <li>테더링 10GB</li>
+                </ul>
+                <button class="btn btn-primary" style="width: 100%;">선택하기</button>
+            </div>
+            <div class="plan-card">
+                <h3 class="plan-name">프리미엄</h3>
+                <div class="plan-price">75,000원</div>
+                <ul class="plan-features">
+                    <li>데이터 무제한</li>
+                    <li>음성통화 무제한</li>
+                    <li>문자 무제한</li>
+                    <li>5G 지원</li>
+                    <li>테더링 무제한</li>
+                    <li>해외로밍 할인</li>
+                </ul>
+                <button class="btn btn-primary" style="width: 100%;">선택하기</button>
             </div>
         </div>
-    </section>
+        <div style="text-align: center;">
+            <button class="btn btn-ghost btn-large">모든 요금제 보기</button>
+        </div>
+    </div>
+</section>
+<!-- 성향 입력 모달 -->
+<div id="modal-bg"></div>
+<div id="tendency-modal">
+    <h3>성향 정보 입력</h3>
+    <form id="tendency-form">
+        <label>월평균 데이터 사용량(GB)
+            <input name="avgMonthlyDataGB" type="number" required>
+        </label>
+        <label>월평균 통화량(분)
+            <input name="avgMonthlyVoiceMin" type="number" required>
+        </label>
+        <label>희망 요금제 가격(원)
+            <input name="preferencePrice" type="number" required>
+        </label>
+        <label>기타(주요 사용 목적 등)
+            <input name="comment" required>
+        </label>
+        <button type="submit">등록</button>
+        <button type="button" id="tendency-later">다음에 하기</button>
+    </form>
+</div>
+<!-- Footer -->
+<footer class="footer">
+    <p>&copy; 2025 YOAJUNG. All rights reserved.</p>
+</footer>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 YOAJUNG. All rights reserved.</p>
-    </footer>
+<!-- Chat Button -->
+<button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
 
-    <!-- Chat Button -->
-    <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('/assets/navbar.html')
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('navbar').innerHTML = html;
-                })
-                .catch(err => console.error('navbar 로딩 실패:', err));
-        });
-
-        function startRecommendation() {
-            window.location.href = '/chatbot.html';
-        }
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', function () {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+<script>
+    async function renderNavButtons() {
+        const navBtns = document.getElementById('nav-auth-buttons');
+        if (!navBtns) return;
+        try {
+            const res = await fetch('/api/user/me', {credentials: 'include'});
+            if (res.ok) {
+                navBtns.innerHTML = `
+                    <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
+                    <button id="logout-btn" class="btn btn-primary">로그아웃</button>
+                `;
+                document.getElementById('logout-btn').onclick = async function () {
+                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+                    location.href = "login.html";
+                };
             } else {
-                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navBtns.innerHTML = `
+                    <a href="login.html" class="btn btn-ghost">로그인</a>
+                    <a href="signup.html" class="btn btn-primary">시작하기</a>
+                `;
+            }
+        } catch {
+            navBtns.innerHTML = `
+                <a href="login.html" class="btn btn-ghost">로그인</a>
+                <a href="signup.html" class="btn btn-primary">시작하기</a>
+            `;
+        }
+    }
+
+    // 모달 표시/숨김
+    function showTendencyModal() {
+        document.getElementById('modal-bg').style.display = "block";
+        document.getElementById('tendency-modal').style.display = "block";
+    }
+
+    function hideTendencyModal() {
+        document.getElementById('modal-bg').style.display = "none";
+        document.getElementById('tendency-modal').style.display = "none";
+    }
+
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             }
         });
-    </script>
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/assets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('navbar').innerHTML = html;
+                renderNavButtons();
+            });
+
+        // 2. [최적화] 로그인 체크 → 성향 체크 (순차 fetch)
+        fetch('/api/user/me', {credentials: 'include'})
+            .then(res => {
+                if (!res.ok) return null; // 비로그인(401 등): null 반환
+                return fetch('/api/tendency/me', {credentials: 'include'});
+            })
+            .then(res => {
+                if (!res) return; // 비로그인: 아무 것도 안함
+                if (!res.ok) return; // 성향 API 에러: 아무 것도 안함
+                return res.json();
+            })
+            .then(data => {
+                // 로그인 + 성향 미입력 → 모달
+                if (data && !data.data) showTendencyModal();
+            });
+    });
+
+    document.getElementById('modal-bg').onclick = hideTendencyModal;
+
+    // 성향 등록
+    document.getElementById('tendency-form').onsubmit = function (e) {
+        e.preventDefault();
+        const obj = Object.fromEntries(new FormData(e.target));
+        fetch('/api/tendency', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify(obj)
+        }).then(res => res.json())
+            .then(data => {
+                alert(data.message || "등록 완료");
+                hideTendencyModal();
+                renderNavButtons();
+            })
+            .catch(e => {
+                alert("등록 실패");
+            })
+    };
+    document.getElementById('tendency-later').onclick = hideTendencyModal;
+
+    function startRecommendation() {
+        window.location.href = '/chatbot.html';
+    }
+</script>
 </body>
 </html>

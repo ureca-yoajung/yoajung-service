@@ -29,9 +29,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/login.html", "/signup.html", "/reset-password.html"
-                                , "/reset-request.html", "/main.html",
-                                "/api/oauth/**", "/api/auth/**", "/callback.html", "/additional-info.html"
+                                "/", "/index.html", "/login.html", "/signup.html", "/reset-password.html"
+                                , "/reset-request.html", "/api/oauth/**", "/api/auth/**", "/callback.html", "/additional-info.html"
                                 , "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico"
                                 , "/api/user/signup", "/api/plan/**"
                         ).permitAll()
