@@ -21,7 +21,6 @@ public class PlanFilterServiceImpl implements PlanFilterService {
     @Override
     @Transactional
     public PlanFilterResultResponse searchPlans(PlanFilterRequest request) {
-        // Fetch paginated plans and total count using consistent filter logic
         List<Plan> plans = planFilterRepository.plans(request);
         long totalCount = planFilterRepository.countPlans(request);
         return PlanFilterResultResponse.builder()
