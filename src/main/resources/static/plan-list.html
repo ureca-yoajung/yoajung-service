@@ -32,25 +32,97 @@
             <div class="plans-header">
                 <div class="plans-count" id="plansCount">총 0개의 요금제</div>
                 <div class="plans-filter">
-                    <select class="sort-select" onchange="sortPlans()">
+                    <select class="sort-select" id="mainSortSelect">
                         <option value="POPULAR">인기순</option>
                         <option value="LOW_PRICE">가격 낮은순</option>
                         <option value="HIGH_PRICE">가격 높은순</option>
-                        <option value="HIGH_DATA">데이터 많은순</option>
+                        <option value="DATA">데이터 많은순</option>
                     </select>
-                    <select class="sort-select" onchange="">
-                        <option value="">전체</option>
-                        <option value="">20대</option>
-                        <option value="">30대</option>
-                        <option value="">40대</option>
-                        <option value="">50대</option>
-                        <option value="">60대 이상</option>
+                    <select class="sort-select" id="mainAgeSelect" style="display: block;">
+                        <option value="ALL">전체</option>
+                        <option value="TWENTY_S">20대</option>
+                        <option value="THIRTY_S">30대</option>
+                        <option value="FORTY_S">40대</option>
+                        <option value="FIFTY_S">50대</option>
+                        <option value="SIXTY_S_PLUS">60대 이상</option>
                     </select>
-                    <div class="plan-user-filter">
+                    <div class="plan-user-filter" id="openFilterModalBtn" style="cursor:pointer;">
                         <i class="fa-solid fa-filter"></i>
                         <p>필터</p>
                     </div>
                 </div>
+    <!-- Filter Modal -->
+    <div id="planFilterModal" class="plan-filter-modal" style="display:none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>요금제 상세 필터</h2>
+                <button class="modal-close-btn" id="closeFilterModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="planFilterForm">
+                    <div class="filter-row">
+                        <label for="modalSortSelect">정렬:</label>
+                        <select id="modalSortSelect" name="sort">
+                            <option value="POPULAR">인기순</option>
+                            <option value="LOW_PRICE">낮은가격순</option>
+                            <option value="HIGH_PRICE">높은가격순</option>
+                            <option value="DATA">데이터 많은 순</option>
+                        </select>
+                    </div>
+                    <div class="filter-row" id="modalAgeFieldset">
+                        <fieldset>
+                            <legend>연령대</legend>
+                            <label><input type="radio" name="ageGroup" value="ALL" checked>전체</label>
+                            <label><input type="radio" name="ageGroup" value="TWENTY_S">20대</label>
+                            <label><input type="radio" name="ageGroup" value="THIRTY_S">30대</label>
+                            <label><input type="radio" name="ageGroup" value="FORTY_S">40대</label>
+                            <label><input type="radio" name="ageGroup" value="FIFTY_S">50대</label>
+                            <label><input type="radio" name="ageGroup" value="SIXTY_S_PLUS">60대+</label>
+                        </fieldset>
+                    </div>
+                    <div class="filter-row">
+                        <label for="modalCategorySelect">카테고리:</label>
+                        <select id="modalCategorySelect" name="category">
+                            <option value="ALL">전체</option>
+                            <option value="LTE_FIVE_G">5G/LTE</option>
+                            <option value="ONLINE_ONLY">온라인 전용</option>
+                        </select>
+                    </div>
+                    <div class="filter-row">
+                        <fieldset>
+                            <legend>데이터</legend>
+                            <label><input type="radio" name="dataType" value="UNLIMITED">무제한</label>
+                            <label><input type="radio" name="dataType" value="FIXED">정량</label>
+                            <label><input type="radio" name="dataType" value="THROTTLED">속도제한</label>
+                            <label><input type="radio" name="dataType" value="" checked>상관없음</label>
+                        </fieldset>
+                    </div>
+                    <div class="filter-row">
+                        <fieldset>
+                            <legend>요금 범위</legend>
+                            <label><input type="radio" name="priceRange" value="UNDER5">~5만원</label>
+                            <label><input type="radio" name="priceRange" value="BETWEEN6_8">6~8만원</label>
+                            <label><input type="radio" name="priceRange" value="ABOVE9">9만원~</label>
+                            <label><input type="radio" name="priceRange" value="" checked>상관없음</label>
+                        </fieldset>
+                    </div>
+                    <div class="filter-row">
+                        <fieldset>
+                            <legend>프로덕트</legend>
+                            <label><input type="checkbox" id="modalNoProduct">혜택은 필요없어요</label><br>
+                            <label><input type="checkbox" name="product" value="아이들나라">아이들나라</label>
+                            <label><input type="checkbox" name="product" value="넷플릭스">NETFLIX</label>
+                            <label><input type="checkbox" name="product" value="바이브">바이브</label>
+                        </fieldset>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="applyFilterBtn" type="button">검색</button>
+            </div>
+        </div>
+    </div>
             </div>
 
             <div class="detailed-plans-grid" id="plans-grid">
@@ -83,13 +155,20 @@
         // State management
         let currentPage = 0;
         let pageSize = 9;
-        let currentCategory = '';
-        let currentSortType = 'POPULAR';
         let totalPlans = 0;
         let loadedPlans = [];
         let hasMoreData = true;
 
-        // 상태 초기화 함수 추가
+        // --- Filter State
+        let filterState = {
+            category: 'ALL',
+            dataType: '',
+            priceRange: '',
+            productNames: '',
+            ageGroup: 'ALL',
+            sort: 'POPULAR'
+        };
+
         function resetState() {
             currentPage = 0;
             loadedPlans = [];
@@ -97,23 +176,40 @@
             totalPlans = 0;
         }
 
-        // API call function
-        async function fetchPlans(page = 0, size = 9, planType = '', sortedType = 'POPULAR') {
+        // Unified API call function for /api/plans (filtering)
+        async function fetchPlans(page = 0, size = 9, filter = {}) {
             try {
-                const params = new URLSearchParams({
-                    page: page.toString(),
-                    size: size.toString(),
-                    planType: planType,
-                    sortedType: sortedType
-                });
+                const params = new URLSearchParams();
+                params.append('page', page);
+                params.append('size', size);
+                if (filter.category && filter.category !== 'ALL') params.append('category', filter.category);
+                if (filter.dataType) params.append('dataType', filter.dataType);
+                if (filter.priceRange) params.append('priceRange', filter.priceRange);
+                if (filter.productNames) params.append('productNames', filter.productNames);
+                if (filter.ageGroup && filter.sort === 'POPULAR' && filter.ageGroup !== 'ALL') params.append('ageGroup', filter.ageGroup);
+                if (filter.sort) params.append('sort', filter.sort);
 
-                const response = await fetch(`api/plan?${params}`);
+                const response = await fetch(`/api/plans?${params}`);
                 const data = await response.json();
-
-                if (data.status === 'OK') {
+                if (data.code === 'READ_PLAN_LIST_200') {
+                    // New backend response: { plans: [...], totalCount: N }
+                    const plans = (data.data && data.data.plans) ? data.data.plans : [];
+                    const totalCount = (data.data && typeof data.data.totalCount === 'number') ? data.data.totalCount : 0;
+                    // Normalize backend PlanFilterResponse[] to frontend plan format
                     return {
-                        plans: data.data.plans,
-                        totalCount: data.data.count
+                        plans: plans.map(item => ({
+                            planId: item.id,
+                            name: item.name,
+                            basePrice: item.basePrice,
+                            dataAllowance: item.dataAllowance,
+                            speedAfterLimit: item.speedAfterLimit,
+                            planCategory: item.planCategory || '기타', // fallback if missing
+                            networkType: item.networkType || '기타', // fallback if missing
+                            tetheringSharingAllowance: item.tetheringSharingAllowance !== undefined ? item.tetheringSharingAllowance : 0,
+                            products: (item.productNames || []).map(name => ({ name })),
+                            description: (item.benefits || []).map(b => b.name).join(', ')
+                        })),
+                        totalCount: totalCount
                     };
                 } else {
                     throw new Error(data.message || '요금제 조회에 실패했습니다.');
@@ -146,10 +242,14 @@
             plans.forEach(plan => {
                 const planCard = document.createElement('div');
                 planCard.className = 'detailed-plan-card';
+                // Defensively handle undefined fields
+                const planCategory = plan.planCategory !== undefined ? plan.planCategory : '기타';
+                const networkType = plan.networkType !== undefined ? plan.networkType : '기타';
+                const tetheringSharingAllowance = plan.tetheringSharingAllowance !== undefined ? plan.tetheringSharingAllowance : 0;
                 planCard.innerHTML = `
                     <div class="plan-header">
                         <h3 class="plan-name">${plan.name}</h3>
-                        <span class="network-badge ${plan.networkType.toLowerCase()}">${plan.networkType}</span>
+                        <span class="network-badge ${networkType.toLowerCase()}">${networkType}</span>
                     </div>
                     <div class="plan-price">월 ${plan.basePrice.toLocaleString()}원</div>
                     <div class="plan-details">
@@ -159,7 +259,7 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">테더링</span>
-                            <span class="detail-value">${plan.tetheringSharingAllowance === 9999 ? '무제한' : plan.tetheringSharingAllowance + 'GB'}</span>
+                            <span class="detail-value">${tetheringSharingAllowance === 9999 ? '무제한' : tetheringSharingAllowance + 'GB'}</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">속도제한 후</span>
@@ -167,16 +267,16 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">카테고리</span>
-                            <span class="detail-value">${getCategoryName(plan.planCategory)}</span>
+                            <span class="detail-value">${getCategoryName(planCategory)}</span>
                         </div>
                     </div>
                     <div class="services-section">
                         <div class="services-title">포함 서비스</div>
                         <div class="services-list">
-                            ${plan.products.map(product => `<span class="service-tag">${product.name}</span>`).join('')}
+                            ${(plan.products || []).map(product => `<span class="service-tag">${product.name}</span>`).join('')}
                         </div>
                     </div>
-                    <p class="plan-description">${plan.description}</p>
+                    <p class="plan-description">${plan.description || ''}</p>
                     <button class="btn btn-primary btn-large" style="width: 100%;" onclick="goToDetail(${plan.planId})">자세히 보기</button>
                 `;
                 plansGrid.appendChild(planCard);
@@ -212,7 +312,7 @@
             `;
         }
 
-        // Category filter function - 수정됨
+        // Category filter function
         async function filterByCategory(category) {
             // Update active state of buttons
             document.querySelectorAll('.category-btn').forEach(btn => {
@@ -220,23 +320,32 @@
             });
             event.target.classList.add('active');
 
-            currentCategory = category === 'all' ? '' : category;
-
-            // 상태 완전 초기화
+            filterState.category = category === 'all' ? 'ALL' : category;
             resetState();
-
-            await loadPlans(false); // false = replace mode
+            await loadPlans(false);
         }
 
-        // Sort function - 수정됨
+        // Sort function (main bar)
         async function sortPlans() {
-            const sortSelect = document.querySelector('.sort-select');
-            currentSortType = sortSelect.value;
-
-            // 상태 완전 초기화
+            const sortValue = document.getElementById('mainSortSelect').value;
+            filterState.sort = sortValue;
+            // Show/hide age group select
+            document.getElementById('mainAgeSelect').style.display = (sortValue === 'POPULAR') ? 'block' : 'none';
+            // If not 인기순, reset age group to ALL
+            if (sortValue !== 'POPULAR') {
+                filterState.ageGroup = 'ALL';
+                document.getElementById('mainAgeSelect').value = 'ALL';
+            }
             resetState();
+            await loadPlans(false);
+        }
 
-            await loadPlans(false); // false = replace mode
+        // Age select function (main bar)
+        async function ageGroupChanged() {
+            const ageValue = document.getElementById('mainAgeSelect').value;
+            filterState.ageGroup = ageValue;
+            resetState();
+            await loadPlans(false);
         }
 
         // Load more function
@@ -287,19 +396,21 @@
             }
         }
 
-        // Main load function - 수정됨
+        // Main load function (uses filterState)
         async function loadPlans(append = false) {
-            const { plans, totalCount } = await fetchPlans(currentPage, pageSize, currentCategory, currentSortType);
+            const { plans, totalCount } = await fetchPlans(currentPage, pageSize, filterState);
 
-            // totalPlans 업데이트
+            console.log(`📦 가져온 plans 개수: ${plans.length}`);
+            console.log(`📊 loadPlans 호출 시 loadedPlans: ${loadedPlans.length}개 append=${append}`);
+
+            // 1) 총 개수 저장
             totalPlans = totalCount;
 
-            // Check if we have more data
-            hasMoreData = plans.length === pageSize;
-
+            // 2) 화면에 렌더링 (renderPlans 내부에서 loadedPlans가 갱신됨)
             renderPlans(plans, append);
 
-            // 현재 로드된 플랜 수와 전체 수로 버튼 업데이트
+            // 3) loadedPlans 길이를 기준으로 hasMoreData 및 버튼 텍스트 계산
+            hasMoreData = loadedPlans.length < totalPlans;
             updateLoadMoreButton(loadedPlans.length, totalPlans);
         }
 
@@ -325,20 +436,207 @@
 
         scrollTopBtn.addEventListener('click', scrollToTop);
 
-        // Initialize page
+        // --- FILTER MODAL LOGIC ---
+        function openFilterModal() {
+            document.getElementById('planFilterModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            // Sync modal controls with filterState
+            document.getElementById('modalSortSelect').value = filterState.sort;
+            document.getElementById('modalCategorySelect').value = filterState.category;
+            // Age group radio
+            const ageGroupRadios = document.querySelectorAll('#modalAgeFieldset input[name="ageGroup"]');
+            ageGroupRadios.forEach(r => { r.checked = (r.value === filterState.ageGroup); });
+            // DataType, priceRange
+            document.querySelectorAll('#planFilterForm input[name="dataType"]').forEach(r => {
+                r.checked = (r.value === filterState.dataType);
+            });
+            document.querySelectorAll('#planFilterForm input[name="priceRange"]').forEach(r => {
+                r.checked = (r.value === filterState.priceRange);
+            });
+            // Products
+            if (!filterState.productNames) {
+                document.getElementById('modalNoProduct').checked = false;
+                document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => { cb.checked = false; });
+            } else {
+                document.getElementById('modalNoProduct').checked = false;
+                const prods = filterState.productNames.split(',');
+                document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => {
+                    cb.checked = prods.includes(cb.value);
+                });
+            }
+            // Show/hide age group in modal
+            document.getElementById('modalAgeFieldset').style.display = (filterState.sort === 'POPULAR') ? 'block' : 'none';
+        }
+        function closeFilterModal() {
+            document.getElementById('planFilterModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        // Modal events
         document.addEventListener('DOMContentLoaded', function () {
-            loadPlans(false); // false = replace mode for initial load
+            // Initial load
+            loadPlans(false);
 
+            // Main sort select
+            document.getElementById('mainSortSelect').addEventListener('change', sortPlans);
+            document.getElementById('mainAgeSelect').addEventListener('change', ageGroupChanged);
+
+            // Load more
             const loadMoreBtn = document.getElementById('loadMoreBtn');
-
             if (loadMoreBtn) {
                 loadMoreBtn.addEventListener('click', function(event) {
                     event.preventDefault();
                     loadMorePlans();
                 });
             }
+
+            // Filter modal open/close
+            document.getElementById('openFilterModalBtn').addEventListener('click', openFilterModal);
+            document.getElementById('closeFilterModalBtn').addEventListener('click', closeFilterModal);
+            document.querySelector('#planFilterModal .modal-overlay').addEventListener('click', closeFilterModal);
+
+            // Modal sort change: show/hide age group
+            document.getElementById('modalSortSelect').addEventListener('change', function() {
+                document.getElementById('modalAgeFieldset').style.display = (this.value === 'POPULAR') ? 'block' : 'none';
+            });
+            // 혜택은 필요없어요 체크박스
+            document.getElementById('modalNoProduct').addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => { cb.checked = false; });
+                }
+            });
+            document.querySelectorAll('#planFilterForm input[name="product"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (this.checked) {
+                        document.getElementById('modalNoProduct').checked = false;
+                    }
+                });
+            });
+
+            // 검색 버튼
+            document.getElementById('applyFilterBtn').addEventListener('click', function() {
+                // Collect filter values from modal
+                const sort = document.getElementById('modalSortSelect').value;
+                const category = document.getElementById('modalCategorySelect').value;
+                let ageGroup = 'ALL';
+                if (sort === 'POPULAR') {
+                    const checkedAge = document.querySelector('#modalAgeFieldset input[name="ageGroup"]:checked');
+                    if (checkedAge) ageGroup = checkedAge.value;
+                }
+                const dataType = document.querySelector('#planFilterForm input[name="dataType"]:checked').value;
+                const priceRange = document.querySelector('#planFilterForm input[name="priceRange"]:checked').value;
+                let productNames = '';
+                if (!document.getElementById('modalNoProduct').checked) {
+                    productNames = Array.from(document.querySelectorAll('#planFilterForm input[name="product"]:checked'))
+                        .map(cb => cb.value).join(',');
+                }
+                // Update filterState
+                filterState = {
+                    category,
+                    dataType,
+                    priceRange,
+                    productNames,
+                    ageGroup,
+                    sort
+                };
+                // Sync main bar
+                document.getElementById('mainSortSelect').value = sort;
+                document.getElementById('mainAgeSelect').style.display = (sort === 'POPULAR') ? 'block' : 'none';
+                document.getElementById('mainAgeSelect').value = ageGroup;
+                // Apply filter & close modal
+                resetState();
+                loadPlans(false);
+                closeFilterModal();
+            });
         });
     </script>
 </body>
 
 </html>
+    </script>
+    <style>
+    .plan-filter-modal {
+        position: fixed;
+        z-index: 200;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .plan-filter-modal .modal-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.3);
+    }
+    .plan-filter-modal .modal-content {
+        position: relative;
+        background: #fff;
+        border-radius: 16px;
+        max-width: 420px;
+        width: 95vw;
+        padding: 32px 24px 16px 24px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        z-index: 210;
+    }
+    .plan-filter-modal .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+    .plan-filter-modal .modal-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 26px;
+        cursor: pointer;
+        color: #aaa;
+        transition: color 0.2s;
+    }
+    .modal-close-btn:hover {
+        color: var(--primary);
+    }
+    .plan-filter-modal .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .plan-filter-modal .filter-row {
+        margin-bottom: 16px;
+    }
+    .plan-filter-modal label {
+        font-size: 15px;
+        margin-right: 10px;
+    }
+    .plan-filter-modal fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 6px;
+    }
+    .plan-filter-modal legend {
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 15px;
+    }
+    .plan-filter-modal input[type="radio"],
+    .plan-filter-modal input[type="checkbox"] {
+        margin-right: 4px;
+    }
+    .plan-filter-modal .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 12px;
+    }
+    @media (max-width: 600px) {
+        .plan-filter-modal .modal-content {
+            max-width: 98vw;
+            padding: 16px 8px 8px 8px;
+        }
+    }
+    </style>
