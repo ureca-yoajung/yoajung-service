@@ -1,15 +1,13 @@
 package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
+
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordFirst;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
 
-import com.ureca.yoajungserver.chatbot.dto.*;
 
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import java.util.Map;
 
 
 import java.util.concurrent.CompletableFuture;
@@ -32,31 +29,29 @@ import lombok.Getter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
+
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.MessageType;
+
 import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.openai.api.OpenAiApi;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.scheduling.annotation.Async;
+
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService {
+    private final ObjectMapper objectMapper;
     private final ChatbotRepository chatbotRepository;
     private final LLMAsyncService llmAsyncService;
     private final UserRepository userRepository;
@@ -99,7 +94,16 @@ public class ChatbotServiceImpl implements ChatbotService {
             //    .join()은 예외를 던지지 않지만, .get()은 checked exception을 던집니다.
             //    allOf() 로 이미 완료를 기다렸기 때문에 여기서 join()은 블로킹되지 않습니다.
             PlanKeywordResponse planKeywordResponse = getKeyWordResponse(input, userId);
-            return chatbotRepository.recommendPlans(planKeywordResponse);
+
+            // DB 조회
+            List<PersonalPlanRecommendResponse> planResult = chatbotRepository.recommendPlans(planKeywordResponse); // json으로
+
+            // 조회 결과 db에 저장
+            String json = objectMapper.writeValueAsString(planResult);
+            Message message = new SystemMessage(json);
+            chatMemory.add(userId, message);
+
+            return planResult;
         } catch (Exception e) {
             // 비동기 작업 중 발생한 예외 처리
             log.error("Error during asynchronous LLM call processing", e);
@@ -197,15 +201,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         log.info("planKeyword3 : {}", resp3);
         log.info("planKeywordResponse : {}", planKeywordResponse);
 
-        // DB 조회
-        List<PersonalPlanRecommendResponse> planResult = chatbotRepository.recommendPlans(planKeywordResponse); // json으로
-
-        // 조회 결과 db에 저장
-        String json = objectMapper.writeValueAsString(planResult);
-        Message message = new SystemMessage(json);
-        chatMemory.add(userId, message);
-
-        return planResult;
+        return planKeywordResponse;
     }
 
     @Getter
