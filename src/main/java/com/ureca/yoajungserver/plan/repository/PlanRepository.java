@@ -12,10 +12,14 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     Page<Plan> findAllByPlanCategory(PlanCategory planCategory, Pageable pageable);
 
     List<Plan> findByIdIn(List<Long> planIds);
+
     List<Plan> findByPlanCategoryAndIdIn(PlanCategory planCategory, List<Long> planIds);
 
     Page<Plan> findByIdNotIn(List<Long> popularPlanIds, Pageable normalPageable);
+
     Page<Plan> findByPlanCategoryAndIdNotIn(PlanCategory planCategory, List<Long> popularPlanIds, Pageable normalPageable);
 
     long countByPlanCategory(PlanCategory category);
+
+    List<Plan> findByNameContaining(String keyword);
 }

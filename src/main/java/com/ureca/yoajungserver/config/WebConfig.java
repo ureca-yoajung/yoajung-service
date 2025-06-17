@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.common.config;
+package com.ureca.yoajungserver.config;
 
 import com.ureca.yoajungserver.chatbot.interceptor.GptBadWordInterceptor;
 import com.ureca.yoajungserver.chatbot.interceptor.LocalBadWordInterceptor;

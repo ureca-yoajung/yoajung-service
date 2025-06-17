@@ -1,4 +1,4 @@
-package com.ureca.yoajungserver.common.config;
+package com.ureca.yoajungserver.config;
 
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;

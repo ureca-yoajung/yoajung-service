@@ -31,4 +31,11 @@ public class ChatbotController {
                 : guestId;
         return ResponseEntity.ok(ApiResponse.of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapper(question, id)));
     }
+
+    @GetMapping("/chat-preferences")
+    public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> getPlanRecommendationByPreferences(@RequestParam("question") String question,
+                                                                                                              @RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(ApiResponse
+                .of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapperByPreferences(question, userId)));
+    }
 }

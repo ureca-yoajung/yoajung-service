@@ -84,11 +84,11 @@
                         <p class="category-description">다양한 미디어 서비스 중 하나를 선택하세요</p>
                     </div>
                     <div class="benefits-container">
-                        <button class="scroll-button prev" onclick="scrollBenefits('mediaBenefits', -1)">
+                        <button class="scroll-button prev" onclick="scrollMedia('mediaBenefits', -1)">
                             <i class="fa-solid fa-angle-left" style="color: black"></i>
                         </button>
                         <div class="product-grid" id="mediaBenefits"></div>
-                        <button class="scroll-button next" onclick="scrollBenefits('mediaBenefits', 1)">
+                        <button class="scroll-button next" onclick="scrollMedia('mediaBenefits', 1)">
                             <i class="fa-solid fa-angle-right" style="color: black"></i>
                         </button>
                     </div>
@@ -108,11 +108,11 @@
                         <p class="category-description">프리미엄 서비스 중 하나를 선택하세요</p>
                     </div>
                     <div class="benefits-container">
-                        <button class="scroll-button prev" onclick="scrollBenefits('mediaBenefits', -1)">
+                        <button class="scroll-button prev" onclick="scrollPremium('premiumBenefits', -1)">
                             <i class="fa-solid fa-angle-left" style="color: black"></i>
                         </button>
                         <div class="product-grid" id="premiumBenefits"></div>
-                        <button class="scroll-button next" onclick="scrollBenefits('mediaBenefits', 1)">
+                        <button class="scroll-button next" onclick="scrollPremium('premiumBenefits', 1)">
                             <i class="fa-solid fa-angle-right" style="color: black"></i>
                         </button>
                     </div>
@@ -576,7 +576,16 @@
                 });
             }
 
-            function scrollBenefits(containerId, direction) {
+            function scrollMedia(containerId, direction) {
+                const container = document.getElementById(containerId);
+                const scrollAmount = 320;
+                container.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+
+            function scrollPremium(containerId, direction) {
                 const container = document.getElementById(containerId);
                 const scrollAmount = 320;
                 container.scrollBy({
