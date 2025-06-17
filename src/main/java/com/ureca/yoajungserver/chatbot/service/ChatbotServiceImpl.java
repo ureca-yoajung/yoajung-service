@@ -1,5 +1,6 @@
 package com.ureca.yoajungserver.chatbot.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
@@ -104,6 +105,8 @@ public class ChatbotServiceImpl implements ChatbotService {
             chatMemory.add(userId, message);
 
             return planResult;
+
+
         } catch (Exception e) {
             // 비동기 작업 중 발생한 예외 처리
             log.error("Error during asynchronous LLM call processing", e);
@@ -158,6 +161,16 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         for (int i = 0; i < limit; i++) {
             result.add(planScores.get(i).getPlan());
+        }
+
+        try {
+            // 조회 결과 db에 저장
+            String json = objectMapper.writeValueAsString(result);
+            Message message = new SystemMessage(json);
+            chatMemory.add(String.valueOf(userId), message);
+        } catch (JsonProcessingException e) {
+            // 로그 출력 or 사용자 메시지 처리
+            log.error("JSON 변환 실패", e);
         }
 
         return result;
