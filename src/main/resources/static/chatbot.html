@@ -861,6 +861,16 @@
                 const data = await response.json();
                 hideTypingIndicator();
 
+                if (!response.ok) {
+                    // 서버가 400, 500 등 에러 응답을 내려준 경우
+                    if (data.code === 'BAD_WORD_CHAT_400') {
+                        addMessage('bot', data.message); // 욕설 감지 메시지 표시
+                    } else {
+                        addMessage('bot', data.message || '오류가 발생했습니다.');
+                    }
+                    return;
+                }
+
                 if (Array.isArray(data.data) && data.data.length) {
                     renderCards(data.data);
                 } else {
