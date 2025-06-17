@@ -29,6 +29,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     private final TendencyRepository tendencyRepository;
     private final ObjectMapper objectMapper;
     private final ChatClient chatClient;
+    private final ChatMemory chatMemory;
 
     @Value("${spring.ai.chat.system-prompt1}")
     private Resource promptRes1;
@@ -89,7 +92,14 @@ public class ChatbotServiceImpl implements ChatbotService {
                 top3 = personalPlanRecommendResponses;
             }
             System.out.println(responseMapper(input, userId, planKeywordResponse, top3));
+
+            // 조회 결과 db에 저장
+            String json = objectMapper.writeValueAsString(top3);
+            Message message = new SystemMessage(json);
+            chatMemory.add(userId, message);
+
             return top3;
+
         } catch (Exception e) {
             // 비동기 작업 중 발생한 예외 처리
             log.error("Error during asynchronous LLM call processing", e);
@@ -144,6 +154,16 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         for (int i = 0; i < limit; i++) {
             result.add(planScores.get(i).getPlan());
+        }
+
+        try {
+            // 조회 결과 db에 저장
+            String json = objectMapper.writeValueAsString(result);
+            Message message = new SystemMessage(json);
+            chatMemory.add(String.valueOf(userId), message);
+        } catch (JsonProcessingException e) {
+            // 로그 출력 or 사용자 메시지 처리
+            log.error("JSON 변환 실패", e);
         }
 
         return result;
