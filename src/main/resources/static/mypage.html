@@ -33,7 +33,11 @@
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        // 1. 로그인 상태 체크 (비로그인 → login.html로)
+        // --- 상태 변수 (중복 선언 X) ---
+        let userData = null, userEditMode = false;
+        let tendencyData = null, tendencyEditMode = false;
+
+        // 1. 로그인 상태 체크
         const res = await fetch('/api/user/me', {credentials: 'include'});
         if (!res.ok) {
             location.href = "login.html";
@@ -46,7 +50,7 @@
             renderUserInfo();
         }
 
-        // 2. 네비게이션 바 (메인, 로그아웃만 노출)
+        // 2. 네비게이션 바 로딩
         try {
             const res = await fetch('/assets/navbar.html');
             const html = await res.text();
@@ -75,37 +79,18 @@
             tabTendency.onclick = () => setTab('tendency');
         }
 
-        // 4. 초기 정보 로딩
-        loadMyInfo();
-    });
-
-    // --- 내 정보/성향 상태 및 함수 ---
-    let userData = null, userEditMode = false;
-    let tendencyData = null, tendencyEditMode = false;
-
-    function setTab(tab) {
-        document.getElementById('tab-info').classList.toggle('active', tab === 'info');
-        document.getElementById('tab-tendency').classList.toggle('active', tab === 'tendency');
-        document.getElementById('section-info').classList.toggle('active', tab === 'info');
-        document.getElementById('section-tendency').classList.toggle('active', tab === 'tendency');
-        if (tab === 'info') loadMyInfo();
-        if (tab === 'tendency') loadTendency();
-    }
-
-    // 내 정보
-    let userData = null, userEditMode = false;
-
-    function renderUserInfo() {
-        const d = userData;
-        const el = document.getElementById('userinfo');
-        document.getElementById('profile-name').textContent = d?.name || "";
-        document.getElementById('profile-email').textContent = d?.email || "";
-        if (!d) {
-            el.innerHTML = "정보 없음";
-            return;
-        }
-        if (userEditMode) {
-            el.innerHTML = `
+        // 4. 내 정보/성향 함수
+        function renderUserInfo() {
+            const d = userData;
+            const el = document.getElementById('userinfo');
+            document.getElementById('profile-name').textContent = d?.name || "";
+            document.getElementById('profile-email').textContent = d?.email || "";
+            if (!d) {
+                el.innerHTML = "정보 없음";
+                return;
+            }
+            if (userEditMode) {
+                el.innerHTML = `
                 <form id="user-edit-form">
                     <div><span class="label">이메일</span><input type="email" name="email" value="${d.email}" disabled></div>
                     <div><span class="label">이름</span><input type="text" name="name" value="${d.name}" disabled></div>
@@ -130,82 +115,60 @@
                     <button class="save-btn" type="submit">수정 완료</button>
                 </form>
             `;
-            document.getElementById('user-edit-form').onsubmit = function (e) {
-                e.preventDefault();
-                const obj = Object.fromEntries(new FormData(e.target));
-                fetch('/api/user/me', {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    body: JSON.stringify(obj)
-                }).then(r => r.json()).then(data => {
-                    if (data && data.data) {
-                        userData = data.data;
-                        userEditMode = false;
-                        renderUserInfo();
-                        alert(data.message || "수정 완료");
-                    } else alert(data.message || "실패");
-                });
-            }
-        } else {
-            el.innerHTML = `
+                document.getElementById('user-edit-form').onsubmit = function (e) {
+                    e.preventDefault();
+                    const obj = Object.fromEntries(new FormData(e.target));
+                    fetch('/api/user/me', {
+                        method: 'PATCH',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include',
+                        body: JSON.stringify(obj)
+                    }).then(r => r.json()).then(data => {
+                        if (data && data.data) {
+                            userData = data.data;
+                            userEditMode = false;
+                            renderUserInfo();
+                            alert(data.message || "수정 완료");
+                        } else alert(data.message || "실패");
+                    });
+                }
+            } else {
+                el.innerHTML = `
                 <div><span class="label">이메일</span> <b>${d.email}</b></div>
                 <div><span class="label">이름</span> ${d.name}</div>
                 <div><span class="label">전화번호</span> ${d.phoneNumber || ''}</div>
                 <div><span class="label">성별</span> ${d.gender === 'MALE' ? '남자' : d.gender === 'FEMALE' ? '여자' : ''}</div>
                 <div><span class="label">연령대</span> ${
-                d.ageGroup === 'TEN_S' ? '10대'
-                    : d.ageGroup === 'TWENTY_S' ? '20대'
-                        : d.ageGroup === 'THIRTY_S' ? '30대'
-                            : d.ageGroup === 'FORTY_S' ? '40대'
-                                : d.ageGroup === 'FIFTY_S' ? '50대'
-                                    : d.ageGroup === 'SIXTY_S_PLUS' ? '60대 이상' : ''
-            }</div>
+                    d.ageGroup === 'TEN_S' ? '10대'
+                        : d.ageGroup === 'TWENTY_S' ? '20대'
+                            : d.ageGroup === 'THIRTY_S' ? '30대'
+                                : d.ageGroup === 'FORTY_S' ? '40대'
+                                    : d.ageGroup === 'FIFTY_S' ? '50대'
+                                        : d.ageGroup === 'SIXTY_S_PLUS' ? '60대 이상' : ''
+                }</div>
                 <div><span class="label">가족수</span> ${d.familyCount || ''}</div>
                 <button class="edit-btn" id="user-edit-btn">내 정보 수정</button>
             `;
-            document.getElementById('user-edit-btn').onclick = () => {
-                userEditMode = true;
-                renderUserInfo();
-            }
-        }
-    }
-
-    function loadMyInfo() {
-        fetch('/api/user/me', {method: 'GET', credentials: 'include'})
-            .then(res => {
-                if (res.status === 401) {
-                    alert("로그인 필요");
-                    location.href = "login.html";
-                    return
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (data && data.data) {
-                    userData = data.data;
-                    userEditMode = false;
+                document.getElementById('user-edit-btn').onclick = () => {
+                    userEditMode = true;
                     renderUserInfo();
                 }
-            });
-    }
-
-    // 내 성향
-    let tendencyData = null, tendencyEditMode = false;
-
-    function renderTendency() {
-        const d = tendencyData;
-        const el = document.getElementById('tendency');
-        if (!d && !tendencyEditMode) {
-            el.innerHTML = `<div>성향 정보가 없습니다.</div><button class="edit-btn" id="tendency-reg-btn">성향 등록</button>`;
-            document.getElementById('tendency-reg-btn').onclick = () => {
-                tendencyEditMode = true;
-                renderTendency();
             }
-            return;
         }
-        if (tendencyEditMode) {
-            el.innerHTML = `
+
+        function renderTendency() {
+            const d = tendencyData;
+            const el = document.getElementById('tendency');
+            if (!d && !tendencyEditMode) {
+                el.innerHTML = `<div>성향 정보가 없습니다.</div><button class="edit-btn" id="tendency-reg-btn">성향 등록</button>`;
+                document.getElementById('tendency-reg-btn').onclick = () => {
+                    tendencyEditMode = true;
+                    renderTendency();
+                }
+                return;
+            }
+            if (tendencyEditMode) {
+                el.innerHTML = `
                 <form id="tendency-edit-form">
                     <div><span class="label">월평균 데이터 사용량(GB)</span><input name="avgMonthlyDataGB" type="number" value="${d ? d.avgMonthlyDataGB : ''}" required></div>
                     <div><span class="label">월평균 통화량(분)</span><input name="avgMonthlyVoiceMin" type="number" value="${d ? d.avgMonthlyVoiceMin : ''}" required></div>
@@ -214,73 +177,87 @@
                     <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
                 </form>
             `;
-            document.getElementById('tendency-edit-form').onsubmit = function (e) {
-                e.preventDefault();
-                const obj = Object.fromEntries(new FormData(e.target));
-                fetch('/api/tendency', {
-                    method: d ? 'PUT' : 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    body: JSON.stringify(obj)
-                }).then(r => r.json()).then(data => {
-                    if (data && data.data) {
-                        tendencyData = data.data;
-                        tendencyEditMode = false;
-                        renderTendency();
-                        alert(data.message || "저장 완료");
-                    } else alert(data.message || "실패");
-                });
-            }
-        } else if (d) {
-            el.innerHTML = `
-                <div><span class="label">월평균 데이터 사용량(GB)</span> ${d.avgMonthlyDataGB}</div>
-                <div><span class="label">월평균 통화량(분)</span> ${d.avgMonthlyVoiceMin}</div>
-                <div><span class="label">희망 요금제 가격(원)</span> ${d.preferencePrice}</div>
+                document.getElementById('tendency-edit-form').onsubmit = function (e) {
+                    e.preventDefault();
+                    const obj = Object.fromEntries(new FormData(e.target));
+                    fetch('/api/tendency', {
+                        method: d ? 'PUT' : 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include',
+                        body: JSON.stringify(obj)
+                    }).then(r => r.json()).then(data => {
+                        if (data && data.data) {
+                            tendencyData = data.data;
+                            tendencyEditMode = false;
+                            renderTendency();
+                            alert(data.message || "저장 완료");
+                        } else alert(data.message || "실패");
+                    });
+                }
+            } else if (d) {
+                el.innerHTML = `
+                <div><span class="label">월평균 데이터 사용량(GB)</span> ${d.avgMonthlyDataGB} GB</div>
+                <div><span class="label">월평균 통화량(분)</span> ${d.avgMonthlyVoiceMin} 분</div>
+                <div><span class="label">희망 요금제 가격(원)</span> ${d.preferencePrice} 원</div>
                 <div><span class="label">기타</span> ${d.comment}</div>
                 <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>
             `;
-            document.getElementById('tendency-edit-btn').onclick = () => {
-                tendencyEditMode = true;
+                document.getElementById('tendency-edit-btn').onclick = () => {
+                    tendencyEditMode = true;
+                    renderTendency();
+                }
+            }
+        }
+
+        // 탭 전환 함수
+        function setTab(tab) {
+            document.getElementById('tab-info').classList.toggle('active', tab === 'info');
+            document.getElementById('tab-tendency').classList.toggle('active', tab === 'tendency');
+            document.getElementById('section-info').classList.toggle('active', tab === 'info');
+            document.getElementById('section-tendency').classList.toggle('active', tab === 'tendency');
+            if (tab === 'info') loadMyInfo();
+            if (tab === 'tendency') loadTendency();
+        }
+
+        // 데이터 로드 함수
+        async function loadMyInfo() {
+            const res = await fetch('/api/user/me', {method: 'GET', credentials: 'include'});
+            if (res.status === 401) {
+                alert("로그인 필요");
+                location.href = "login.html";
+                return;
+            }
+            const data = await res.json();
+            if (data && data.data) {
+                userData = data.data;
+                userEditMode = false;
+                renderUserInfo();
+            }
+        }
+
+        async function loadTendency() {
+            const res = await fetch('/api/tendency', {method: 'GET', credentials: 'include'});
+            if (res.status === 401) {
+                alert("로그인 필요");
+                location.href = "login.html";
+                return;
+            }
+            const data = await res.json();
+            if (data && data.data) {
+                tendencyData = data.data;
+                tendencyEditMode = false;
+                renderTendency();
+            } else {
+                tendencyData = null;
+                tendencyEditMode = false;
                 renderTendency();
             }
         }
-    }
 
-    function loadTendency() {
-        fetch('/api/tendency/me', {method: 'GET', credentials: 'include'})
-            .then(res => {
-                if (res.status === 401) {
-                    alert("로그인 필요");
-                    location.href = "login.html";
-                    return
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (data && data.data) {
-                    tendencyData = data.data;
-                    tendencyEditMode = false;
-                    renderTendency();
-                } else {
-                    tendencyData = null;
-                    tendencyEditMode = false;
-                    renderTendency();
-                }
-            });
-    }
-
-    function logout() {
-        fetch('/api/auth/logout', {method: 'POST', credentials: 'include'})
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || "로그아웃");
-                location.href = "login.html";
-            });
-    }
-
-    window.onload = function () {
-        loadMyInfo();
-    }
+        // 최초 렌더 시 정보/성향 동시에 미리 로딩 (탭 전환시 최신화)
+        await loadMyInfo();
+        await loadTendency();
+    });
 </script>
 </body>
 </html>
