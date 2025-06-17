@@ -36,7 +36,7 @@ public class PlanController {
         }
 
         PlanSortType planSortType = PlanSortType.fromType(sortedType.toUpperCase())
-                    .orElseThrow(() -> new InvalidPlanSortTypeException(INVALID_PLAN_SORT_TYPE));
+                .orElseThrow(() -> new InvalidPlanSortTypeException(INVALID_PLAN_SORT_TYPE));
 
         ListPlanResponse responses = (planSortType == PlanSortType.POPULAR)
                 ? planService.getPopularPlans(page, size, category, planSortType)
@@ -69,5 +69,13 @@ public class PlanController {
         return ResponseEntity
                 .status(PLAN_BENEFIT_SUCCESS.getStatus())
                 .body(ApiResponse.of(PLAN_BENEFIT_SUCCESS, responses));
+    }
+
+    @GetMapping("/names")
+    public ResponseEntity<ApiResponse<List<PlanNameResponse>>> getPlanNames(
+            @RequestParam(required = false) String keyword
+    ) {
+        List<PlanNameResponse> plans = planService.getPlanName(keyword);
+        return ResponseEntity.ok(ApiResponse.of(PLAN_LIST_SUCCESS, plans));
     }
 }
