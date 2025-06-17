@@ -35,10 +35,6 @@ public class PlanServiceImpl implements PlanService {
     @Override
     @Transactional(readOnly = true)
     public ListPlanResponse getListPlan(int page, int size, PlanCategory planCategory, PlanSortType sortedType) {
-        if (sortedType == PlanSortType.POPULAR) {
-            throw new IllegalArgumentException("POPULAR sort type should use getPopularPlans method");
-        }
-
         Pageable pageable = PlanSortType.toSort(sortedType)
                 .map(sort -> PageRequest.of(page, size, sort))
                 .orElse(PageRequest.of(page, size));
