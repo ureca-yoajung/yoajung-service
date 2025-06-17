@@ -1,6 +1,5 @@
 package com.ureca.yoajungserver.user.dto.response;
 
-import com.ureca.yoajungserver.plan.entity.Plan;
 import com.ureca.yoajungserver.user.entity.AgeGroup;
 import com.ureca.yoajungserver.user.entity.Gender;
 import com.ureca.yoajungserver.user.entity.User;
@@ -21,7 +20,6 @@ public class UserResponse {
     private String planName;
 
     public static UserResponse fromEntity(User user) {
-        Plan plan = user.getPlan();
         return UserResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -29,7 +27,7 @@ public class UserResponse {
                 .gender(user.getGender())
                 .ageGroup(user.getAgeGroup())
                 .familyCount(user.getFamilyCount())
-                .planName(plan == null ? "없음" : plan.getName())
+                .planName(user.getPlan() == null ? "없음" : user.getPlan().getName())
                 .build();
     }
 }
