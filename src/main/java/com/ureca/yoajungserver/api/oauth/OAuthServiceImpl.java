@@ -4,8 +4,11 @@ import com.ureca.yoajungserver.external.kakao.KakaoOAuthClient;
 import com.ureca.yoajungserver.external.kakao.KakaoSignupRequest;
 import com.ureca.yoajungserver.external.kakao.KakaoTokenResponse;
 import com.ureca.yoajungserver.external.kakao.KakaoUserInfoResponse;
+import com.ureca.yoajungserver.plan.entity.Plan;
+import com.ureca.yoajungserver.plan.repository.PlanRepository;
 import com.ureca.yoajungserver.user.entity.Role;
 import com.ureca.yoajungserver.user.entity.User;
+import com.ureca.yoajungserver.user.exception.UserDuplicatedEmailException;
 import com.ureca.yoajungserver.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,7 @@ public class OAuthServiceImpl implements OAuthService {
 
     private final KakaoOAuthClient kakaoOAuthClient;
     private final UserRepository userRepository;
+    private final PlanRepository planRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -54,6 +58,15 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public User kakaoSignup(KakaoSignupRequest request) {
+        userRepository.findByEmail(request.getEmail()).ifPresent(
+                u -> {
+                    throw new UserDuplicatedEmailException();
+                });
+        Plan plan = null;
+        if (request.getPlanId() != null) {
+            plan = planRepository.findById(request.getPlanId()).orElse(null);
+        }
+
         User user = User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
