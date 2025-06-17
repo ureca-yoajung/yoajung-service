@@ -85,7 +85,9 @@
             if (!accessToken) throw new Error("액세스토큰 발급 실패");
 
             // 2. 액세스토큰으로 로그인(회원조회)
-            const loginRes = await fetch(`/api/oauth/kakao/login?accessToken=${accessToken}`);
+            const loginRes = await fetch(`/api/oauth/kakao/login?accessToken=${accessToken}`, {
+                credentials: 'include'
+            });
             const d = await loginRes.json();
 
             if (d && d.data && d.data.user) {

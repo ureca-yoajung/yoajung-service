@@ -147,6 +147,7 @@
                                         : d.ageGroup === 'SIXTY_S_PLUS' ? '60대 이상' : ''
                 }</div>
                 <div><span class="label">가족수</span> ${d.familyCount || ''}</div>
+                <div><span class="label">요금제</span> ${d.planName || ''}</div>
                 <button class="edit-btn" id="user-edit-btn">내 정보 수정</button>
             `;
                 document.getElementById('user-edit-btn').onclick = () => {
