@@ -25,6 +25,8 @@ public class KakaoSignupRequest {
     @Size(min = 1, message = "비밀번호는 1자이상")
     private String password;
 
+    private Long planId;
+
     @NotBlank(message = "전화번호 입력")
     @Pattern(regexp = "^010\\d{8}$", message = "형식을 맞추세요")
     private String phoneNumber;

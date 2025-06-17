@@ -8,6 +8,6 @@ import lombok.Getter;
 public class InvalidPlanCategoryException extends BusinessException {
 
     public InvalidPlanCategoryException(BaseCode baseCode) {
-        super(baseCode.INVALID_PLAN_CATEGORY);
+        super(baseCode);
     }
 }

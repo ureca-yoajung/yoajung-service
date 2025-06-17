@@ -25,20 +25,39 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
+    private static final String PENDING_EMAIL = "pendingEmail";
+    private static final String VERIFIED_EMAIL = "verifiedEmail";
+
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final PasswordResetService passwordResetService;
 
     @PostMapping("/send-code")
-    public ResponseEntity<ApiResponse<Void>> sendCode(@Valid @RequestBody SendCodeRequest request, HttpSession session) {
-        authService.sendVerificationCode(request, session);
+    public ResponseEntity<ApiResponse<Void>> sendCode(@Valid @RequestBody SendCodeRequest request, HttpServletRequest servletRequest) {
+        HttpSession session = servletRequest.getSession(true);
+        session.setAttribute(PENDING_EMAIL, request.getEmail());
+        authService.sendVerificationCode(request.getEmail());
         return ResponseEntity.ok(ApiResponse.ok(EMAIL_CODE_SENT));
     }
     //  사용자가 이메일 입력하고 인증 코드 받기 요청
 
     @PostMapping("/verify-code")
-    public ResponseEntity<ApiResponse<Void>> verifyCode(@Valid @RequestBody VerifyCodeRequest request, HttpSession httpSession) {
-        authService.verifyCode(request, httpSession);
+    public ResponseEntity<ApiResponse<Void>> verifyCode(@Valid @RequestBody VerifyCodeRequest request, HttpServletRequest servletRequest) {
+        HttpSession session = servletRequest.getSession(false);
+        if (session == null || session.getAttribute(PENDING_EMAIL) == null) {
+            return ResponseEntity.status(EMAIL_CODE_EXPIRED.getStatus())
+                    .body(ApiResponse.ok(EMAIL_CODE_EXPIRED));
+        }
+        String email = (String) session.getAttribute(PENDING_EMAIL);
+        boolean result = authService.verifyCode(email, request.getCode());
+        if (!result) {
+            return ResponseEntity.status(EMAIL_CODE_MISMATCH.getStatus())
+                    .body(ApiResponse.ok(EMAIL_CODE_MISMATCH));
+        }
+        session.setAttribute(VERIFIED_EMAIL, email);
+        session.removeAttribute(PENDING_EMAIL);
+
         return ResponseEntity.ok(ApiResponse.ok(EMAIL_VERIFICATION_SUCCESS));
     }
 

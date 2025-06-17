@@ -8,6 +8,6 @@ import lombok.Getter;
 public class PlanNotFoundException extends BusinessException {
 
     public PlanNotFoundException(BaseCode baseCode) {
-        super(baseCode.PLAN_NOT_FOUND);
+        super(baseCode);
     }
 }

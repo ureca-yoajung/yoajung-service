@@ -35,10 +35,6 @@ public class PlanServiceImpl implements PlanService {
     @Override
     @Transactional(readOnly = true)
     public ListPlanResponse getListPlan(int page, int size, PlanCategory planCategory, PlanSortType sortedType) {
-        if (sortedType == PlanSortType.POPULAR) {
-            throw new IllegalArgumentException("POPULAR sort type should use getPopularPlans method");
-        }
-
         Pageable pageable = PlanSortType.toSort(sortedType)
                 .map(sort -> PageRequest.of(page, size, sort))
                 .orElse(PageRequest.of(page, size));
@@ -94,7 +90,7 @@ public class PlanServiceImpl implements PlanService {
         Map<Long, Plan> planMap = plans.stream()
                 .collect(Collectors.toMap(Plan::getId, plan -> plan));
 
-        List<Plan> popularPlans =  popularPlanIds.stream()
+        List<Plan> popularPlans = popularPlanIds.stream()
                 .map(planMap::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -200,6 +196,19 @@ public class PlanServiceImpl implements PlanService {
                 .premium(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.PREMIUM)))
                 .other(DetailBenefitDto.fromBenefit(benefitMap.get(BenefitType.OTHER)))
                 .build();
+    }
+
+    @Override
+    public List<PlanNameResponse> getPlanName(String keyword) {
+        List<Plan> plans;
+        if (keyword == null || keyword.isBlank()) {
+            plans = planRepository.findAll();
+        } else {
+            plans = planRepository.findByNameContaining(keyword);
+        }
+        return plans.stream()
+                .map(PlanNameResponse::fromEntity)
+                .toList();
     }
 
     private List<ListPlanDto> convertToListPlanResponse(List<Plan> plans) {

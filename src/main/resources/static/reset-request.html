@@ -30,57 +30,36 @@
     </div>
 </main>
 <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async function () {
+        // 로그인 상태면 회원가입 불가 - 메인으로 리다이렉트
         try {
             const res = await fetch('/api/user/me', {credentials: 'include'});
             if (res.ok) {
-                // 이미 로그인 → 메인 or 마이페이지로
-                location.href = "main.html"; // 또는 "mypage.html"
+                location.href = "index.html";
                 return;
             }
         } catch (e) {
             // 네트워크 에러 등은 무시
         }
 
-        // 2. 로그인 상태가 아니면 navbar를 불러옴
-        fetch('/assets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('navbar').innerHTML = html;
-                renderNavButtons && renderNavButtons();
-            })
-            .catch(err => console.error('navbar 로딩 실패:', err));
-    });
-
-    async function renderNavButtons() {
-        const navBtns = document.getElementById('nav-auth-buttons');
-        if (!navBtns) return;
+        //  비로그인 상태에서만 navbar 불러와서 렌더링
         try {
-            const res = await fetch('/api/user/me', {credentials: 'include'});
-            if (res.ok) {
-                // 로그인 상태
-                navBtns.innerHTML = `
-                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
-                <button id="logout-btn" class="btn btn-primary">로그아웃</button>
-            `;
-                document.getElementById('logout-btn').onclick = async function () {
-                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
-                    location.href = "login.html";
-                };
-            } else {
-                // 비로그인 상태
+            const res = await fetch('/assets/navbar.html');
+            const html = await res.text();
+            document.getElementById('navbar').innerHTML = html;
+
+            // 항상 로그인/시작하기 버튼만 노출
+            const navBtns = document.getElementById('nav-auth-buttons');
+            if (navBtns) {
                 navBtns.innerHTML = `
                 <a href="login.html" class="btn btn-ghost">로그인</a>
                 <a href="signup.html" class="btn btn-primary">시작하기</a>
             `;
             }
-        } catch {
-            navBtns.innerHTML = `
-            <a href="login.html" class="btn btn-ghost">로그인</a>
-            <a href="signup.html" class="btn btn-primary">시작하기</a>
-        `;
+        } catch (err) {
+            console.error('navbar 로딩 실패:', err);
         }
-    }
+    });
 
     document.getElementById('reset-request-btn').onclick = async function () {
         const email = document.getElementById('reset-email').value;

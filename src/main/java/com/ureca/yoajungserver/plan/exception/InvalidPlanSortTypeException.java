@@ -8,6 +8,6 @@ import lombok.Getter;
 public class InvalidPlanSortTypeException extends BusinessException {
 
     public InvalidPlanSortTypeException(BaseCode baseCode) {
-        super(baseCode.INVALID_PLAN_SORT_TYPE);
+        super(baseCode);
     }
 }

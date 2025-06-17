@@ -38,29 +38,40 @@
                 <label for="phoneNumber" class="form-label">전화번호</label>
                 <input type="text" id="phoneNumber" name="phoneNumber" class="form-input" placeholder="전화번호" required>
             </div>
-            <div class="form-group">
-                <label for="gender" class="form-label">성별</label>
-                <select id="gender" name="gender" class="form-input" required>
-                    <option value="">성별</option>
-                    <option value="MALE">남자</option>
-                    <option value="FEMALE">여자</option>
-                </select>
+            <div class="form-group" style="position: relative;">
+                <label for="plan-search" class="form-label">요금제</label>
+                <input type="text" id="plan-search" class="form-input" placeholder="요금제 검색 (선택 안 하면 요금제 없음)"
+                       autocomplete="off">
+                <input type="hidden" id="planId" name="planId" value="">
+                <div id="plan-list" class="dropdown-list"
+                     style="display: none; position: absolute; width: 100%; z-index: 10; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 180px; overflow-y: auto;"></div>
             </div>
-            <div class="form-group">
-                <label for="ageGroup" class="form-label">연령</label>
-                <select id="ageGroup" name="ageGroup" class="form-input" required>
-                    <option value="">연령</option>
-                    <option value="TEN_S">10대</option>
-                    <option value="TWENTY_S">20대</option>
-                    <option value="THIRTY_S">30대</option>
-                    <option value="FORTY_S">40대</option>
-                    <option value="FIFTY_S">50대</option>
-                    <option value="SIXTY_S_PLUS">60대 이상</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="familyCount" class="form-label">가족수</label>
-                <input type="number" id="familyCount" name="familyCount" class="form-input" placeholder="가족수" required>
+            <div class="form-row-horizontal">
+                <div class="form-group">
+                    <label for="gender" class="form-label">성별</label>
+                    <select id="gender" name="gender" class="form-input" required>
+                        <option value="">성별</option>
+                        <option value="MALE">남자</option>
+                        <option value="FEMALE">여자</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ageGroup" class="form-label">연령</label>
+                    <select id="ageGroup" name="ageGroup" class="form-input" required>
+                        <option value="">연령</option>
+                        <option value="TEN_S">10대</option>
+                        <option value="TWENTY_S">20대</option>
+                        <option value="THIRTY_S">30대</option>
+                        <option value="FORTY_S">40대</option>
+                        <option value="FIFTY_S">50대</option>
+                        <option value="SIXTY_S_PLUS">60대 이상</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="familyCount" class="form-label">가족수</label>
+                    <input type="number" id="familyCount" name="familyCount" class="form-input" placeholder="가족수"
+                           required>
+                </div>
             </div>
             <div id="signup-result" class="error-message" style="display:none"></div>
             <button type="submit" class="signup-button btn btn-primary" id="signup-btn">회원가입</button>
@@ -72,71 +83,72 @@
     </div>
 </main>
 <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    // DOMContentLoaded 내에서 이벤트 리스너 등록
+    document.addEventListener('DOMContentLoaded', async function () {
+        // 로그인 상태면 회원가입 불가 - 메인으로 리다이렉트
         try {
             const res = await fetch('/api/user/me', {credentials: 'include'});
             if (res.ok) {
-                // 이미 로그인 → 메인 or 마이페이지로
-                location.href = "main.html"; // 또는 "mypage.html"
+                location.href = "index.html";
                 return;
             }
         } catch (e) {
             // 네트워크 에러 등은 무시
         }
 
-        // 2. 로그인 상태가 아니면 navbar를 불러옴
-        fetch('/assets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('navbar').innerHTML = html;
-                renderNavButtons && renderNavButtons();
-            })
-            .catch(err => console.error('navbar 로딩 실패:', err));
-    });
-
-    async function renderNavButtons() {
-        const navBtns = document.getElementById('nav-auth-buttons');
-        if (!navBtns) return;
+        //  비로그인 상태에서만 navbar 불러와서 렌더링
         try {
-            const res = await fetch('/api/user/me', {credentials: 'include'});
-            if (res.ok) {
-                // 로그인 상태
-                navBtns.innerHTML = `
-                <a href="mypage.html" class="btn btn-ghost">마이페이지</a>
-                <button id="logout-btn" class="btn btn-primary">로그아웃</button>
-            `;
-                document.getElementById('logout-btn').onclick = async function () {
-                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
-                    location.href = "login.html";
-                };
-            } else {
-                // 비로그인 상태
+            const res = await fetch('/assets/navbar.html');
+            const html = await res.text();
+            document.getElementById('navbar').innerHTML = html;
+
+            // 항상 로그인/시작하기 버튼만 노출
+            const navBtns = document.getElementById('nav-auth-buttons');
+            if (navBtns) {
                 navBtns.innerHTML = `
                 <a href="login.html" class="btn btn-ghost">로그인</a>
                 <a href="signup.html" class="btn btn-primary">시작하기</a>
             `;
             }
-        } catch {
-            navBtns.innerHTML = `
-            <a href="login.html" class="btn btn-ghost">로그인</a>
-            <a href="signup.html" class="btn btn-primary">시작하기</a>
-        `;
+        } catch (err) {
+            console.error('navbar 로딩 실패:', err);
         }
+        registerSignupEventListeners();
+    });
+
+
+    function registerSignupEventListeners() {
+        // 이메일 인증코드 발송
+        document.getElementById('send-code-btn').addEventListener('click', sendCode);
+        // 이메일 인증코드 확인
+        document.getElementById('verify-code-btn').addEventListener('click', verifyCode);
+        // 회원가입 폼 제출
+        document.getElementById('signup-form').addEventListener('submit', submitSignup);
+        // 요금제 검색
+        const planSearch = document.getElementById('plan-search');
+        planSearch.addEventListener('input', debounce(searchPlan, 300));
+        planSearch.addEventListener('blur', function () {
+            setTimeout(() => {
+                document.getElementById('plan-list').style.display = 'none';
+            }, 200);
+        });
+        planSearch.addEventListener('change', function () {
+            if (!this.value) {
+                document.getElementById('planId').value = "";
+            }
+        });
     }
 
-    function showResult(msg, isError = true) {
-        const result = document.getElementById('signup-result');
-        result.textContent = msg;
-        result.style.display = msg ? 'block' : 'none';
-        result.style.background = isError ? '#fee2e2' : '#dcfce7';
-        result.style.color = isError ? '#dc2626' : '#15803d';
-        result.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
-    }
 
-    // 이메일 인증코드 발송
-    document.getElementById('send-code-btn').onclick = async function () {
+    async function sendCode() {
+        const btn = document.getElementById('send-code-btn');
+        btn.disabled = true;
         const email = document.getElementById('email').value.trim();
-        if (!email) return showResult('이메일을 입력하세요!');
+        if (!email) {
+            showResult('이메일을 입력하세요!');
+            btn.disabled = false;
+            return;
+        }
         const res = await fetch('/api/auth/send-code', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -145,13 +157,20 @@
         });
         const data = await res.json();
         showResult(data.message, !res.ok || data.code?.includes('FAIL'));
-    };
+        btn.disabled = false;
+    }
 
     // 이메일 인증코드 확인
-    document.getElementById('verify-code-btn').onclick = async function () {
+    async function verifyCode() {
+        const btn = document.getElementById('verify-code-btn');
+        btn.disabled = true;
         const email = document.getElementById('email').value.trim();
         const code = document.getElementById('code').value.trim();
-        if (!email || !code) return showResult('이메일/코드를 입력하세요!');
+        if (!email || !code) {
+            showResult('이메일/코드를 입력하세요!');
+            btn.disabled = false;
+            return;
+        }
         const res = await fetch('/api/auth/verify-code', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -160,11 +179,14 @@
         });
         const data = await res.json();
         showResult(data.message, !res.ok || data.code?.includes('FAIL'));
-    };
+        btn.disabled = false;
+    }
 
-    // 회원가입 submit (feature/52-oauth API 방식)
-    document.getElementById('signup-form').onsubmit = async function (e) {
+    // 회원가입 폼 제출
+    async function submitSignup(e) {
         e.preventDefault();
+        const btn = document.getElementById('signup-btn');
+        btn.disabled = true;
         const form = e.target;
         const obj = Object.fromEntries(new FormData(form));
         const res = await fetch('/api/user/signup', {
@@ -176,9 +198,62 @@
         const data = await res.json();
         showResult(data.message, !res.ok || data.code?.includes('FAIL'));
         if (res.ok && (data.code?.includes('SUCCESS') || data.code?.includes('OK'))) {
-            setTimeout(() => window.location.href = "login.html", 1000);
+            setTimeout(() => window.location.href = "login.html", 1000);  // 성공 시 로그인 페이지로
         }
-    };
+        btn.disabled = false;
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function () {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
+    async function searchPlan() {
+        const keyword = this.value.trim();
+        const planList = document.getElementById('plan-list');
+        const planIdInput = document.getElementById('planId');
+        if (!keyword) {
+            planList.style.display = 'none';
+            planIdInput.value = "";
+            return;
+        }
+        try {
+            const res = await fetch(`/api/plan/names?keyword=${encodeURIComponent(keyword)}`, {credentials: 'include'});
+            const {data} = await res.json();
+            planList.innerHTML = '';
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(plan => {
+                    const div = document.createElement('div');
+                    div.textContent = plan.name;
+                    div.style.cursor = "pointer";
+                    div.onclick = () => {
+                        this.value = plan.name;
+                        planIdInput.value = plan.planId;
+                        planList.style.display = 'none';
+                    };
+                    planList.appendChild(div);
+                });
+                planList.style.display = 'block';
+            } else {
+                planList.innerHTML = '<div>검색 결과 없음</div>';
+                planList.style.display = 'block';
+            }
+        } catch (e) {
+            planList.innerHTML = '<div>요금제 로딩 실패</div>';
+            planList.style.display = 'block';
+        }
+    }
+
+    function showResult(msg, isError = true) {
+        const result = document.getElementById('signup-result');
+        result.textContent = msg;
+        result.style.display = msg ? 'block' : 'none';
+        result.className = isError ? 'error-message' : 'success-message';
+    }
 </script>
 </body>
 </html>
