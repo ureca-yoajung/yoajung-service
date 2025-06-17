@@ -12,6 +12,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
+    @Query("select u from User u left join fetch u.plan where u.email = :email")
+    Optional<User> findByEmailWithPlan(@Param("email") String email);
+    // user 엔티티 DTO 매핑에서 plan 까지 한번에 가져오는 fetch join
+
     // 일주일 전부터 하루 전까지의 데이터로 인기 요금제 조회
     @Query("SELECT u.plan.id " +
             "FROM User u " +

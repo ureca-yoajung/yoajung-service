@@ -40,7 +40,8 @@ public class OAuthServiceImpl implements OAuthService {
             throw new RuntimeException("카카오 이메일 동의 필요");
         }
         // 이메일로 조회
-        return userRepository.findByEmail(email).orElse(null);
+        return userRepository.findByEmailWithPlan(email).orElse(null);
+        // Plan 즉시 사용시 fetch join 으로 영속성 트랜잭션 끝나기전에 같이 가져옴
     }
 
     @Override
@@ -74,6 +75,7 @@ public class OAuthServiceImpl implements OAuthService {
                 .gender(request.getGender())
                 .ageGroup(request.getAgeGroup())
                 .familyCount(request.getFamilyCount())
+                .plan(plan)
                 .password(passwordEncoder.encode("KAKAO"))
                 .role(Role.USER)
                 .build();

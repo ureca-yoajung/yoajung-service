@@ -9,7 +9,7 @@ spring:
     password: ${MYSQL_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+#      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -54,6 +54,7 @@ spring:
         options:
           model: gpt-4o
           temperature: 0.5
+         
     chat:
       system-prompt1: classpath:prompt/prompt1.txt
       system-prompt2: classpath:prompt/prompt2.txt

@@ -25,6 +25,10 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
+    private static final String PENDING_EMAIL = "pendingEmail";
+    private static final String VERIFIED_EMAIL = "verifiedEmail";
+
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final PasswordResetService passwordResetService;
@@ -32,7 +36,7 @@ public class AuthController {
     @PostMapping("/send-code")
     public ResponseEntity<ApiResponse<Void>> sendCode(@Valid @RequestBody SendCodeRequest request, HttpServletRequest servletRequest) {
         HttpSession session = servletRequest.getSession(true);
-        session.setAttribute("pendingEmail", request.getEmail());
+        session.setAttribute(PENDING_EMAIL, request.getEmail());
         authService.sendVerificationCode(request.getEmail());
         return ResponseEntity.ok(ApiResponse.ok(EMAIL_CODE_SENT));
     }
@@ -41,18 +45,18 @@ public class AuthController {
     @PostMapping("/verify-code")
     public ResponseEntity<ApiResponse<Void>> verifyCode(@Valid @RequestBody VerifyCodeRequest request, HttpServletRequest servletRequest) {
         HttpSession session = servletRequest.getSession(false);
-        if (session == null || session.getAttribute("pendingEmail") == null) {
+        if (session == null || session.getAttribute(PENDING_EMAIL) == null) {
             return ResponseEntity.status(EMAIL_CODE_EXPIRED.getStatus())
                     .body(ApiResponse.ok(EMAIL_CODE_EXPIRED));
         }
-        String email = (String) session.getAttribute("pendingEmail");
+        String email = (String) session.getAttribute(PENDING_EMAIL);
         boolean result = authService.verifyCode(email, request.getCode());
         if (!result) {
             return ResponseEntity.status(EMAIL_CODE_MISMATCH.getStatus())
                     .body(ApiResponse.ok(EMAIL_CODE_MISMATCH));
         }
-        session.setAttribute("verifiedEmail", email);
-        session.removeAttribute("pendingEmail");
+        session.setAttribute(VERIFIED_EMAIL, email);
+        session.removeAttribute(PENDING_EMAIL);
 
         return ResponseEntity.ok(ApiResponse.ok(EMAIL_VERIFICATION_SUCCESS));
     }
