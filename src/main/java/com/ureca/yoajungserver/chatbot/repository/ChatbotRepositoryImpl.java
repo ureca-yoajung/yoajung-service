@@ -18,6 +18,7 @@ import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.plan.entity.BenefitType;
 import com.ureca.yoajungserver.plan.entity.NetworkType;
 import com.ureca.yoajungserver.plan.entity.PlanCategory;
+import com.ureca.yoajungserver.plan.entity.PlanTarget;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

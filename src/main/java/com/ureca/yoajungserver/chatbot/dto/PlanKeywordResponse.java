@@ -18,8 +18,6 @@ public class PlanKeywordResponse {
 
     private String networkType;
 
-    private String planTarget;
-
     private String price;
 
     private String speedAfterLimit;
