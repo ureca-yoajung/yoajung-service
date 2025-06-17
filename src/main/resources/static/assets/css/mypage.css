@@ -126,7 +126,7 @@ body {
     box-shadow: 0 10px 32px rgba(230, 0, 126, 0.06);
     border-radius: var(--border-radius);
     width: 100%;
-    max-width: 800px; /* 카드 크기 확 키움 */
+    max-width: 800px;
     padding: 0 0 50px 0;
 }
 
