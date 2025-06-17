@@ -29,17 +29,20 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/login.html", "/signup.html", "/reset-password.html"
-                                , "/reset-request.html", "/main.html",
-                                "/api/oauth/**", "/api/auth/**", "/callback.html", "/additional-info.html"
-                                , "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico"
-                                , "/api/user/signup"
+                                "/", "/index.html",
+                                "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
+                                "/api/oauth/**", "/api/auth/**", "/additional-info.html", "/review/**"
+                                , "/api/user/signup", "/api/plan/**", "/plan-list.html", "/plan-detail.html"
                         ).permitAll()
+                        .requestMatchers(
+                                "/login.html", "/signup.html",
+                                "/reset-password.html", "/reset-request.html", "/callback.html")
+                        .anonymous()
                         .requestMatchers(
                                 "/api/user/**",
                                 "/api/tendency/**"
                         ).authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()//authenticated()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {

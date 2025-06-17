@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.ureca.yoajungserver.plan.entity.PlanTarget;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -80,6 +82,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                 .leftJoin(planBenefit).on(planBenefit.plan.id.eq(plan.id))
                 .leftJoin(benefit).on(planBenefit.benefit.id.eq(benefit.id))
                 .where(
+                        planTargetCondition(keyword.getPlanTarget()),
                         categoryCondition(keyword.getCategory()),
                         priceCondition(keyword.getPrice()),
                         networkCondition(keyword.getNetworkType()),
@@ -139,6 +142,14 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
                 }).collect(Collectors.toList());
 
         return recommendResult;
+    }
+
+    // 분류 조건(ALL, YOUTH, SOLDIER, ...)
+    private BooleanExpression planTargetCondition(String target) {
+        if (isNull(target)) {
+            return null;
+        }
+        return plan.planTarget.eq(PlanTarget.valueOf(target));
     }
 
     // 카테고리 조건
@@ -348,6 +359,16 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return null;
         }
 
+        // 사잇값 처리
+        if(tethering.contains("사이")){
+            Optional<int[]> opt = safeParseRange(tethering);
+            if(opt.isPresent()){
+                int min = opt.get()[0];
+                int max = opt.get()[1];
+                return plan.tetheringSharingAllowance.between(min, max);
+            }
+        }
+
         Optional<Integer> opt = safeParse(tethering);
         int tetheringInt;
 
@@ -357,7 +378,19 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return null;
         }
 
-        return plan.tetheringSharingAllowance.goe(tetheringInt);
+        if (tethering.contains("이상") || tethering.contains("평균")) {
+            return plan.tetheringSharingAllowance.goe(tetheringInt);
+        } else if (tethering.contains("정확")) {
+            return plan.tetheringSharingAllowance.eq(tetheringInt);
+        } else if (tethering.contains("이하")) {
+            return plan.tetheringSharingAllowance.loe(tetheringInt);
+        } else if (tethering.contains("초과")) {
+            return plan.tetheringSharingAllowance.gt(tetheringInt);
+        } else if (tethering.contains("미만")) {
+            return plan.tetheringSharingAllowance.lt(tetheringInt);
+        }
+
+        return null;
     }
 
     private boolean isNull(String input) {

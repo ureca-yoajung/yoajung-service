@@ -1,7 +1,6 @@
 package com.ureca.yoajungserver.api.oauth;
 
 import com.ureca.yoajungserver.common.ApiResponse;
-import com.ureca.yoajungserver.common.BaseCode;
 import com.ureca.yoajungserver.external.kakao.KakaoSignupRequest;
 import com.ureca.yoajungserver.external.kakao.KakaoTokenResponse;
 import com.ureca.yoajungserver.user.dto.response.UserResponse;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.ureca.yoajungserver.common.BaseCode.USER_ADDITIONAL_INFO_REQUIRED;
+import static com.ureca.yoajungserver.common.BaseCode.USER_LOGIN_SUCCESS;
 
 @RestController
 @RequestMapping("/api/oauth/kakao")
@@ -42,12 +44,12 @@ public class OAuthController {
         if (user != null) {
             setAuthenticationSession(user, request);
             result.put("user", UserResponse.fromEntity(user));
-            return ResponseEntity.ok(ApiResponse.of(BaseCode.USER_LOGIN_SUCCESS, result));
+            return ResponseEntity.ok(ApiResponse.of(USER_LOGIN_SUCCESS, result));
         }
         Map<String, String> info = oAuthService.getEmailAndNameByToken(accessToken);
         result.putAll(info);
         result.put("accessToken", accessToken);
-        return ResponseEntity.ok(ApiResponse.of(BaseCode.USER_ADDITIONAL_INFO_REQUIRED, result));
+        return ResponseEntity.ok(ApiResponse.of(USER_ADDITIONAL_INFO_REQUIRED, result));
     }
 
     private void setAuthenticationSession(User user, HttpServletRequest request) {
@@ -69,7 +71,7 @@ public class OAuthController {
     ) {
         User user = oAuthService.kakaoSignup(request);
         setAuthenticationSession(user, req);
-        return ResponseEntity.ok(ApiResponse.of(BaseCode.USER_LOGIN_SUCCESS, UserResponse.fromEntity(user)));
+        return ResponseEntity.ok(ApiResponse.of(USER_LOGIN_SUCCESS, UserResponse.fromEntity(user)));
     }
 
 }

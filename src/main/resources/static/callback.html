@@ -91,15 +91,17 @@
             if (d && d.data && d.data.user) {
                 spinner.style.display = "none";
                 resultDiv.textContent = "로그인 완료! 메인화면으로 이동합니다.";
-                setTimeout(() => window.location.href = "main.html", 1200);
+                setTimeout(() => window.location.href = "index.html", 1200);
             } else if (d && d.data && d.data.email && d.data.name) {
+                // accessToken을 sessionStorage에 저장!
+                sessionStorage.setItem('kakaoAccessToken', d.data.accessToken);
+
                 spinner.style.display = "none";
                 resultDiv.innerHTML = "추가 정보가 필요합니다.<br>추가 정보 입력 화면으로 이동합니다.";
                 setTimeout(() =>
                         window.location.href =
                             "additional-info.html?email=" + encodeURIComponent(d.data.email)
-                            + "&name=" + encodeURIComponent(d.data.name)
-                            + "&accessToken=" + encodeURIComponent(d.data.accessToken),
+                            + "&name=" + encodeURIComponent(d.data.name),
                     1400
                 );
             } else {
