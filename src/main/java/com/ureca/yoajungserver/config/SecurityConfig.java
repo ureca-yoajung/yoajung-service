@@ -31,8 +31,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/index.html",
                                 "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
-                                "/api/oauth/**", "/api/auth/**", "/additional-info.html"
-                                , "/api/user/signup", "/api/plan/**"
+                                "/api/oauth/**", "/api/auth/**", "/additional-info.html", "/review/**"
+                                , "/api/user/signup", "/api/plan/**", "/plan-list.html", "/plan-detail.html"
                         ).permitAll()
                         .requestMatchers(
                                 "/login.html", "/signup.html",
