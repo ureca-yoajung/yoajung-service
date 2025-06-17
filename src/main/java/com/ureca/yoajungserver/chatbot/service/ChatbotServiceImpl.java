@@ -1,7 +1,16 @@
 package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
+import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
+import com.ureca.yoajungserver.chatbot.dto.PlanKeywordFirst;
+import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
+import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
+import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
+
 import com.ureca.yoajungserver.chatbot.dto.*;
+
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
 import com.ureca.yoajungserver.user.entity.User;
@@ -13,13 +22,26 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import java.util.Map;
+
+
 import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.MessageType;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Async;
@@ -39,6 +61,12 @@ public class ChatbotServiceImpl implements ChatbotService {
     private final LLMAsyncService llmAsyncService;
     private final UserRepository userRepository;
     private final TendencyRepository tendencyRepository;
+
+
+    private final ChatMemory chatMemory;
+    private final JdbcChatMemoryRepository chatMemoryRepository;
+
+    // application.yml 의 키와 일치시킵니다.
 
     @Value("${spring.ai.chat.system-prompt1}")
     private Resource promptRes1;
@@ -169,7 +197,15 @@ public class ChatbotServiceImpl implements ChatbotService {
         log.info("planKeyword3 : {}", resp3);
         log.info("planKeywordResponse : {}", planKeywordResponse);
 
-        return planKeywordResponse;
+        // DB 조회
+        List<PersonalPlanRecommendResponse> planResult = chatbotRepository.recommendPlans(planKeywordResponse); // json으로
+
+        // 조회 결과 db에 저장
+        String json = objectMapper.writeValueAsString(planResult);
+        Message message = new SystemMessage(json);
+        chatMemory.add(userId, message);
+
+        return planResult;
     }
 
     @Getter
