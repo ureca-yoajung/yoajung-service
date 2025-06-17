@@ -49,43 +49,7 @@ public class PlanFilterRepository {
             to   = from.plusDays(1).minusNanos(1);
         }
 
-        BooleanBuilder booleanBuilder = new BooleanBuilder(); // 동적 where 절 구성
-
-        if(planFilterRequest.getCategory() != null && planFilterRequest.getCategory() != PlanCategory.ALL){
-            booleanBuilder.and(plan.planCategory.eq(planFilterRequest.getCategory())); // 카테고리 필터, ALL 이 아닐 때
-        }
-
-        // 연령대 필터 (stat.ageGroup 기준) - 인기순일 때만 적용
-        if (popularSort &&
-            planFilterRequest.getAgeGroup() != null &&
-            planFilterRequest.getAgeGroup() != AgeGroup.ALL) {
-            booleanBuilder.and(stat.ageGroup.eq(planFilterRequest.getAgeGroup()));
-        }
-
-        // 가격 범위 필터
-        if (planFilterRequest.getPriceRange() != null) {
-            switch (planFilterRequest.getPriceRange()) {
-                case "UNDER5"      -> booleanBuilder.and(plan.basePrice.loe(59900));
-                case "BETWEEN6_8"  -> booleanBuilder.and(plan.basePrice.between(60000, 89900));
-                case "ABOVE9"      -> booleanBuilder.and(plan.basePrice.goe(90000));
-            }
-        }
-
-        // 데이터 타입 필터
-        String dt = planFilterRequest.getDataType();
-        if (dt != null && !dt.isBlank()) {
-            switch (dt) {
-                case "UNLIMITED"  -> booleanBuilder.and(plan.dataAllowance.goe(9999));
-                case "FIXED"      -> booleanBuilder.and(plan.dataAllowance.lt(9999)
-                                                  .and(plan.speedAfterLimit.eq(0)));
-                case "THROTTLED"  -> booleanBuilder.and(plan.dataAllowance.lt(9999)
-                                                  .and(plan.speedAfterLimit.gt(0)));
-            }
-        }
-
-        // 프로덕트 이름 필터
-        if (planFilterRequest.getProductNames() != null && !planFilterRequest.getProductNames().isEmpty())
-            booleanBuilder.and(product.name.in(planFilterRequest.getProductNames()));
+        BooleanBuilder booleanBuilder = buildWhereClause(planFilterRequest);
 
         // 정렬 지정
         OrderSpecifier<?> orderSpec;
@@ -133,5 +97,89 @@ public class PlanFilterRepository {
         }
 
         return query.fetch();
+    }
+
+    public long countPlans(PlanFilterRequest request) {
+        QPlan plan = QPlan.plan;
+        QPlanProduct planProduct = QPlanProduct.planProduct;
+        QProduct product = QProduct.product;
+        QPlanStatistic stat = QPlanStatistic.planStatistic;
+        String sort = request.getSort();
+        boolean popularSort = "POPULAR".equalsIgnoreCase(sort);
+        LocalDateTime from = null, to = null;
+        if (popularSort){
+            LocalDateTime latestTime = queryFactory.select(stat.createDate.max())
+                    .from(stat)
+                    .fetchOne();
+            if (latestTime == null) return 0;
+            from = latestTime.toLocalDate().atStartOfDay();
+            to   = from.plusDays(1).minusNanos(1);
+        }
+        BooleanBuilder booleanBuilder = buildWhereClause(request);
+        JPAQuery<?> query;
+        if (popularSort) {
+            query = queryFactory.select(plan.id.countDistinct())
+                    .from(plan)
+                    .leftJoin(plan.planProducts, planProduct)
+                    .leftJoin(planProduct.product, product)
+                    .leftJoin(stat).on(
+                            stat.planId.eq(plan.id)
+                                    .and(stat.createDate.between(from, to))
+                    )
+                    .where(booleanBuilder);
+        } else {
+            query = queryFactory.select(plan.id.countDistinct())
+                    .from(plan)
+                    .leftJoin(plan.planProducts, planProduct)
+                    .leftJoin(planProduct.product, product)
+                    .where(booleanBuilder);
+        }
+        Long count = (Long) query.fetchOne();
+        return count != null ? count : 0L;
+    }
+
+    // Added: buildWhereClause helper for PlanFilterRequest
+    private BooleanBuilder buildWhereClause(PlanFilterRequest planFilterRequest) {
+        QPlan plan = QPlan.plan;
+        QPlanProduct planProduct = QPlanProduct.planProduct;
+        QProduct product = QProduct.product;
+        QPlanStatistic stat = QPlanStatistic.planStatistic;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 카테고리
+        if(planFilterRequest.getCategory() != null && planFilterRequest.getCategory() != PlanCategory.ALL){
+            builder.and(plan.planCategory.eq(planFilterRequest.getCategory()));
+        }
+        // 연령대 (인기순인 경우에만 사용됨)
+        if ("POPULAR".equalsIgnoreCase(planFilterRequest.getSort()) &&
+            planFilterRequest.getAgeGroup() != null &&
+            planFilterRequest.getAgeGroup() != AgeGroup.ALL) {
+            builder.and(stat.ageGroup.eq(planFilterRequest.getAgeGroup()));
+        }
+        // 가격 범위
+        if (planFilterRequest.getPriceRange() != null) {
+            switch (planFilterRequest.getPriceRange()) {
+                case "UNDER5"      -> builder.and(plan.basePrice.loe(59900));
+                case "BETWEEN6_8"  -> builder.and(plan.basePrice.between(60000, 89900));
+                case "ABOVE9"      -> builder.and(plan.basePrice.goe(90000));
+            }
+        }
+        // 데이터 타입
+        String dt = planFilterRequest.getDataType();
+        if (dt != null && !dt.isBlank()) {
+            switch (dt) {
+                case "UNLIMITED"  -> builder.and(plan.dataAllowance.goe(9999));
+                case "FIXED"      -> builder.and(plan.dataAllowance.lt(9999)
+                                              .and(plan.speedAfterLimit.eq(0)));
+                case "THROTTLED"  -> builder.and(plan.dataAllowance.lt(9999)
+                                              .and(plan.speedAfterLimit.gt(0)));
+            }
+        }
+        // 프로덕트 이름
+        if (planFilterRequest.getProductNames() != null && !planFilterRequest.getProductNames().isEmpty())
+            builder.and(product.name.in(planFilterRequest.getProductNames()));
+
+        builder.and(plan.deletedAt.isNull());
+        return builder;
     }
 }
