@@ -19,7 +19,10 @@ body {
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
-    background: #fafafa;
+    background: rgb(250, 250, 250);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Navigation */
@@ -311,6 +314,132 @@ body {
 .feature-card p {
     color: var(--text-secondary);
     line-height: 1.6;
+}
+
+/* 모달 카드 스타일 */
+#modal-bg {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.13);
+    z-index: 1000;
+}
+
+#tendency-modal {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    box-shadow: 0 8px 32px #e6007e15;
+    border-radius: 20px;
+    z-index: 1010;
+    min-width: 320px;
+    max-width: 97vw;
+    padding: 36px 22px 28px 22px; /* 여기! 좌우 패딩 22px로 수정 */
+    text-align: left;
+    border: 2px solid #f6e5f1;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#tendency-modal h3 {
+    font-size: 1.28rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--primary);
+    text-align: center;
+}
+
+#tendency-modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#tendency-modal label {
+    font-size: 1.08rem;
+    margin-bottom: 2px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+#tendency-modal input {
+    width: 100%;
+    margin-top: 3px;
+    border-radius: 9px;
+    border: 2px solid #ececec;
+    padding: 10px 12px;
+    font-size: 1.08rem;
+    margin-bottom: 10px;
+    background: #fafaff;
+    box-sizing: border-box;
+}
+
+#tendency-modal input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+#tendency-modal button[type="submit"] {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 0;
+    font-size: 1.07rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 7px;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+#tendency-modal button[type="submit"]:hover {
+    background: var(--primary-dark);
+}
+
+#tendency-modal #tendency-later {
+    background: #f5f5f7;
+    color: var(--primary);
+    border: none;
+    border-radius: 8px;
+    padding: 11px 0;
+    font-size: 1.02rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+}
+
+#tendency-modal #tendency-later:hover {
+    background: #fff0fa;
+    color: var(--primary-dark);
+}
+
+@media (max-width: 900px) {
+    .main-cards {
+        max-width: 100vw;
+    }
+
+    .main-hero {
+        max-width: 97vw;
+        padding: 24px 8px 22px 8px;
+    }
+
+    .main-content {
+        padding: 90px 0 24px 0;
+    }
+
+    #tendency-modal {
+        padding: 24px 8px 18px 8px;
+    }
 }
 
 /* Plans Section */
