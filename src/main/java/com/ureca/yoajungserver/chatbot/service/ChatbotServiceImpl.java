@@ -2,14 +2,11 @@ package com.ureca.yoajungserver.chatbot.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordFirst;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
-
-
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
 import com.ureca.yoajungserver.user.entity.User;
@@ -20,49 +17,32 @@ import com.ureca.yoajungserver.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-
-
-
 import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
-
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
-import org.springframework.ai.chat.messages.Message;
-
-import org.springframework.ai.chat.messages.SystemMessage;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-
 import org.springframework.stereotype.Service;
-
-
-import java.util.ArrayList;
-import java.util.Comparator;
-
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService {
-    private final ObjectMapper objectMapper;
     private final ChatbotRepository chatbotRepository;
     private final LLMAsyncService llmAsyncService;
     private final UserRepository userRepository;
     private final TendencyRepository tendencyRepository;
-
-
-    private final ChatMemory chatMemory;
-    private final JdbcChatMemoryRepository chatMemoryRepository;
-
-    // application.yml 의 키와 일치시킵니다.
+    private final ObjectMapper objectMapper;
+    private final ChatClient chatClient;
 
     @Value("${spring.ai.chat.system-prompt1}")
     private Resource promptRes1;
@@ -73,15 +53,20 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Value("${spring.ai.chat.system-prompt3}")
     private Resource promptRes3;
 
+    @Value("${spring.ai.chat.system-prompt4}")
+    private Resource promptRes4;
+
     private String prompt1;
     private String prompt2;
     private String prompt3;
+    private String prompt4;
 
     @PostConstruct
     public void init() throws IOException {
         prompt1 = readPrompt(promptRes1);
         prompt2 = readPrompt(promptRes2);
         prompt3 = readPrompt(promptRes3);
+        prompt4 = readPrompt(promptRes4);
     }
 
     private String readPrompt(Resource resource) throws IOException {
@@ -95,18 +80,16 @@ public class ChatbotServiceImpl implements ChatbotService {
             //    .join()은 예외를 던지지 않지만, .get()은 checked exception을 던집니다.
             //    allOf() 로 이미 완료를 기다렸기 때문에 여기서 join()은 블로킹되지 않습니다.
             PlanKeywordResponse planKeywordResponse = getKeyWordResponse(input, userId);
-
-            // DB 조회
-            List<PersonalPlanRecommendResponse> planResult = chatbotRepository.recommendPlans(planKeywordResponse); // json으로
-
-            // 조회 결과 db에 저장
-            String json = objectMapper.writeValueAsString(planResult);
-            Message message = new SystemMessage(json);
-            chatMemory.add(userId, message);
-
-            return planResult;
-
-
+            List<PersonalPlanRecommendResponse> personalPlanRecommendResponses = chatbotRepository.recommendPlans(planKeywordResponse);
+            Collections.shuffle(personalPlanRecommendResponses);
+            List<PersonalPlanRecommendResponse> top3;
+            if (personalPlanRecommendResponses.size() > 3) {
+                top3 = personalPlanRecommendResponses.subList(0, 3);
+            } else {
+                top3 = personalPlanRecommendResponses;
+            }
+            System.out.println(responseMapper(input, userId, planKeywordResponse, top3));
+            return top3;
         } catch (Exception e) {
             // 비동기 작업 중 발생한 예외 처리
             log.error("Error during asynchronous LLM call processing", e);
@@ -163,17 +146,22 @@ public class ChatbotServiceImpl implements ChatbotService {
             result.add(planScores.get(i).getPlan());
         }
 
-        try {
-            // 조회 결과 db에 저장
-            String json = objectMapper.writeValueAsString(result);
-            Message message = new SystemMessage(json);
-            chatMemory.add(String.valueOf(userId), message);
-        } catch (JsonProcessingException e) {
-            // 로그 출력 or 사용자 메시지 처리
-            log.error("JSON 변환 실패", e);
-        }
-
         return result;
+    }
+
+    @Override
+    public String responseMapper(String input, String userId, PlanKeywordResponse keywordResponse, List<PersonalPlanRecommendResponse> recommendPlan)
+            throws JsonProcessingException {
+        String keywordResponseJson = objectMapper.writeValueAsString(keywordResponse);
+        String recommendPlanJson = objectMapper.writeValueAsString(recommendPlan);
+
+        String responseInput = input + keywordResponseJson + recommendPlanJson;
+        return chatClient.prompt()
+                .system(prompt4)
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .user(responseInput)
+                .call()
+                .content();
     }
 
     // 요금제 조회
@@ -182,7 +170,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         return chatbotRepository.recommendPlans(keywordResponse);
     }
 
-    private PlanKeywordResponse getKeyWordResponse(String input, String userId){
+    private PlanKeywordResponse getKeyWordResponse(String input, String userId) {
         // 1. 각 LLM 호출을 비동기로 시작합니다.
         //    이 메소드들은 호출 즉시 CompletableFuture 객체를 반환하고, 백그라운드 스레드에서 실행됩니다.
         CompletableFuture<PlanKeywordFirst> future1 = llmAsyncService.getLLMResponse(input, userId, prompt1, PlanKeywordFirst.class);
@@ -218,6 +206,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     }
 
     @Getter
+    @ToString
     @AllArgsConstructor
     private static class PlanScore {
         private final PersonalPlanRecommendResponse plan;

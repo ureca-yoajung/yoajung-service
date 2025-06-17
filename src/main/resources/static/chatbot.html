@@ -853,8 +853,8 @@
                 console.log("왜 오류?")
                 // 토글 상태에 따른 엔드포인트 분기
                 const endpoint = toggle.checked
-                    // ? `/chat/preference?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`
-                    ? `/chat?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`
+                    ? `/chat-preferences?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`
+                    // ? `/chat?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`
                     : `/chat?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`;
                 const response = await fetch(endpoint);
                 // if (!response.ok) throw new Error(response.statusText);

@@ -52,12 +52,14 @@ spring:
       api-key: "${OPENAI_API_KEY}"
       chat:
         options:
-          model: o4-mini
-          temperature: 1
+          model: gpt-4o
+          temperature: 0.5
+         
     chat:
       system-prompt1: classpath:prompt/prompt1.txt
       system-prompt2: classpath:prompt/prompt2.txt
       system-prompt3: classpath:prompt/prompt3.txt
+      system-prompt4: classpath:prompt/prompt4.txt
 
       memory:
         repository:
