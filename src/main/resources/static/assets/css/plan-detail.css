@@ -445,12 +445,13 @@ body {
 }
 
 .product-card {
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
     border: 2px solid #e5e5e5;
     border-radius: 16px;
     padding: 16px;
-    min-width: 250px;
-    max-width: 350px;
+    width: 260px;
     transition: transform 0.3s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     position: relative;
@@ -463,11 +464,12 @@ body {
 }
 
 .product-image {
-    width: 220px;
-    height: 220px;
+    width: 200px;
+    height: 200px;
     border-radius: 12px;
     margin-bottom: 12px;
     object-fit: cover;
+    align-self: center;
 }
 
 .product-name {
