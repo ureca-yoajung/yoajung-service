@@ -205,7 +205,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return plan.basePrice.between(min, max - 1);
         }
 
-        return null;
+        return plan.basePrice.eq(priceInt);
     }
 
     // 네트워크 타입 조건
@@ -307,7 +307,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return plan.dataAllowance.eq(dataInt);
         }
 
-        return null;
+        return plan.dataAllowance.eq(dataInt);
     }
 
     // 속도제한 조건
@@ -351,7 +351,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return plan.speedAfterLimit.goe(afterLimitInt);
         }
 
-        return null;
+        return plan.speedAfterLimit.eq(afterLimitInt);
     }
 
     // 테더링 조건
@@ -391,7 +391,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return plan.tetheringSharingAllowance.lt(tetheringInt);
         }
 
-        return null;
+        return plan.tetheringSharingAllowance.eq(tetheringInt);
     }
 
     private boolean isNull(String input) {
