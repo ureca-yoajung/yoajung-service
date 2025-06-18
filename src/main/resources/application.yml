@@ -61,6 +61,7 @@ spring:
       system-prompt3: classpath:prompt/prompt3.txt
       system-prompt4: classpath:prompt/prompt4.txt
       system-prompt5: classpath:prompt/prompt5.txt
+      system-prompt6: classpath:prompt/prompt6.txt
 
       memory:
         repository:
