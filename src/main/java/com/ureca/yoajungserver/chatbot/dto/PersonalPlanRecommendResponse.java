@@ -1,7 +1,5 @@
 package com.ureca.yoajungserver.chatbot.dto;
 
-import com.ureca.yoajungserver.plan.entity.NetworkType;
-import com.ureca.yoajungserver.plan.entity.PlanCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
