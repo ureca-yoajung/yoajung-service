@@ -154,10 +154,6 @@ function initializeRatingSystem() {
             updateRatingDisplay();
         });
 
-        star.addEventListener('mouseover', function () {
-            const rating = parseInt(this.dataset.rating);
-            highlightStars(rating);
-        });
     });
 
     document.getElementById('ratingInput').addEventListener('mouseleave', function () {
