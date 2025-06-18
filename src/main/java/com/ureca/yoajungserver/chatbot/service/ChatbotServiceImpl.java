@@ -12,6 +12,7 @@ import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
 import com.ureca.yoajungserver.chatbot.exception.KeywordExtractionFailedException;
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
+import com.ureca.yoajungserver.plan.repository.PlanStatisticRepository;
 import com.ureca.yoajungserver.review.repository.ReviewRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
 import com.ureca.yoajungserver.user.entity.User;
@@ -48,7 +49,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService {
     private final ChatbotRepository chatbotRepository;
-    private final ReviewRepository reviewRepository;
+    private final PlanStatisticRepository planStatisticRepository;
     private final LLMAsyncService llmAsyncService;
     private final UserRepository userRepository;
     private final TendencyRepository tendencyRepository;
@@ -114,11 +115,12 @@ public class ChatbotServiceImpl implements ChatbotService {
 
             List<PlanScore> planScores = new ArrayList<>();
 
-            // 리뷰 평점순
+            // 인기순
             for(PersonalPlanRecommendResponse plan : personalPlanRecommendResponses) {
-                Double score = reviewRepository.avgStar(plan.getResponse().getId());
-                if(score == null) score = 0.0;
-                planScores.add(new PlanScore(plan, score));
+                Integer popular = planStatisticRepository.popularPlans(plan.getResponse().getId());
+
+                if(popular == null) popular = 0;
+                planScores.add(new PlanScore(plan, popular));
             }
 
             planScores.sort(Comparator.comparingDouble(PlanScore::getScore).reversed());
@@ -170,39 +172,31 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         Tendency tendency = tendencyRepository.findByUser(user).orElseThrow(TendencyNotFoundException::new);
 
-        // 추천 받아오기
         List<PersonalPlanRecommendResponse> personalPlanRecommendResponses = chatbotRepository.recommendPlans(planKeywordResponse);
 
-        // 사용자 성향(데이터, 가격)
         int avgMonthlyDataGB = tendency.getAvgMonthlyDataGB();
         int preferencePrice = tendency.getPreferencePrice();
 
-        // 요금제 점수
         List<PlanScore> planScores = new ArrayList<>();
 
-        // 가중치
         double weightGB = 0.5;
         double weightPrice = 0.5;
 
-        // 요금제 별로 가중치 점수 계산
         for (PersonalPlanRecommendResponse personalPlanRecommendResponse : personalPlanRecommendResponses) {
             double dataScore;
             int tempData;
 
-            // 데이터 점수: 무제한이면 300, 아니면 그대로
             if (personalPlanRecommendResponse.getResponse().getDataAllowance() == 9999) {
                 tempData = 300;
             } else {
                 tempData = personalPlanRecommendResponse.getResponse().getDataAllowance();
             }
 
-            // 데이터 점수, 가격 점수
             dataScore = 1 - (Math.abs(tempData - avgMonthlyDataGB) / (double) avgMonthlyDataGB);
             double priceScore = 1 - (Math.abs(personalPlanRecommendResponse.getResponse().getPrice() - preferencePrice) / (double) preferencePrice);
             dataScore = Math.max(dataScore, 0);
             priceScore = Math.max(priceScore, 0);
 
-            // 최종 점수: 데이터점수 + 가격 점수 (각각 가중치 더함)
             double totalScore = dataScore * weightGB + priceScore * weightPrice;
             planScores.add(new PlanScore(personalPlanRecommendResponse, totalScore));
         }
