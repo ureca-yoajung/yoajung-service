@@ -22,31 +22,6 @@ public class PlanController {
 
     private final PlanService planService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<?>> getListPlan(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
-            @RequestParam(defaultValue = "") String planType,
-            @RequestParam(defaultValue = "POPULAR") String sortedType
-    ) {
-        PlanCategory category = null;
-        if (!planType.isBlank()) {
-            category = PlanCategory.fromType(planType.toUpperCase())
-                    .orElseThrow(() -> new InvalidPlanCategoryException(INVALID_PLAN_CATEGORY));
-        }
-
-        PlanSortType planSortType = PlanSortType.fromType(sortedType.toUpperCase())
-                .orElseThrow(() -> new InvalidPlanSortTypeException(INVALID_PLAN_SORT_TYPE));
-
-        ListPlanResponse responses = (planSortType == PlanSortType.POPULAR)
-                ? planService.getPopularPlans(page, size, category, planSortType)
-                : planService.getListPlan(page, size, category, planSortType);
-
-        return ResponseEntity
-                .status(PLAN_LIST_SUCCESS.getStatus())
-                .body(ApiResponse.of(PLAN_LIST_SUCCESS, responses));
-    }
-
     @GetMapping("/{planId}")
     public ResponseEntity<ApiResponse<?>> getDetailPlan(@PathVariable(value = "planId") Long planId) {
         DetailPlanResponse responses = planService.getDetailPlan(planId);

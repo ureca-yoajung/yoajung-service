@@ -28,9 +28,8 @@
                 <div class="plan-info">
                     <h1 id="planName">로딩 중...</h1>
                     <div class="plan-badges">
-                        <span class="badge badge-popular">인기</span>
-                        <span class="badge badge-5g" id="networkType">5G</span>
-                        <span class="badge badge-category" id="planCategory">PHONE</span>
+                        <span class="badge badge-5g" id="planCategory">5G</span>
+                        <span class="badge badge-category" id="planTarget">PHONE</span>
                     </div>
                     <div class="plan-price">
                         월 <span id="basePrice">0</span>원
@@ -40,17 +39,17 @@
                     </p>
 
                     <div class="plan-features">
-                        <div class="feature-item">
+                        <div class="feature-item" id="dataIcon">
                             <div class="feature-icon">📱</div>
                             <span class="feature-text">데이터 <span id="dataAllowance">0</span></span>
                         </div>
-                        <div class="feature-item">
+                        <div class="feature-item" id="tetheringIcon">
                             <div class="feature-icon">🔗</div>
-                            <span class="feature-text">테더링 <span id="tetheringSharingAllowance">0</span>GB</span>
+                            <span class="feature-text">테더링 <span id="tetheringSharingAllowance">0</span></span>
                         </div>
-                        <div class="feature-item">
+                        <div class="feature-item" id="speedIcon">
                             <div class="feature-icon">🚀</div>
-                            <span class="feature-text">속도제한 후 <span id="speedAfterLimit">0</span>Mbps</span>
+                            <span class="feature-text"><span id="speedAfterLimit">0</span></span>
                         </div>
                     </div>
                 </div>
@@ -58,8 +57,8 @@
 
 
             <!-- Benefits Section -->
-            <div class="benefits-section">
-                <div class="benefit-category" id="baseBenefitsSection">
+            <div class="benefits-section" id="baseBenefitsContainer">
+                <div class="benefit-category">
                     <div class="category-header">
                         <h1 class="category-title">
                             <span class="category-icon">⭐</span>
@@ -67,6 +66,8 @@
                         </h1>
                         <p class="category-description">기본으로 제공되는 혜택입니다</p>
                     </div>
+                </div>
+                <div class="benefits-container" id="baseBenefitsSection">
                     <div class="benefits-grid" id="baseBenefits"></div>
                 </div>
             </div>
@@ -74,7 +75,7 @@
             <!-- Media Benefits -->
             <div class="benefits-section" id="mediaContainer">
                 <!-- Media Benefits -->
-                <div class="benefit-category" id="mediaBenefitsSection">
+                <div class="benefit-category">
                     <div class="category-header">
                         <h1 class="category-title">
                             <span class="category-icon">🎵</span>
@@ -83,22 +84,22 @@
                         </h1>
                         <p class="category-description">다양한 미디어 서비스 중 하나를 선택하세요</p>
                     </div>
-                    <div class="benefits-container">
-                        <button class="scroll-button prev" onclick="scrollMedia('mediaBenefits', -1)">
-                            <i class="fa-solid fa-angle-left" style="color: black"></i>
-                        </button>
-                        <div class="product-grid" id="mediaBenefits"></div>
-                        <button class="scroll-button next" onclick="scrollMedia('mediaBenefits', 1)">
-                            <i class="fa-solid fa-angle-right" style="color: black"></i>
-                        </button>
-                    </div>
+                </div>
+                <div class="products-container" id="mediaBenefitsSection">
+                    <button class="scroll-button prev" onclick="scrollMedia('mediaBenefits', -1)">
+                        <i class="fa-solid fa-angle-left" style="color: black"></i>
+                    </button>
+                    <div class="products-grid" id="mediaBenefits"></div>
+                    <button class="scroll-button next" onclick="scrollMedia('mediaBenefits', 1)">
+                        <i class="fa-solid fa-angle-right" style="color: black"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- Benefits Section -->
             <div class="benefits-section" id="premiumContainer">
                 <!-- Premium Benefits -->
-                <div class="benefit-category" id="premiumBenefitsSection">
+                <div class="benefit-category">
                     <div class="category-header">
                         <h1 class="category-title">
                             <span class="category-icon">🎁</span>
@@ -107,15 +108,15 @@
                         </h1>
                         <p class="category-description">프리미엄 서비스 중 하나를 선택하세요</p>
                     </div>
-                    <div class="benefits-container">
-                        <button class="scroll-button prev" onclick="scrollPremium('premiumBenefits', -1)">
-                            <i class="fa-solid fa-angle-left" style="color: black"></i>
-                        </button>
-                        <div class="product-grid" id="premiumBenefits"></div>
-                        <button class="scroll-button next" onclick="scrollPremium('premiumBenefits', 1)">
-                            <i class="fa-solid fa-angle-right" style="color: black"></i>
-                        </button>
-                    </div>
+                </div>
+                <div class="products-container" id="premiumBenefitsSection">
+                    <button class="scroll-button prev" onclick="scrollPremium('premiumBenefits', -1)">
+                        <i class="fa-solid fa-angle-left" style="color: black"></i>
+                    </button>
+                    <div class="products-grid" id="premiumBenefits"></div>
+                    <button class="scroll-button next" onclick="scrollPremium('premiumBenefits', 1)">
+                        <i class="fa-solid fa-angle-right" style="color: black"></i>
+                    </button>
                 </div>
             </div>
 
@@ -307,31 +308,75 @@
                 }
             }
 
-            // Update UI functions
             function updatePlanInfo() {
                 if (!planData) return;
+
+                const get = (id) => document.getElementById(id);
+
+                const dataAllowance = planData.dataAllowance;
+                const tethering = planData.tetheringSharingAllowance;
+                const speed = planData.speedAfterLimit;
+
+                const setFeatureVisibility = (value, textId, wrapperId, formatter) => {
+                    const textEl = get(textId);
+                    const wrapperEl = get(wrapperId);
+                    if (!textEl || !wrapperEl) return;
+
+                    if (value === 0) {
+                        wrapperEl.style.display = 'none';
+                    } else {
+                        textEl.textContent = formatter(value);
+                        wrapperEl.style.display = 'flex';
+                    }
+                };
+
+                setFeatureVisibility(
+                    dataAllowance,
+                    'dataAllowance',
+                    'dataIcon',
+                    (val) => val === 9999 ? '무제한' : `${val}GB`
+                );
+
+                setFeatureVisibility(
+                    tethering,
+                    'tetheringSharingAllowance',
+                    'tetheringIcon',
+                    (val) => val === 9999 ? '무제한' : `${val}GB`
+                );
+
+                setFeatureVisibility(
+                    speed,
+                    'speedAfterLimit',
+                    'speedIcon',
+                    (val) => val === 9999 ? '속도제한 없음' : `다 쓰면 최대 +${val}Mbps`
+                );
+
+                const categoryMap = {
+                    ALL: '전체',
+                    LTE_FIVE_G: 'LTE/5G',
+                    ONLINE_ONLY: '온라인 전용'
+                };
 
                 const updates = {
                     planName: planData.name,
                     planDetailName: planData.name,
                     basePrice: planData.basePrice.toLocaleString(),
                     planDescription: planData.description,
-                    networkType: planData.networkType === 'FIVE_G' ? '5G' : '4G',
-                    dataAllowance: planData.dataAllowance === 9999 ? '무제한' : planData.dataAllowance + 'GB',
-                    tetheringSharingAllowance: planData.tetheringSharingAllowance,
-                    speedAfterLimit: planData.speedAfterLimit
+                    planCategory: categoryMap[planData.planCategory] || planData.planCategory,
+                    planTarget: planData.planTarget
                 };
 
                 Object.entries(updates).forEach(([id, value]) => {
-                    const element = document.getElementById(id);
+                    const element = get(id);
                     if (element) element.textContent = value;
                 });
             }
 
+
             function updateBenefitsInfo() {
                 if (!benefitsData) return;
 
-                const section = document.getElementById('baseBenefitsSection');
+                const container = document.getElementById('baseBenefitsContainer');
                 const grid = document.getElementById('baseBenefits');
 
                 grid.innerHTML = '';
@@ -361,7 +406,8 @@
                     }
                 }
 
-                section.classList.toggle('has-benefits', hasBenefits);
+                // 표시 여부 결정
+                container.style.display = hasBenefits ? 'flex' : 'none';
             }
 
             function updateProductsInfo() {
@@ -380,17 +426,16 @@
                     media: document.getElementById('mediaBenefits')
                 };
 
-                // Initialize
+                // 초기화
                 Object.values(grids).forEach(grid => grid.innerHTML = '');
                 Object.values(sections).forEach(section => section.classList.remove('has-benefits'));
                 Object.values(containers).forEach(container => container.style.display = 'none');
 
                 if (!productsData) return;
 
-                // Handle both media and premium products
                 ['media', 'premium'].forEach(type => {
                     if (productsData[type] && productsData[type].length > 0) {
-                        containers[type].style.display = '';
+                        containers[type].style.display = 'flex'; // 또는 'block' 등 레이아웃에 맞게
                         sections[type].classList.add('has-benefits');
 
                         productsData[type].forEach((product, index) => {
@@ -458,16 +503,16 @@
                     : '제공';
 
                 card.innerHTML = `
-        <div class="benefit-header">
-            <div class="benefit-info">
-                <h4 class="benefit-name">${benefit.name}</h4>
-            </div>
-        </div>
-        <p class="benefit-description">${benefit.description}</p>
-        <div class="benefit-details">
-            <span class="benefit-limit">${limitText}</span>
-        </div>
-    `;
+                    <div class="benefit-header">
+                        <div class="benefit-info">
+                            <h4 class="benefit-name">${benefit.name}</h4>
+                        </div>
+                    </div>
+                    <p class="benefit-description">${benefit.description}</p>
+                    <div class="benefit-details">
+                        <span class="benefit-limit">${limitText}</span>
+                    </div>
+                `;
 
                 return card;
             }
@@ -476,15 +521,35 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
 
-                const imageHTML = product.imageUrl
-                    ? `<img src="/assets/image/${product.imageUrl}" alt="${product.name}" class="product-image">`
-                    : `<img src="/assets/image/defaultImg.jpg" alt="${product.name}" class="product-image">`;
+                // 이미지 파싱 로직
+                let imgText = '';
+                if (product.imageUrl) {
+                    if (typeof product.imageUrl === 'object') {
+                        imgText = product.imageUrl.data ?? '';
+                    } else {
+                        try {
+                            const parsed = JSON.parse(product.imageUrl);
+                            imgText = parsed.data ?? '';
+                        } catch {
+                            imgText = product.imageUrl;
+                        }
+                    }
+                }
+
+                // 이미지 유효성 체크 및 기본 이미지 처리
+                const invalidValues = ['/', '', null, undefined];
+                const isValidUrl =
+                    typeof imgText === 'string' &&
+                    !invalidValues.includes(imgText.trim()) &&
+                    imgText.trim().length > 0;
+
+                const finalImageUrl = isValidUrl ? imgText : '/assets/image/defaultImg.jpg';
 
                 card.innerHTML = `
-        ${imageHTML}
-        <div class="product-name">${product.name}</div>
-        <div class="product-description">${product.description}</div>
-    `;
+                    <img src="${finalImageUrl}" alt="${product.name}" class="product-image">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description}</div>
+                `;
 
                 return card;
             }
@@ -587,7 +652,7 @@
 
             function scrollPremium(containerId, direction) {
                 const container = document.getElementById(containerId);
-                const scrollAmount = 320;
+                const scrollAmount = 450;
                 container.scrollBy({
                     left: direction * scrollAmount,
                     behavior: 'smooth'
