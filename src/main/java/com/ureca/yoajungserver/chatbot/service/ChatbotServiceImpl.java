@@ -1,7 +1,10 @@
 package com.ureca.yoajungserver.chatbot.service;
 
+import static com.ureca.yoajungserver.common.BaseCode.KEYWORD_EXTRACTION_FAILED;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ureca.yoajungserver.chatbot.dto.ChatResponse;
 import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordFirst;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
@@ -32,11 +35,10 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-
-import static com.ureca.yoajungserver.common.BaseCode.KEYWORD_EXTRACTION_FAILED;
 
 @Slf4j
 @Service
@@ -62,10 +64,14 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Value("${spring.ai.chat.system-prompt4}")
     private Resource promptRes4;
 
+    @Value("${spring.ai.chat.system-prompt5}")
+    private Resource promptRes5;
+
     private String prompt1;
     private String prompt2;
     private String prompt3;
     private String prompt4;
+    private String prompt5;
 
     @PostConstruct
     public void init() throws IOException {
@@ -73,6 +79,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         prompt2 = readPrompt(promptRes2);
         prompt3 = readPrompt(promptRes3);
         prompt4 = readPrompt(promptRes4);
+        prompt5 = readPrompt(promptRes5);
     }
 
     private String readPrompt(Resource resource) throws IOException {
@@ -80,7 +87,14 @@ public class ChatbotServiceImpl implements ChatbotService {
     }
 
     @Override
-    public List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) {
+    public ChatResponse keywordMapper(String input, String userId) {
+        PlanExplanation planExplanation = getPlanExplanation(input, userId);
+
+        if (!planExplanation.getComparePreviousPlan()) {
+            log.info("planExplan{}: ", planExplanation.getMessage());
+            return new ChatResponse(planExplanation.getMessage(), List.of());
+        }
+
         try {
             // 3. 각 Future에서 완료된 결과를 추출합니다.
             //    .join()은 예외를 던지지 않지만, .get()은 checked exception을 던집니다.
@@ -99,14 +113,17 @@ public class ChatbotServiceImpl implements ChatbotService {
             } else {
                 top3 = personalPlanRecommendResponses;
             }
-            System.out.println(responseMapper(input, userId, planKeywordResponse, top3));
+
+            String reason = responseMapper(input, userId, planKeywordResponse, top3);
+
+            log.info("reason : {}", reason);
 
             // 조회 결과 db에 저장
             String json = objectMapper.writeValueAsString(top3);
             Message message = new SystemMessage(json);
             chatMemory.add(userId, message);
 
-            return top3;
+            return new ChatResponse(reason, top3);
 
         } catch (JsonProcessingException e) {
             // 비동기 작업 중 발생한 예외 처리
@@ -117,8 +134,15 @@ public class ChatbotServiceImpl implements ChatbotService {
     }
 
     @Override
-    public List<PersonalPlanRecommendResponse> keywordMapperByPreferences(String question, Long userId) {
-        PlanKeywordResponse planKeywordResponse = getKeyWordResponse(question, userId.toString());
+    public ChatResponse keywordMapperByPreferences(String input, Long userId) throws JsonProcessingException {
+        PlanExplanation planExplanation = getPlanExplanation(input, userId.toString());
+
+        if (!planExplanation.getComparePreviousPlan()) {
+            log.info("planExplanation: {}", planExplanation.getMessage());
+            return new ChatResponse(planExplanation.getMessage(), List.of());
+        }
+
+        PlanKeywordResponse planKeywordResponse = getKeyWordResponse(input, userId.toString());
 
         if (!planKeywordResponse.hasAnyValidKeyword()) {
             throw new KeywordExtractionFailedException(KEYWORD_EXTRACTION_FAILED);
@@ -170,15 +194,16 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         try {
             // 조회 결과 db에 저장
+            String reason = responseMapper(input, userId.toString(), planKeywordResponse, result);
             String json = objectMapper.writeValueAsString(result);
             Message message = new SystemMessage(json);
             chatMemory.add(String.valueOf(userId), message);
+            return new ChatResponse(reason, result);
         } catch (JsonProcessingException e) {
             // 로그 출력 or 사용자 메시지 처리
             log.error("JSON 변환 실패", e);
+            throw e;
         }
-
-        return result;
     }
 
     @Override
@@ -190,6 +215,10 @@ public class ChatbotServiceImpl implements ChatbotService {
         String responseInput = input + keywordResponseJson + recommendPlanJson;
         return chatClient.prompt()
                 .system(prompt4)
+                .options(ChatOptions.builder()
+                        .model("gpt-4.1-mini")
+                        .temperature(0.5)
+                        .build())
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
                 .user(responseInput)
                 .call()
@@ -237,6 +266,19 @@ public class ChatbotServiceImpl implements ChatbotService {
         return planKeywordResponse;
     }
 
+    private PlanExplanation getPlanExplanation(String input, String userId) {
+        return chatClient.prompt()
+                .system(prompt5)
+                .options(ChatOptions.builder()
+                        .model("gpt-4.1-mini")
+                        .temperature(0.5)
+                        .build())
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .user(input)
+                .call()
+                .entity(PlanExplanation.class);
+    }
+
     @Getter
     @ToString
     @AllArgsConstructor
@@ -245,5 +287,11 @@ public class ChatbotServiceImpl implements ChatbotService {
         private final double score;
     }
 
+    @Getter
+    @AllArgsConstructor
+    private static class PlanExplanation {
+        private final Boolean comparePreviousPlan;
+        private final String message;
+    }
 }
 

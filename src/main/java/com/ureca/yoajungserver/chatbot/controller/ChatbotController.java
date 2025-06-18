@@ -2,12 +2,12 @@ package com.ureca.yoajungserver.chatbot.controller;
 
 import static com.ureca.yoajungserver.common.BaseCode.KEYWORD_MAPPING_SUCCESS;
 
-import com.ureca.yoajungserver.chatbot.dto.PersonalPlanRecommendResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ureca.yoajungserver.chatbot.dto.ChatResponse;
 import com.ureca.yoajungserver.chatbot.service.ChatbotService;
 import com.ureca.yoajungserver.common.ApiResponse;
 import com.ureca.yoajungserver.user.security.CustomUserDetails;
 import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +22,7 @@ public class ChatbotController {
     private final ChatbotService chatbotService;
 
     @GetMapping("/chat")
-    public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> getPlanRecommendation(
+    public ResponseEntity<ApiResponse<ChatResponse>> getPlanRecommendation(
             @RequestParam("question") String question,
             @RequestParam("guestId") String guestId,
             @AuthenticationPrincipal CustomUserDetails user) throws IOException {
@@ -33,9 +33,9 @@ public class ChatbotController {
     }
 
     @GetMapping("/chat-preferences")
-    public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> getPlanRecommendationByPreferences(
+    public ResponseEntity<ApiResponse<ChatResponse>> getPlanRecommendationByPreferences(
             @RequestParam("question") String question,
-            @AuthenticationPrincipal CustomUserDetails user) {
+            @AuthenticationPrincipal CustomUserDetails user) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse
                 .of(KEYWORD_MAPPING_SUCCESS, chatbotService.keywordMapperByPreferences(question, user.getId())));
     }

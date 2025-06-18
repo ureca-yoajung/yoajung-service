@@ -1,17 +1,16 @@
 package com.ureca.yoajungserver.chatbot.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalPlanRecommendResponse {
-    private PersonalPlanListResponse response;
+public class ChatResponse {
 
-    private Integer callAllowance;
+    private String reason;
 
-    private Integer smsAllowance;
+    private List<PersonalPlanRecommendResponse> personalPlanRecommendResponses;
 }
