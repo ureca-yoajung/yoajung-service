@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +82,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 
+    @Transactional
     @Override
     public List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) {
         try {
@@ -103,7 +107,8 @@ public class ChatbotServiceImpl implements ChatbotService {
 
             // 조회 결과 db에 저장
             String json = objectMapper.writeValueAsString(top3);
-            Message message = new SystemMessage(json);
+            json = "추천요금제: " + json;
+            Message message = new AssistantMessage(json);
             chatMemory.add(userId, message);
 
             return top3;
@@ -116,6 +121,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
     }
 
+    @Transactional
     @Override
     public List<PersonalPlanRecommendResponse> keywordMapperByPreferences(String question, Long userId) {
         PlanKeywordResponse planKeywordResponse = getKeyWordResponse(question, userId.toString());
@@ -169,9 +175,12 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
 
         try {
+            System.out.println(responseMapper(question, String.valueOf(userId), planKeywordResponse, result));
+
             // 조회 결과 db에 저장
             String json = objectMapper.writeValueAsString(result);
-            Message message = new SystemMessage(json);
+            json = "추천요금제: " + json;
+            Message message = new AssistantMessage(json);
             chatMemory.add(String.valueOf(userId), message);
         } catch (JsonProcessingException e) {
             // 로그 출력 or 사용자 메시지 처리
