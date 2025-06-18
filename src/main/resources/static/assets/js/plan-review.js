@@ -317,11 +317,6 @@ function createEditForm(reviewId, currentRating, currentContent) {
             const rating = parseInt(this.dataset.rating);
             updateEditRatingDisplay(reviewId, rating);
         });
-
-        star.addEventListener('mouseover', function() {
-            const rating = parseInt(this.dataset.rating);
-            highlightEditStars(reviewId, rating);
-        });
     });
 
     editDiv.addEventListener('mouseleave', function() {
