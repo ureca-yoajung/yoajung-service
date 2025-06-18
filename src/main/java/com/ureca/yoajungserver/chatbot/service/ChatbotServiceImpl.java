@@ -32,6 +32,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -62,10 +63,14 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Value("${spring.ai.chat.system-prompt4}")
     private Resource promptRes4;
 
+    @Value("${spring.ai.chat.system-prompt5}")
+    private Resource promptRes5;
+
     private String prompt1;
     private String prompt2;
     private String prompt3;
     private String prompt4;
+    private String prompt5;
 
     @PostConstruct
     public void init() throws IOException {
@@ -73,6 +78,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         prompt2 = readPrompt(promptRes2);
         prompt3 = readPrompt(promptRes3);
         prompt4 = readPrompt(promptRes4);
+        prompt5 = readPrompt(promptRes5);
     }
 
     private String readPrompt(Resource resource) throws IOException {
@@ -81,6 +87,13 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     @Override
     public List<PersonalPlanRecommendResponse> keywordMapper(String input, String userId) {
+        PlanExplanation planExplanation = getPlanExplanation(input, userId);
+
+        if (!planExplanation.getComparePreviousPlan()) {
+            log.info("planExplanation: {}", planExplanation.getMessage());
+            return List.of();
+        }
+
         try {
             // 3. 각 Future에서 완료된 결과를 추출합니다.
             //    .join()은 예외를 던지지 않지만, .get()은 checked exception을 던집니다.
@@ -118,6 +131,13 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     @Override
     public List<PersonalPlanRecommendResponse> keywordMapperByPreferences(String question, Long userId) {
+        PlanExplanation planExplanation = getPlanExplanation(question, userId.toString());
+
+        if (!planExplanation.getComparePreviousPlan()) {
+            log.info("planExplanation: {}", planExplanation.getMessage());
+            return List.of();
+        }
+
         PlanKeywordResponse planKeywordResponse = getKeyWordResponse(question, userId.toString());
 
         if (!planKeywordResponse.hasAnyValidKeyword()) {
@@ -237,6 +257,19 @@ public class ChatbotServiceImpl implements ChatbotService {
         return planKeywordResponse;
     }
 
+    private PlanExplanation getPlanExplanation(String input, String userId) {
+        return chatClient.prompt()
+                .system(prompt5)
+                .options(ChatOptions.builder()
+                        .model("gpt-4.1-mini")
+                        .temperature(0.5)
+                        .build())
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .user(input)
+                .call()
+                .entity(PlanExplanation.class);
+    }
+
     @Getter
     @ToString
     @AllArgsConstructor
@@ -245,5 +278,11 @@ public class ChatbotServiceImpl implements ChatbotService {
         private final double score;
     }
 
+    @Getter
+    @AllArgsConstructor
+    private static class PlanExplanation {
+        private final Boolean comparePreviousPlan;
+        private final String message;
+    }
 }
 
