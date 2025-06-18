@@ -191,6 +191,7 @@
 
             let editingReviewId = null;
             let originalData = {};
+            let isLogined = false;
 
             // Initialize page
             document.addEventListener('DOMContentLoaded', async () => {
@@ -297,8 +298,10 @@
                         totalPages = result.data.totalPages;
 
                         const reviewWriteBtn = document.getElementById('write-review-btn');
+                        isLogined = result.data.isLogined;
+
                         if (reviewWriteBtn) {
-                            reviewWriteBtn.style.display = result.data.isPlanUser ? 'inline-block' : 'none';
+                            reviewWriteBtn.style.display = (result.data.isPlanUser || !isLogined) ? 'inline-block' : 'none';
                         }
                     }
                 } catch (error) {
@@ -693,6 +696,11 @@
 
             // Review form functions
             function toggleReviewForm() {
+                if(!isLogined){
+                    alert("로그인 페이지로 이동합니다.");
+                    window.location.href = "/login.html";
+                    return;
+                }
                 const form = document.getElementById('reviewForm');
                 form.classList.toggle('active');
             }
