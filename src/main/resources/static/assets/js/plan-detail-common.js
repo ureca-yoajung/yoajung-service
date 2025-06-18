@@ -6,6 +6,7 @@ let productsData = null;
 let reviewsData = [];
 let responseReview = [];
 let planId;
+let isLogined;
 
 let currentPage = 0;
 const pageSize = 5;
