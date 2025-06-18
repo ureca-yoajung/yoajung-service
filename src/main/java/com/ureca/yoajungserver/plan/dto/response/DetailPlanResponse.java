@@ -16,6 +16,7 @@ public class DetailPlanResponse {
     private Integer tetheringSharingAllowance;
     private Integer speedAfterLimit;
     private String description;
+    private String planTarget;
 
     public static DetailPlanResponse fromPlan(Plan plan) {
         return DetailPlanResponse.builder()
@@ -28,6 +29,7 @@ public class DetailPlanResponse {
                 .tetheringSharingAllowance(plan.getTetheringSharingAllowance())
                 .speedAfterLimit(plan.getSpeedAfterLimit())
                 .description(plan.getDescription())
+                .planTarget(plan.getPlanTarget().name())
                 .build();
     }
 }
