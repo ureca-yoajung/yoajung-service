@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -86,6 +89,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 
+    @Transactional
     @Override
     public ChatResponse keywordMapper(String input, String userId) {
         PlanExplanation planExplanation = getPlanExplanation(input, userId);
@@ -120,6 +124,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
             // 조회 결과 db에 저장
             String json = objectMapper.writeValueAsString(top3);
+            json = "추천요금제: " + json;
             Message message = new SystemMessage(json);
             chatMemory.add(userId, message);
 
@@ -133,6 +138,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
     }
 
+    @Transactional
     @Override
     public ChatResponse keywordMapperByPreferences(String input, Long userId) throws JsonProcessingException {
         PlanExplanation planExplanation = getPlanExplanation(input, userId.toString());
@@ -193,9 +199,12 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
 
         try {
+            System.out.println(responseMapper(question, String.valueOf(userId), planKeywordResponse, result));
+
             // 조회 결과 db에 저장
             String reason = responseMapper(input, userId.toString(), planKeywordResponse, result);
             String json = objectMapper.writeValueAsString(result);
+            json = "추천요금제: " + json;
             Message message = new SystemMessage(json);
             chatMemory.add(String.valueOf(userId), message);
             return new ChatResponse(reason, result);
