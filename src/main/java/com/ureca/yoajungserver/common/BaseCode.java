@@ -79,7 +79,7 @@ public enum BaseCode {
     KEYWORD_MAPPING_SUCCESS("MAPPING_KEYWORD_200", HttpStatus.OK, "키워드 맵핑에 성공했습니다."),
     KEYWORD_MAPPING_FAIL("MAPPING_KEYWORD_400", HttpStatus.BAD_REQUEST, "키워드 맵핑에 실패했습니다."),
     CHAT_BAD_WORD_DETECTED("BAD_WORD_CHAT_400", HttpStatus.BAD_REQUEST, "상담원에게 폭언이나 욕설을 하시면 안 됩니다."),
-
+    KEYWORD_EXTRACTION_FAILED("KEYWORD_EXTRACTION_FAILED_400", HttpStatus.BAD_REQUEST, "죄송합니다. 요금제 관련 질문을 이해하지 못했습니다. 번거로우시겠지만, 요금제에 대해 다시 한 번 질문해 주시면 감사하겠습니다."),
 
     // Product
     PRODUCT_LIST_SUCCESS("PRODUCT_LIST_SUCCESS_200", HttpStatus.OK, "상품 목록 조회에 성공했습니다."),
