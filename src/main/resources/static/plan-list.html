@@ -230,38 +230,52 @@
                 const planCategory = plan.planCategory !== undefined ? plan.planCategory : '기타';
                 const networkType = plan.networkType !== undefined ? plan.networkType : '기타';
                 const tetheringSharingAllowance = plan.tetheringSharingAllowance !== undefined ? plan.tetheringSharingAllowance : 0;
-                planCard.innerHTML = `
-                    <div class="plan-header">
-                        <h3 class="plan-name">${plan.name}</h3>
-                        <span class="network-badge ${networkType.toLowerCase()}">${networkType}</span>
-                    </div>
-                    <div class="plan-price">월 ${plan.basePrice.toLocaleString()}원</div>
-                    <div class="plan-details">
-                        <div class="detail-row">
-                            <span class="detail-label">데이터</span>
-                            <span class="detail-value">${plan.dataAllowance === 9999 ? '무제한' : plan.dataAllowance + 'GB'}</span>
-                        </div>
-                        ${tetheringSharingAllowance !== 0 ? `
-                        <div class="detail-row">
-                            <span class="detail-label">테더링</span>
-                            <span class="detail-value">${tetheringSharingAllowance === 9999 ? '무제한' : tetheringSharingAllowance + 'GB'}</span>
-                        </div>` : ''}
-                        ${plan.speedAfterLimit !== 9999 ? `
-                        <div class="detail-row">
-                            <span class="detail-label">속도제한 후</span>
-                            <span class="detail-value">${plan.speedAfterLimit}Mbps</span>
-                        </div>` : ''}
 
-                    </div>
-                    <div class="services-section">
-                        <div class="services-title">포함 서비스</div>
-                        <div class="services-list">
-                            ${(plan.products || []).map(product => `<span class="service-tag">${product.name}</span>`).join('')}
+                const products = plan.products || [];
+                let servicesHTML = '';
+
+                if (products.length > 0) {
+                    const shownProducts = products.slice(0, 3);
+                    const hiddenCount = products.length - shownProducts.length;
+
+                    servicesHTML = `
+                        <div class="services-section">
+                            <div class="services-title">포함 서비스</div>
+                            <div class="services-list">
+                                ${shownProducts.map(product => `<span class="service-tag">${product.name}</span>`).join('')}
+                                ${hiddenCount > 0 ? `<span class="service-tag">+${hiddenCount}</span>` : ''}
+                            </div>
                         </div>
+                    `;
+                }
+
+                planCard.innerHTML = `
+                <div class="plan-header">
+                    <h3 class="plan-name">${plan.name}</h3>
+                    <span class="network-badge ${networkType.toLowerCase()}">${networkType}</span>
+                </div>
+                <div class="plan-price">월 ${plan.basePrice.toLocaleString()}원</div>
+                <div class="plan-details">
+                    <div class="detail-row">
+                        <span class="detail-label">데이터</span>
+                        <span class="detail-value">${plan.dataAllowance === 9999 ? '무제한' : plan.dataAllowance + 'GB'}</span>
                     </div>
-                    <p class="plan-description">${plan.description || ''}</p>
-                    <button class="btn btn-primary btn-large" style="width: 100%;" onclick="goToDetail(${plan.planId})">자세히 보기</button>
-                `;
+                    ${tetheringSharingAllowance !== 0 ? `
+                    <div class="detail-row">
+                        <span class="detail-label">테더링</span>
+                        <span class="detail-value">${tetheringSharingAllowance === 9999 ? '무제한' : tetheringSharingAllowance + 'GB'}</span>
+                    </div>` : ''}
+                    ${plan.speedAfterLimit !== 0 ? `
+                    <div class="detail-row">
+                        <span class="detail-label">속도제한 후</span>
+                        <span class="detail-value">${plan.speedAfterLimit === 9999 ? '무제한' : plan.speedAfterLimit + 'Mbps'}</span>
+                    </div>` : ''}
+                </div>
+                ${servicesHTML}
+                <p class="plan-description">${plan.description || ''}</p>
+                <button class="btn btn-primary btn-large" style="width: 100%;" onclick="goToDetail(${plan.planId})">자세히 보기</button>
+            `;
+
                 plansGrid.appendChild(planCard);
             });
 
@@ -271,17 +285,6 @@
             } else {
                 loadedPlans = [...plans];
             }
-        }
-
-        // Helper functions
-        function getCategoryName(category) {
-            const categoryNames = {
-                'LTE_FIVE_G': '5G/LTE',
-                'ONLINE_ONLY': '온라인전용',
-                'TABLET_WATCH': '태블릿/워치',
-                'DUAL_NUMBER': '듀얼넘버'
-            };
-            return categoryNames[category] || category;
         }
 
         function showError(message) {
