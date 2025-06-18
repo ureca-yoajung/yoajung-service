@@ -35,7 +35,6 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -109,7 +108,7 @@ public class ChatbotServiceImpl implements ChatbotService {
             // 조회 결과 db에 저장
             String json = objectMapper.writeValueAsString(top3);
             json = "추천요금제: " + json;
-            Message message = new SystemMessage(json);
+            Message message = new AssistantMessage(json);
             chatMemory.add(userId, message);
 
             return top3;
@@ -181,7 +180,7 @@ public class ChatbotServiceImpl implements ChatbotService {
             // 조회 결과 db에 저장
             String json = objectMapper.writeValueAsString(result);
             json = "추천요금제: " + json;
-            Message message = new SystemMessage(json);
+            Message message = new AssistantMessage(json);
             chatMemory.add(String.valueOf(userId), message);
         } catch (JsonProcessingException e) {
             // 로그 출력 or 사용자 메시지 처리
