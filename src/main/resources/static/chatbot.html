@@ -63,23 +63,22 @@
                             <p>당신에게 딱 맞는 요금제를 찾아드릴게요!</p>
                             <p>먼저 몇 가지 질문을 통해 사용 패턴을 알려주세요.</p>
                         </div>
-                        <div class="message-time">오전 12:00</div>
+                        <div class="message-time" id="welcomeTime">오전 12:00</div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Typing Indicator -->
-            <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                <div class="message bot-message">
-                    <div class="message-avatar">
-                        <span class="bot-icon">🤖</span>
-                    </div>
-                    <div class="message-content">
-                        <div class="typing-bubble">
-                            <div class="typing-dots">
-                                <span></span>
-                                <span></span>
-                                <span></span>
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <span class="bot-icon">🤖</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="typing-bubble">
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -168,6 +167,14 @@
                     renderNavButtons();
                 });
 
+            const now = new Date();
+            const welcomeTime = now.toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const el = document.getElementById('welcomeTime');
+            if (el) el.textContent = welcomeTime;
+
             // 로그인 여부 확인 (예: authToken)
             let isLoggedIn = false;
 
@@ -255,17 +262,15 @@
 
             try {
                 const userId = getOrCreateUserId();
-                // 토글 상태에 따른 엔드포인트 분기
                 const endpoint = toggle.checked
                     ? `/chat-preferences?question=${encodeURIComponent(text)}`
                     : `/chat?question=${encodeURIComponent(text)}&guestId=${encodeURIComponent(userId)}`;
-                console.log(endpoint);
+
                 const response = await fetch(endpoint);
                 const data = await response.json();
                 hideTypingIndicator();
 
                 if (!response.ok) {
-                    // 서버가 400, 500 등 에러 응답을 내려준 경우
                     if (data.code === 'BAD_WORD_CHAT_400' || data.code === 'KEYWORD_EXTRACTION_FAILED_400') {
                         addMessage('bot', data.message);
                     } else {
@@ -274,17 +279,25 @@
                     return;
                 }
 
-                if (Array.isArray(data.data) && data.data.length) {
-                    renderCards(data.data);
+                const reasonText = data.data?.reason || '';
+                const plans = data.data?.personalPlanRecommendResponses;
+
+                if (Array.isArray(plans) && plans.length) {
+                    // renderCards 함수에서 reasonText를 카드 하단에 렌더링하도록 넘깁니다.
+                    renderCards(plans, reasonText);
+                } else if (reasonText) {
+                    addMessage('bot', reasonText);
                 } else {
                     addMessage('bot', '죄송해요. 추천할 요금제가 없습니다.');
                 }
+
             } catch (err) {
                 hideTypingIndicator();
                 console.error('sendMessage 오류:', err);
                 addMessage('bot', '오류: 서버 통신에 실패했습니다.');
             }
         }
+
 
         // 메시지 추가
         function addMessage(sender, content, isCard = false) {
@@ -325,53 +338,73 @@
             scrollToBottom()
         }
 
-        function renderCards(items) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message bot-message';
-            const time = new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
-
+        // renderCards 함수 전체 (planText 인자 추가)
+        function renderCards(items, planText) {
             const cardsHtml = items.map(item => {
                 const p = item.response;
-                const dataText = p.dataAllowance === 9999 ? '무제한' : p.dataAllowance + 'GB';
-                const callText = item.callAllowance === 9999 ? '무제한' : item.callAllowance + '분';
-                const smsText = item.smsAllowance === 9999 ? '무제한' : item.smsAllowance + '건';
-                const speedLimitText = p.speedAfterLimit === 9999 ? '속도 제한 없음' : p.speedAfterLimit + 'Mbps';
+                const p2 = item; // callAllowance, smsAllowance 등이 item에 직접 있음
+
+                const dataText = p.dataAllowance === 9999 ? '무제한' : `${p.dataAllowance}GB`;
+                const callText = p2.callAllowance === 9999 ? '무제한' : `${p2.callAllowance}분`;
+                const smsText = p2.smsAllowance === 9999 ? '무제한' : `${p2.smsAllowance}건`;
+                const speedLimitText = p.speedAfterLimit === 9999 ? '속도 제한 없음' : `${p.speedAfterLimit}Mbps`;
+
                 return `
-                  <div class="plan-card">
-                    <div class="plan-header">
-                      <h3>${p.planName}</h3>
-                      <p class="plan-price">월 ${p.price.toLocaleString()}원</p>
-                    </div>
-                    <div class="plan-body">
-                      <p>데이터: ${dataText}</p>
-                      <p>속도제한 후: ${speedLimitText}</p>
-                      <p>테더링: ${p.tetheringSharing}GB</p>
-                      <p>음성: ${callText}</p>
-                      <p>문자: ${smsText}</p>
-                    </div>
-                    <button class="detail-btn" onclick="window.open('/plan-detail.html?id=${p.id}', '_blank')">
-                      요금제 자세히 보기
-                    </button>
-                  </div>`;
+      <div class="plan-card">
+        <div class="plan-header">
+          <h3>${p.planName}</h3>
+          <p class="plan-price">월 ${p.price.toLocaleString()}원</p>
+        </div>
+        <div class="plan-body">
+          <p>데이터: ${dataText}</p>
+          <p>속도제한 후: ${speedLimitText}</p>
+          <p>테더링: ${p.tetheringSharing}GB</p>
+          <p>음성: ${callText}</p>
+          <p>문자: ${smsText}</p>
+        </div>
+        <button class="detail-btn" onclick="window.open('/plan-detail.html?id=${p.id}', '_blank')">
+          요금제 자세히 보기
+        </button>
+      </div>`;
             }).join('');
 
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot-message';
+            const time = new Date().toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const reasonHtml = planText
+                .split('\n')                         // 줄바꿈마다 배열로 쪼갬
+                .filter(line => line.trim())        // 혹시 빈 줄이 있으면 제거
+                .map(line => `<p>${line}</p>`)      // 각각 <p> 태그로 감싸기
+                .join('');
+
+            // 카드들 아래에 추천 문구(planText)를 추가
             msgDiv.innerHTML = `
-              <div class="message-avatar"><span class="bot-icon">🤖</span></div>
-              <div class="message-content">
-                <div class="message-bubble">
-                  <div class="cards-container">
-                    ${cardsHtml}
-                  </div>
-                </div>
-                <div class="message-time">${time}</div>
-              </div>`;
+    <div class="message-avatar"><span class="bot-icon">🤖</span></div>
+    <div class="message-content">
+      <div class="message-bubble">
+        <div class="cards-container">
+          ${cardsHtml}
+        </div>
+        <div class="plan-reason" style="margin-top:12px; color:#555;">
+          ${reasonHtml}
+        </div>
+      </div>
+      <div class="message-time">${time}</div>
+    </div>`;
+
             chatMessages.appendChild(msgDiv);
             scrollToBottom();
         }
 
+
         // 타이핑 인디케이터 표시
         function showTypingIndicator() {
             isTyping = true
+            chatMessages.appendChild(typingIndicator);
             typingIndicator.style.display = "block"
             updateSendButtonState()
             scrollToBottom()
