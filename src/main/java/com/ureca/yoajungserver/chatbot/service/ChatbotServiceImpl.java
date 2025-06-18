@@ -19,6 +19,7 @@ import com.ureca.yoajungserver.user.exception.UserNotFoundException;
 import com.ureca.yoajungserver.user.repository.TendencyRepository;
 import com.ureca.yoajungserver.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -26,8 +27,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -199,8 +197,6 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
 
         try {
-            System.out.println(responseMapper(question, String.valueOf(userId), planKeywordResponse, result));
-
             // 조회 결과 db에 저장
             String reason = responseMapper(input, userId.toString(), planKeywordResponse, result);
             String json = objectMapper.writeValueAsString(result);
