@@ -31,10 +31,4 @@ public class TestController {
                 .call()
                 .content();
     }
-
-    @GetMapping("/chat/recommend-plan")
-    public ResponseEntity<ApiResponse<List<PersonalPlanRecommendResponse>>> recommendPlan(@RequestBody PlanKeywordResponse keywordResponse){
-        return ResponseEntity.status(STATUS_OK.getStatus())
-                .body(ApiResponse.of(STATUS_OK, chatbotService.planList(keywordResponse)));
-    }
 }

@@ -74,6 +74,7 @@ public class OAuthServiceImpl implements OAuthService {
                 .gender(request.getGender())
                 .ageGroup(request.getAgeGroup())
                 .familyCount(request.getFamilyCount())
+                .plan(plan)
                 .password(passwordEncoder.encode("KAKAO"))
                 .role(Role.USER)
                 .build();

@@ -19,8 +19,6 @@ public class AuthServiceImpl implements AuthService {
     private long codeExpiration;
 
     private static final String CODE_KEY_PREFIX = "verify:code:";
-    private static final String PENDING_EMAIL = "pendingEmail";
-    private static final String VERIFIED_EMAIL = "verifiedEmail";
 
     @Override
     public void sendVerificationCode(String email) {
