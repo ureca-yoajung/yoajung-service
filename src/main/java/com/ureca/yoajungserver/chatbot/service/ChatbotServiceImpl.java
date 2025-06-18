@@ -7,6 +7,7 @@ import com.ureca.yoajungserver.chatbot.dto.PlanKeywordFirst;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
+import com.ureca.yoajungserver.chatbot.exception.KeywordExtractionFailedException;
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
 import com.ureca.yoajungserver.user.entity.User;
@@ -32,6 +33,8 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
+import static com.ureca.yoajungserver.common.BaseCode.KEYWORD_EXTRACTION_FAILED;
 
 @Slf4j
 @Service
@@ -80,6 +83,11 @@ public class ChatbotServiceImpl implements ChatbotService {
             //    .join()은 예외를 던지지 않지만, .get()은 checked exception을 던집니다.
             //    allOf() 로 이미 완료를 기다렸기 때문에 여기서 join()은 블로킹되지 않습니다.
             PlanKeywordResponse planKeywordResponse = getKeyWordResponse(input, userId);
+
+            if (!planKeywordResponse.hasAnyValidKeyword()) {
+                throw new KeywordExtractionFailedException(KEYWORD_EXTRACTION_FAILED);
+            }
+
             List<PersonalPlanRecommendResponse> personalPlanRecommendResponses = chatbotRepository.recommendPlans(planKeywordResponse);
             Collections.shuffle(personalPlanRecommendResponses);
             List<PersonalPlanRecommendResponse> top3;
@@ -90,7 +98,7 @@ public class ChatbotServiceImpl implements ChatbotService {
             }
             System.out.println(responseMapper(input, userId, planKeywordResponse, top3));
             return top3;
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             // 비동기 작업 중 발생한 예외 처리
             log.error("Error during asynchronous LLM call processing", e);
             // 필요에 따라 사용자 정의 예외를 던지거나 다른 방식으로 처리할 수 있습니다.
@@ -101,6 +109,10 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Override
     public List<PersonalPlanRecommendResponse> keywordMapperByPreferences(String question, Long userId) {
         PlanKeywordResponse planKeywordResponse = getKeyWordResponse(question, userId.toString());
+
+        if (!planKeywordResponse.hasAnyValidKeyword()) {
+            throw new KeywordExtractionFailedException(KEYWORD_EXTRACTION_FAILED);
+        }
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
