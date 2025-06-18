@@ -24,7 +24,8 @@ body {
     color: var(--text-primary);
     background: var(--bg-gray);
     height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 /* Navigation */
@@ -117,21 +118,23 @@ body {
 /* Main Content */
 .main-content {
     display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     padding-top: 64px;
-    justify-content: center; /* 화면 중앙에 채팅 컨테이너 배치 */
+    padding: 64px 24px 0;
 }
 
 .chat-container {
-    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    height: calc(100vh - 64px);
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 1200px; /* 시작하기 버튼까지 닿도록 확장 */
-    margin: 0 auto;
     background: var(--bg-white);
     box-shadow: var(--shadow);
-    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 /* Chat Header */
@@ -232,6 +235,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -331,10 +335,14 @@ body {
 }
 
 @keyframes typing {
-    0%, 80%, 100% {
+
+    0%,
+    80%,
+    100% {
         transform: scale(0.8);
         opacity: 0.5;
     }
+
     40% {
         transform: scale(1);
         opacity: 1;
@@ -361,25 +369,6 @@ body {
 
 .chat-input:focus-within {
     border-color: var(--primary);
-}
-
-.attachment-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: transparent;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text-secondary);
-}
-
-.attachment-btn:hover {
-    background: var(--border-color);
-    color: var(--text-primary);
 }
 
 #messageInput {
@@ -445,250 +434,6 @@ body {
     color: var(--primary);
 }
 
-/* Chat Info Sidebar */
-.chat-info-sidebar {
-    width: 320px;
-    background: var(--bg-white);
-    border-left: 1px solid var(--border-color);
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    overflow-y: auto;
-}
-
-.chat-info-sidebar.active {
-    transform: translateX(0);
-}
-
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.sidebar-header h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.close-sidebar {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text-secondary);
-}
-
-.close-sidebar:hover {
-    background: var(--bg-gray);
-    color: var(--text-primary);
-}
-
-.sidebar-content {
-    padding: 24px;
-}
-
-.info-section {
-    margin-bottom: 32px;
-}
-
-.info-section h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 16px;
-}
-
-.process-list {
-    list-style: none;
-}
-
-.process-list li {
-    padding: 8px 0;
-    position: relative;
-    padding-left: 24px;
-    color: var(--text-secondary);
-}
-
-.process-list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid var(--border-color);
-}
-
-.process-list li.completed::before {
-    background: var(--primary);
-    border-color: var(--primary);
-}
-
-.process-list li.current::before {
-    border-color: var(--primary);
-    background: var(--bg-white);
-}
-
-.collected-info {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-}
-
-.info-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.info-value {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.help-items {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.help-btn {
-    padding: 12px 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--bg-white);
-    color: var(--text-primary);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-}
-
-.help-btn:hover {
-    border-color: var(--primary);
-    background: rgba(230, 0, 126, 0.05);
-}
-
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: var(--bg-white);
-    border-radius: 16px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.modal-header h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.close-modal {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text-secondary);
-}
-
-.close-modal:hover {
-    background: var(--bg-gray);
-    color: var(--text-primary);
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.attachment-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.attachment-option {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    background: var(--bg-white);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-}
-
-.attachment-option:hover {
-    border-color: var(--primary);
-    background: rgba(230, 0, 126, 0.05);
-}
-
-.option-icon {
-    font-size: 24px;
-    width: 48px;
-    text-align: center;
-}
-
-.option-text h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-}
-
-.option-text p {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .nav-container {
@@ -704,19 +449,12 @@ body {
     }
 
     .main-content {
-        flex-direction: column;
+        padding: 64px 8px 0;
     }
 
     .chat-container {
-        max-width: none;
-    }
-
-    .chat-info-sidebar {
-        position: fixed;
-        top: 64px;
-        right: 0;
-        bottom: 0;
-        z-index: 200;
+        border-radius: 0;
+        height: calc(100vh - 64px);
     }
 
     .chat-header {
@@ -735,42 +473,30 @@ body {
         max-width: 85%;
     }
 
-    .option-buttons {
-        grid-template-columns: 1fr;
-    }
-
-    .plan-features {
-        grid-template-columns: 1fr;
-    }
-
     .input-suggestions {
         flex-direction: column;
     }
 }
 
 /* Scrollbar Styling */
-.chat-messages::-webkit-scrollbar,
-.chat-info-sidebar::-webkit-scrollbar {
+.chat-messages::-webkit-scrollbar {
     width: 6px;
 }
 
-.chat-messages::-webkit-scrollbar-track,
-.chat-info-sidebar::-webkit-scrollbar-track {
+.chat-messages::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.chat-messages::-webkit-scrollbar-thumb,
-.chat-info-sidebar::-webkit-scrollbar-thumb {
+.chat-messages::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 3px;
 }
 
-.chat-messages::-webkit-scrollbar-thumb:hover,
-.chat-info-sidebar::-webkit-scrollbar-thumb:hover {
+.chat-messages::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
 
-/* 카드 렌더링을 위한 CSS */
+/* 카드 렌더링 */
 .cards-container {
     display: flex;
     gap: 12px;
@@ -780,10 +506,10 @@ body {
 
 .plan-card {
     flex: 0 0 220px;
+    background: var(--bg-white);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     box-shadow: var(--shadow);
-    background: var(--bg-white);
     display: flex;
     flex-direction: column;
 }
@@ -796,7 +522,6 @@ body {
 .plan-header h3 {
     margin: 0 0 4px;
     font-size: 1rem;
-    color: var(--text-primary);
 }
 
 .plan-price {
@@ -820,7 +545,6 @@ body {
     color: #fff;
     border: none;
     border-radius: 6px;
-    text-align: center;
     cursor: pointer;
     font-size: 0.875rem;
     transition: background 0.2s;
@@ -828,4 +552,66 @@ body {
 
 .detail-btn:hover {
     background: var(--primary-dark);
+}
+
+.preference-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto; /* 필요 시 위치 조정 */
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+}
+
+.switch input:checked + .slider {
+    background-color: var(--primary);
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.switch input:disabled + .slider {
+    background-color: #eee;
+    cursor: not-allowed;
+}
+
+.toggle-label {
+    font-size: 14px;
+    color: var(--text-secondary);
 }
