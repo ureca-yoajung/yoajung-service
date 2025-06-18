@@ -12,6 +12,8 @@ import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
 import com.ureca.yoajungserver.chatbot.exception.KeywordExtractionFailedException;
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
+import com.ureca.yoajungserver.plan.repository.PlanStatisticRepository;
+import com.ureca.yoajungserver.review.repository.ReviewRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
 import com.ureca.yoajungserver.user.entity.User;
 import com.ureca.yoajungserver.user.exception.TendencyNotFoundException;
@@ -39,6 +41,7 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -46,6 +49,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService {
     private final ChatbotRepository chatbotRepository;
+    private final PlanStatisticRepository planStatisticRepository;
     private final LLMAsyncService llmAsyncService;
     private final UserRepository userRepository;
     private final TendencyRepository tendencyRepository;
@@ -108,12 +112,24 @@ public class ChatbotServiceImpl implements ChatbotService {
             }
 
             List<PersonalPlanRecommendResponse> personalPlanRecommendResponses = chatbotRepository.recommendPlans(planKeywordResponse);
-            Collections.shuffle(personalPlanRecommendResponses);
-            List<PersonalPlanRecommendResponse> top3;
-            if (personalPlanRecommendResponses.size() > 3) {
-                top3 = personalPlanRecommendResponses.subList(0, 3);
-            } else {
-                top3 = personalPlanRecommendResponses;
+
+            List<PlanScore> planScores = new ArrayList<>();
+
+            // 인기순
+            for(PersonalPlanRecommendResponse plan : personalPlanRecommendResponses) {
+                Integer popular = planStatisticRepository.popularPlans(plan.getResponse().getId());
+
+                if(popular == null) popular = 0;
+                planScores.add(new PlanScore(plan, popular));
+            }
+
+            planScores.sort(Comparator.comparingDouble(PlanScore::getScore).reversed());
+
+            int limit = Math.min(3, planScores.size());
+            List<PersonalPlanRecommendResponse> top3 = new ArrayList<>();
+
+            for (int i = 0; i < limit; i++) {
+                top3.add(planScores.get(i).getPlan());
             }
 
             String reason = responseMapper(input, userId, planKeywordResponse, top3);
@@ -161,7 +177,6 @@ public class ChatbotServiceImpl implements ChatbotService {
         int avgMonthlyDataGB = tendency.getAvgMonthlyDataGB();
         int preferencePrice = tendency.getPreferencePrice();
 
-        // 예시로 첫 번째 응답을 DB 조회에 사용
         List<PlanScore> planScores = new ArrayList<>();
 
         double weightGB = 0.5;
@@ -169,7 +184,6 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         for (PersonalPlanRecommendResponse personalPlanRecommendResponse : personalPlanRecommendResponses) {
             double dataScore;
-
             int tempData;
 
             if (personalPlanRecommendResponse.getResponse().getDataAllowance() == 9999) {
