@@ -78,6 +78,7 @@ public enum BaseCode {
 
     // Chat
     CHAT_SAVE_SUCCESS("SAVE_CHAT_201", HttpStatus.CREATED, "채팅 저장에 성공했습니다."),
+    CHAT_DELETE_SUCCESS("DELETE_CHAT_201", HttpStatus.OK, "채팅 삭제에 성공했습니다."),
     KEYWORD_MAPPING_SUCCESS("MAPPING_KEYWORD_200", HttpStatus.OK, "키워드 맵핑에 성공했습니다."),
     KEYWORD_MAPPING_FAIL("MAPPING_KEYWORD_400", HttpStatus.BAD_REQUEST, "키워드 맵핑에 실패했습니다."),
     CHAT_BAD_WORD_DETECTED("BAD_WORD_CHAT_400", HttpStatus.BAD_REQUEST, "상담원에게 폭언이나 욕설을 하시면 안 됩니다."),

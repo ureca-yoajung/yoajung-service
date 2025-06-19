@@ -441,9 +441,23 @@
         }
 
         // 채팅 초기화
-        function clearChat() {
+        async function clearChat() {
             if (confirm("대화 내용을 모두 삭제하시겠습니까?")) {
-                chatMessages.innerHTML = `
+                const userId = getOrCreateUserId();
+
+                try {
+                    const response = await fetch(`/chat-clear?guestId=${encodeURIComponent(userId)}`, {
+                        method: 'DELETE'
+                    });
+
+                    const result = await response.json();
+                    if (!response.ok) {
+                        alert(result.message || '채팅 삭제 중 오류가 발생했습니다.');
+                        return;
+                    }
+
+
+                    chatMessages.innerHTML = `
             <div class="message bot-message">
                 <div class="message-avatar">
                     <span class="bot-icon">🤖</span>
@@ -458,8 +472,12 @@
                 </div>
             </div>
         `
-                chatHistory = []
-                userInfo = {dataUsage: null, callPattern: null, budget: null}
+                    chatHistory = []
+                    userInfo = {dataUsage: null, callPattern: null, budget: null}
+                } catch (err) {
+                    console.error('clearChat 오류:', err);
+                    alert('오류: 서버와의 통신에 실패했습니다.');
+                }
             }
         }
 

@@ -16,4 +16,6 @@ public interface ChatbotService {
     ChatResponse keywordMapperByPreferences(String question, Long userId) throws JsonProcessingException;
 
     String responseMapper(String input, String userId, PlanKeywordResponse keywordResponse, List<PersonalPlanRecommendResponse> result) throws JsonProcessingException;
+
+    void deleteChatMemory(String userId) throws IOException;
 }
