@@ -1,3 +1,28 @@
+/* -------- AI Review Summary -------- */
+.ai-review-summary {
+    background: #ffffff;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;             /* AI 이미지 바로 아래 여백 */
+    width: clamp(180px, 28vw, 260px);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.ai-summary-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.ai-summary-text {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    white-space: pre-line; /* preserve line breaks */
+}
 :root {
     --primary: #e6007e;
     --primary-dark: #d10070;
@@ -668,6 +693,11 @@ body {
     top: 250px;
     right: 200px;
     z-index: 50;
+
+    /* 추가: 이미지·말풍선·요약을 세로로 쌓고 우측 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .personal-ai {
@@ -706,7 +736,7 @@ body {
 .speech-bubble::after {
     content: "";
     position: absolute;
-    top: 100%;
+    top: 100%;            /* top 기준으로 화살표 재정렬 */
     right: 20px;
     border-width: 10px;
     border-style: solid;
