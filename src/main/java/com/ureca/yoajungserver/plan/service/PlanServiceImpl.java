@@ -26,7 +26,7 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public DetailPlanResponse getDetailPlan(Long planId) {
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
+                .orElseThrow(() -> new PlanNotFoundException());
 
         return DetailPlanResponse.fromPlan(plan);
     }
@@ -34,7 +34,7 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public DetailPlanProductResponse getDetailPlanProducts(Long planId) {
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
+                .orElseThrow(() -> new PlanNotFoundException());
 
         List<PlanProduct> planProducts = planProductRepository.findByPlanIdWithProduct(planId);
 
@@ -61,7 +61,7 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public DetailPlanBenefitResponse getDetailPlanBenefit(Long planId) {
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new PlanNotFoundException(PLAN_NOT_FOUND));
+                .orElseThrow(() -> new PlanNotFoundException());
 
         List<PlanBenefit> planBenefits = planBenefitRepository.findByPlanIdWithBenefit(planId);
 

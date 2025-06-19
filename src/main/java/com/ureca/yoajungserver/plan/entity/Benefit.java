@@ -2,15 +2,13 @@ package com.ureca.yoajungserver.plan.entity;
 
 import com.ureca.yoajungserver.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "benefit")
+@ToString
 public class Benefit extends BaseTimeEntity {
 
     @Id
