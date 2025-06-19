@@ -10,10 +10,12 @@ import com.ureca.yoajungserver.chatbot.dto.PlanKeywordFirst;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordResponse;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordSecond;
 import com.ureca.yoajungserver.chatbot.dto.PlanKeywordThird;
+import com.ureca.yoajungserver.chatbot.entity.ChatHistory;
+import com.ureca.yoajungserver.chatbot.entity.ChatType;
 import com.ureca.yoajungserver.chatbot.exception.KeywordExtractionFailedException;
+import com.ureca.yoajungserver.chatbot.repository.ChatHistoryRepository;
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import com.ureca.yoajungserver.plan.repository.PlanStatisticRepository;
-import com.ureca.yoajungserver.review.repository.ReviewRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
 import com.ureca.yoajungserver.user.entity.User;
 import com.ureca.yoajungserver.user.exception.TendencyNotFoundException;
@@ -24,8 +26,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -41,7 +43,6 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -56,6 +57,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     private final ObjectMapper objectMapper;
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
+    private final ChatHistoryRepository chatHistoryRepository;
 
     @Value("${spring.ai.chat.system-prompt1}")
     private Resource promptRes1;
@@ -93,8 +95,22 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     @Transactional
     @Override
-    public ChatResponse keywordMapper(String input, String userId) {
+    public ChatResponse keywordMapper(String input, String userId) throws JsonProcessingException {
         PlanExplanation planExplanation = getPlanExplanation(input, userId);
+
+        chatHistoryRepository.save(ChatHistory.builder()
+                .conversationId(userId)
+                .content(input)
+                .type(ChatType.USER)
+                .timestamp(LocalDateTime.now())
+                .build());
+
+        chatHistoryRepository.save(ChatHistory.builder()
+                        .conversationId(userId)
+                        .content(objectMapper.writeValueAsString(planExplanation))
+                        .type(ChatType.ASSISTANT)
+                        .timestamp(LocalDateTime.now())
+                .build());
 
         if (!planExplanation.getComparePreviousPlan()) {
             log.info("planExplan{}: ", planExplanation.getMessage());
@@ -106,6 +122,13 @@ public class ChatbotServiceImpl implements ChatbotService {
             //    .join()은 예외를 던지지 않지만, .get()은 checked exception을 던집니다.
             //    allOf() 로 이미 완료를 기다렸기 때문에 여기서 join()은 블로킹되지 않습니다.
             PlanKeywordResponse planKeywordResponse = getKeyWordResponse(input, userId);
+
+            chatHistoryRepository.save(ChatHistory.builder()
+                    .conversationId(userId)
+                    .content(objectMapper.writeValueAsString(planKeywordResponse))
+                    .type(ChatType.ASSISTANT)
+                    .timestamp(LocalDateTime.now())
+                    .build());
 
             if (!planKeywordResponse.hasAnyValidKeyword()) {
                 throw new KeywordExtractionFailedException(KEYWORD_EXTRACTION_FAILED);
@@ -142,6 +165,13 @@ public class ChatbotServiceImpl implements ChatbotService {
             Message message = new SystemMessage(json);
             chatMemory.add(userId, message);
 
+            chatHistoryRepository.save(ChatHistory.builder()
+                    .conversationId(userId)
+                    .content(json)
+                    .type(ChatType.SYSTEM)
+                    .timestamp(LocalDateTime.now())
+                    .build());
+
             return new ChatResponse(reason, top3);
 
         } catch (JsonProcessingException e) {
@@ -157,12 +187,33 @@ public class ChatbotServiceImpl implements ChatbotService {
     public ChatResponse keywordMapperByPreferences(String input, Long userId) throws JsonProcessingException {
         PlanExplanation planExplanation = getPlanExplanation(input, userId.toString());
 
+        chatHistoryRepository.save(ChatHistory.builder()
+                .conversationId(userId.toString())
+                .content(input)
+                .type(ChatType.USER)
+                .timestamp(LocalDateTime.now())
+                .build());
+
+        chatHistoryRepository.save(ChatHistory.builder()
+                .conversationId(userId.toString())
+                .content(objectMapper.writeValueAsString(planExplanation))
+                .type(ChatType.ASSISTANT)
+                .timestamp(LocalDateTime.now())
+                .build());
+
         if (!planExplanation.getComparePreviousPlan()) {
             log.info("planExplanation: {}", planExplanation.getMessage());
             return new ChatResponse(planExplanation.getMessage(), List.of());
         }
 
         PlanKeywordResponse planKeywordResponse = getKeyWordResponse(input, userId.toString());
+
+        chatHistoryRepository.save(ChatHistory.builder()
+                .conversationId(userId.toString())
+                .content(objectMapper.writeValueAsString(planKeywordResponse))
+                .type(ChatType.ASSISTANT)
+                .timestamp(LocalDateTime.now())
+                .build());
 
         if (!planKeywordResponse.hasAnyValidKeyword()) {
             throw new KeywordExtractionFailedException(KEYWORD_EXTRACTION_FAILED);
@@ -217,6 +268,14 @@ public class ChatbotServiceImpl implements ChatbotService {
             json = "추천요금제: " + json;
             Message message = new SystemMessage(json);
             chatMemory.add(String.valueOf(userId), message);
+
+            chatHistoryRepository.save(ChatHistory.builder()
+                    .conversationId(userId.toString())
+                    .content(json)
+                    .type(ChatType.SYSTEM)
+                    .timestamp(LocalDateTime.now())
+                    .build());
+
             return new ChatResponse(reason, result);
         } catch (JsonProcessingException e) {
             // 로그 출력 or 사용자 메시지 처리
