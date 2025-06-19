@@ -5,5 +5,5 @@ import com.ureca.yoajungserver.plan.dto.response.PlanRecommendResponse;
 import com.ureca.yoajungserver.user.security.CustomUserDetails;
 
 public interface PlanRecommendService {
-    PlanRecommendResponse getRecommendPlan(DetailPlanRequest detailPlanRequest, CustomUserDetails userDetails);
+    PlanRecommendResponse getRecommendPlan(Long planId, CustomUserDetails userDetails);
 }

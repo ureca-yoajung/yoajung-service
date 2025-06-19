@@ -18,10 +18,10 @@ let originalData = {};
 // Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
     await loadNavbar();
-    await loadRecommendationText()
     planId = getPlanIdFromUrl() || 1;
 
     await Promise.all([
+        loadRecommendationText(planId),
         loadPlanData(planId),
         loadBenefitsData(planId),
         loadProductsData(planId),
@@ -67,31 +67,37 @@ async function loadNavbar() {
     }
 }
 
-async function loadRecommendationText() {
+async function loadRecommendationText(planId) {
     const recommendationText = document.getElementById('recommendationText');
+    const personalAiImg = document.querySelector('.personal-ai'); // 이미지 요소 선택
     let responseMessage;
 
+    function markdownToHtml(mdText) {
+        mdText = mdText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        mdText = mdText.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+        return mdText;
+    }
+
     try {
-        const response = await fetch('/recommendation');
+        const response = await fetch(`/recommendation/${planId}`);
         const result = await response.json();
 
         if (result?.status === 'OK' && result.data) {
-            // 정상 응답 처리
-            responseMessage = result.data.message;
+            responseMessage = markdownToHtml(result.data.recommendation);
         } else if (result?.code === 'INTERNAL_SERVER_ERROR_500') {
-            // 커스텀 에러 코드 처리
             responseMessage = '당신을 위한 추천 요정입니다. 로그인을 해주세요!';
+
+            // 이미지 변경
+            personalAiImg.src = 'assets/image/recommendationAi_Bad.png';
+            personalAiImg.className = 'personal-ai-bad';
         } else {
-            // 그 외 예상치 못한 응답
             console.error('Unhandled recommendation response:', result);
         }
     } catch (error) {
-        // 네트워크 오류 등
         console.error('recommendation Text Loading Fail:', error);
     }
 
-
-    recommendationText.textContent = responseMessage;
+    recommendationText.innerHTML = responseMessage;
 }
 
 // Extract plan ID from URL

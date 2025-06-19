@@ -7,4 +7,5 @@ import lombok.Setter;
 public class PlanRecommendResponse {
     private String recommendation;
     private String message;
+    private String value;
 }
