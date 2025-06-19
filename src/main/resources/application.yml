@@ -84,4 +84,6 @@ kakao:
   client-id: ${REST_API_KEY}
   redirect-uri: ${REDIRECT_URI}
 
-
+dify:
+  base-url: https://api.dify.ai/v1
+  api-key : ${DIFY_KEY}

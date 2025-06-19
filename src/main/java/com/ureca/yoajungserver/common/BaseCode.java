@@ -56,6 +56,8 @@ public enum BaseCode {
     PLAN_BENEFIT_SUCCESS("FIND_PLAN_BENEFIT_200", HttpStatus.OK, "요금제 혜택 조회에 성공했습니다."),
     PLAN_PRODUCT_SUCCESS("FIND_PLAN_PRODUCT_200", HttpStatus.OK, "요금제 상품 조회에 성공했습니다."),
     PLAN_LIST_SUCCESS("READ_PLAN_LIST_200", HttpStatus.OK, "요금제 목록 조회에 성공했습니다."),
+    PLAN_SUMMARY_SUCCESS("PLAN_SUMMARY_SUCCESS_200", HttpStatus.OK, "요금제 리뷰 요약 조회에 성공했습니다."),
+    PLAN_SUMMARY_NOT_FOUND("PLAN_SUMMARY_NOT_FOUND_204", HttpStatus.NO_CONTENT, "해당 요금제의 리뷰 요약이 없습니다."),
     PLAN_NOT_FOUND("NOT_FOUND_PLAN_404", HttpStatus.NOT_FOUND, "해당 요금제를 찾을 수 없습니다."),
     INVALID_PLAN_CATEGORY("INVALID_PLAN_CATEGORY_400", HttpStatus.BAD_REQUEST, "유효하지 않은 요금제 카테고리입니다."),
     INVALID_PLAN_SORT_TYPE("INVALID_PLAN_SORT_TYPE_400", HttpStatus.BAD_REQUEST, "유효하지 않은 정렬 타입입니다."),
