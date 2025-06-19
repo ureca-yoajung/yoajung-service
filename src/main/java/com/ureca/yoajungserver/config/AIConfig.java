@@ -16,22 +16,17 @@ public class AIConfig {
 
     private final JdbcChatMemoryRepository jdbcChatMemoryRepository;
 
-//    @Value("${spring.ai.chat.system-prompt}")
-//    private Resource systemPromptResource;
-
     @Bean
     public ChatMemory chatMemory() {
         return MessageWindowChatMemory.builder()
                 .chatMemoryRepository(jdbcChatMemoryRepository)
-                .maxMessages(50)
+                .maxMessages(20)
                 .build();
     }
 
     @Bean
     public ChatClient chatClient(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory) throws IOException {
-//        String systemPrompt = StreamUtils.copyToString(systemPromptResource.getInputStream(), StandardCharsets.UTF_8);
         return chatClientBuilder
-//                .defaultSystem(systemPrompt)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
     }
