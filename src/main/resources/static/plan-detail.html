@@ -174,7 +174,15 @@
             <img class="personal-ai" src="assets/image/recommendationAi.png" alt="recommendationAi"/>
             <div class="speech-bubble" id="recommendationText">
             </div>
+
+
+            <!-- AI Review Summary (moved inside ai-container) -->
+            <div id="aiReviewSummary" class="ai-review-summary" style="display:none;">
+                <h2 class="ai-summary-title">요정의 사용자 리뷰 요약</h2>
+                <p id="aiSummaryText" class="ai-summary-text">로딩 중...</p>
+            </div>
         </div>
+
 
         <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
         <button id="scrollTopBtn" title="맨 위로"><i class="fa-solid fa-caret-up" style="color: white"></i></button>
