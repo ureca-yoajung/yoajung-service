@@ -4,10 +4,10 @@ async function loadReviewsData(planId) {
         if (result && result.status === 'OK' && result.data) {
             responseReview = result.data;
             totalPages = result.data.totalPages;
-
+            isLogined = result.data.isLogined;
             const reviewWriteBtn = document.getElementById('write-review-btn');
             if (reviewWriteBtn) {
-                reviewWriteBtn.style.display = result.data.isPlanUser ? 'inline-block' : 'none';
+                reviewWriteBtn.style.display = (result.data.isPlanUser || !isLogined) ? 'inline-block' : 'none';
             }
         }
     } catch (error) {
@@ -154,10 +154,6 @@ function initializeRatingSystem() {
             updateRatingDisplay();
         });
 
-        star.addEventListener('mouseover', function () {
-            const rating = parseInt(this.dataset.rating);
-            highlightStars(rating);
-        });
     });
 
     document.getElementById('ratingInput').addEventListener('mouseleave', function () {
@@ -178,6 +174,12 @@ function updateRatingDisplay() {
 
 // Review form functions
 function toggleReviewForm() {
+    if (!isLogined) {
+        // 로그인하지 않은 상태면 로그인 페이지로 이동
+        alert("로그인 페이지로 이동합니다.");
+        window.location.href = "/login.html";
+        return;
+    }
     const form = document.getElementById('reviewForm');
     form.classList.toggle('active');
 }
@@ -320,11 +322,6 @@ function createEditForm(reviewId, currentRating, currentContent) {
         star.addEventListener('click', function() {
             const rating = parseInt(this.dataset.rating);
             updateEditRatingDisplay(reviewId, rating);
-        });
-
-        star.addEventListener('mouseover', function() {
-            const rating = parseInt(this.dataset.rating);
-            highlightEditStars(reviewId, rating);
         });
     });
 
