@@ -213,6 +213,8 @@
                         showWarningAlert("사용자 성향 정보를 사용하기 위해서는 로그인이 필요합니다.");
                     }
                 });
+
+            localStorage.setItem("userId", "");
         });
 
         toggle.addEventListener('change', () => {
@@ -242,7 +244,7 @@
         function getOrCreateUserId() {
             // 이미 로컬에 userId가 있으면 바로 리턴
             let userId = localStorage.getItem('userId');
-            if (!userId) {
+            if (!userId || userId === "") {
                 // 없으면 UUID 생성 (modern 브라우저) 또는 fallback
                 if (crypto && crypto.randomUUID) {
                     userId = crypto.randomUUID();
