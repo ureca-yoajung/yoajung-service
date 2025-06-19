@@ -286,6 +286,14 @@ body {
     position: relative;
 }
 
+.message-bubble strong {
+    color: var(--primary);
+}
+
+.message-bubble em {
+    color: var(--primary);
+}
+
 .user-message .message-bubble {
     background: var(--gradient);
     color: white;
@@ -658,3 +666,4 @@ body {
     color: var(--primary); /* 기본 primary 색상 사용 */
     /* font-weight: 600;  원한다면 더 강하게 만들 수 있습니다. */
 }
+

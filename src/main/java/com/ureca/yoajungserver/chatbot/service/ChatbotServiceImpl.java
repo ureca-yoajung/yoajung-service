@@ -106,10 +106,10 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .build());
 
         chatHistoryRepository.save(ChatHistory.builder()
-                        .conversationId(userId)
-                        .content(objectMapper.writeValueAsString(planExplanation))
-                        .type(ChatType.ASSISTANT)
-                        .timestamp(LocalDateTime.now())
+                .conversationId(userId)
+                .content(objectMapper.writeValueAsString(planExplanation))
+                .type(ChatType.ASSISTANT)
+                .timestamp(LocalDateTime.now())
                 .build());
 
         if (!planExplanation.getComparePreviousPlan()) {
@@ -139,10 +139,12 @@ public class ChatbotServiceImpl implements ChatbotService {
             List<PlanScore> planScores = new ArrayList<>();
 
             // 인기순
-            for(PersonalPlanRecommendResponse plan : personalPlanRecommendResponses) {
+            for (PersonalPlanRecommendResponse plan : personalPlanRecommendResponses) {
                 Integer popular = planStatisticRepository.popularPlans(plan.getResponse().getId());
 
-                if(popular == null) popular = 0;
+                if (popular == null) {
+                    popular = 0;
+                }
                 planScores.add(new PlanScore(plan, popular));
             }
 
@@ -348,7 +350,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         return chatClient.prompt()
                 .system(prompt5)
                 .options(ChatOptions.builder()
-                        .model("gpt-4.1-mini")
+                        .model("gpt-4o")
                         .temperature(0.5)
                         .build())
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
