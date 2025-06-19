@@ -195,6 +195,8 @@
                     renderNavButtons();
                 });
 
+            sessionStorage.setItem('planSort', '');
+
             // 2. [최적화] 로그인 체크 → 성향 체크 (순차 fetch)
             fetch('/api/user/me', {credentials: 'include'})
                 .then(res => {

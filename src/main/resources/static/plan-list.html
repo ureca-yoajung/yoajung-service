@@ -50,62 +50,62 @@
                         <p>필터</p>
                     </div>
                 </div>
-    <!-- Filter Modal -->
-    <div id="planFilterModal" class="plan-filter-modal" style="display:none;">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>어떤 요금제를 찾으세요?</h2>
-                <button class="modal-close-btn" id="closeFilterModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="planFilterForm">
-                    <!-- 정렬 행 제거됨 -->
-                    <div class="filter-row" id="modalAgeFieldset">
-                        <legend>연령대</legend>
-                        <div class="chip-group" data-target="ageGroup">
-                          <button type="button" class="filter-chip active" data-value="ALL">전체</button>
-                          <button type="button" class="filter-chip" data-value="TWENTY_S">20대</button>
-                          <button type="button" class="filter-chip" data-value="THIRTY_S">30대</button>
-                          <button type="button" class="filter-chip" data-value="FORTY_S">40대</button>
-                          <button type="button" class="filter-chip" data-value="FIFTY_S">50대</button>
-                          <button type="button" class="filter-chip" data-value="SIXTY_S_PLUS">60대+</button>
+                <!-- Filter Modal -->
+                <div id="planFilterModal" class="plan-filter-modal" style="display:none;">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>어떤 요금제를 찾으세요?</h2>
+                            <button class="modal-close-btn" id="closeFilterModalBtn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="planFilterForm">
+                                <!-- 정렬 행 제거됨 -->
+                                <div class="filter-row" id="modalAgeFieldset">
+                                    <legend>연령대</legend>
+                                    <div class="chip-group" data-target="ageGroup">
+                                        <button type="button" class="filter-chip active" data-value="ALL">전체</button>
+                                        <button type="button" class="filter-chip" data-value="TWENTY_S">20대</button>
+                                        <button type="button" class="filter-chip" data-value="THIRTY_S">30대</button>
+                                        <button type="button" class="filter-chip" data-value="FORTY_S">40대</button>
+                                        <button type="button" class="filter-chip" data-value="FIFTY_S">50대</button>
+                                        <button type="button" class="filter-chip" data-value="SIXTY_S_PLUS">60대+</button>
+                                    </div>
+                                </div>
+                                <div class="filter-row">
+                                    <fieldset>
+                                        <legend>데이터</legend>
+                                        <div class="chip-group" data-target="dataType">
+                                            <button type="button" class="filter-chip" data-value="UNLIMITED">무제한</button>
+                                            <button type="button" class="filter-chip" data-value="FIXED">정량</button>
+                                            <button type="button" class="filter-chip" data-value="THROTTLED">속도제한</button>
+                                            <button type="button" class="filter-chip active" data-value="">상관없음</button>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="filter-row">
+                                    <fieldset>
+                                        <legend>요금 범위</legend>
+                                        <div class="chip-group" data-target="priceRange">
+                                            <button type="button" class="filter-chip" data-value="UNDER5">~5만원</button>
+                                            <button type="button" class="filter-chip" data-value="BETWEEN6_8">6~8만원</button>
+                                            <button type="button" class="filter-chip" data-value="ABOVE9">9만원~</button>
+                                            <button type="button" class="filter-chip active" data-value="">상관없음</button>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="filter-row">
+                                    <legend>혜택</legend>
+                                    <div id="productCardGrid" class="product-card-grid" data-target="product"></div>
+                                    <button type="button" id="modalNoProductCard" class="filter-chip" style="margin-top:8px;">혜택은 필요없어요</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" id="applyFilterBtn" type="button">검색</button>
                         </div>
                     </div>
-                    <div class="filter-row">
-                        <fieldset>
-                            <legend>데이터</legend>
-                            <div class="chip-group" data-target="dataType">
-                              <button type="button" class="filter-chip" data-value="UNLIMITED">무제한</button>
-                              <button type="button" class="filter-chip" data-value="FIXED">정량</button>
-                              <button type="button" class="filter-chip" data-value="THROTTLED">속도제한</button>
-                              <button type="button" class="filter-chip active" data-value="">상관없음</button>
-                            </div>
-                        </fieldset>
-                    </div>
-                    <div class="filter-row">
-                        <fieldset>
-                            <legend>요금 범위</legend>
-                            <div class="chip-group" data-target="priceRange">
-                              <button type="button" class="filter-chip" data-value="UNDER5">~5만원</button>
-                              <button type="button" class="filter-chip" data-value="BETWEEN6_8">6~8만원</button>
-                              <button type="button" class="filter-chip" data-value="ABOVE9">9만원~</button>
-                              <button type="button" class="filter-chip active" data-value="">상관없음</button>
-                            </div>
-                        </fieldset>
-                    </div>
-                    <div class="filter-row">
-                      <legend>혜택</legend>
-                      <div id="productCardGrid" class="product-card-grid" data-target="product"></div>
-                      <button type="button" id="modalNoProductCard" class="filter-chip" style="margin-top:8px;">혜택은 필요없어요</button>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="applyFilterBtn" type="button">검색</button>
-            </div>
-        </div>
-    </div>
+                </div>
             </div>
 
             <div class="detailed-plans-grid" id="plans-grid">
@@ -181,7 +181,7 @@
                             planCategory: item.planCategory || '기타', // fallback if missing
                             networkType: item.networkType || '기타', // fallback if missing
                             tetheringSharingAllowance: item.tetheringSharingAllowance !== undefined ? item.tetheringSharingAllowance : 0,
-                            products: (item.productNames || []).map(name => ({ name })),
+                            products: (item.productNames || []).map(name => ({name})),
                             description: (item.benefits || []).map(b => b.name).join(', ')
                         })),
                         totalCount: totalCount
@@ -192,7 +192,7 @@
             } catch (error) {
                 console.error('API 호출 실패:', error);
                 showError('요금제 목록을 불러오는데 실패했습니다.');
-                return { plans: [], totalCount: 0 };
+                return {plans: [], totalCount: 0};
             }
         }
 
@@ -375,7 +375,7 @@
 
         // Main load function (uses filterState)
         async function loadPlans(append = false) {
-            const { plans, totalCount } = await fetchPlans(currentPage, pageSize, filterState);
+            const {plans, totalCount} = await fetchPlans(currentPage, pageSize, filterState);
 
             // 1) 총 개수 저장
             totalPlans = totalCount;
@@ -388,18 +388,18 @@
             updateLoadMoreButton(loadedPlans.length, totalPlans);
         }
 
-        async function loadProductCards(){
+        async function loadProductCards() {
             const grid = document.getElementById('productCardGrid');
             if (!grid || grid.childElementCount > 0) return;
 
-            try{
-                const res  = await fetch('/api/products');
+            try {
+                const res = await fetch('/api/products');
                 const json = await res.json();
                 const list = Array.isArray(json) ? json : (json.data || []);
 
-                list.forEach(p=>{
+                list.forEach(p => {
                     const card = document.createElement('div');
-                    card.className   = 'product-card';
+                    card.className = 'product-card';
                     card.dataset.value = p.name;
                     card.innerHTML = `
                 <img src="${p.productImage}" alt="${p.name}">
@@ -407,7 +407,7 @@
             `;
                     grid.appendChild(card);
                 });
-            }catch(e){
+            } catch (e) {
                 console.error('상품 로딩 실패', e);
             }
         }
@@ -419,7 +419,7 @@
 
         // 맨 위로 스크롤
         function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         const scrollTopBtn = document.getElementById('scrollTopBtn');
@@ -469,37 +469,48 @@
             // Show/hide age group in modal
             document.getElementById('modalAgeFieldset').style.display = (filterState.sort === 'POPULAR') ? 'block' : 'none';
         }
+
         function closeFilterModal() {
             document.getElementById('planFilterModal').style.display = 'none';
             document.body.style.overflow = '';
         }
+
         // chip toggle
-        document.addEventListener('click', e=>{
-          const chip=e.target.closest('.filter-chip');
-          if(!chip) return;
-          const group=chip.parentElement;
-          if(!group.classList.contains('chip-group')) return;
-          group.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-          chip.classList.add('active');
+        document.addEventListener('click', e => {
+            const chip = e.target.closest('.filter-chip');
+            if (!chip) return;
+            const group = chip.parentElement;
+            if (!group.classList.contains('chip-group')) return;
+            group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
         });
         // product-card toggle
-        document.addEventListener('click', e=>{
-          const card=e.target.closest('.product-card');
-          if(card){
-            card.classList.toggle('active');
-            if(card.classList.contains('active')){
-              document.getElementById('modalNoProductCard').classList.remove('active');
+        document.addEventListener('click', e => {
+            const card = e.target.closest('.product-card');
+            if (card) {
+                card.classList.toggle('active');
+                if (card.classList.contains('active')) {
+                    document.getElementById('modalNoProductCard').classList.remove('active');
+                }
             }
-          }
-          if(e.target.id==='modalNoProductCard'){
-            e.target.classList.toggle('active');
-            if(e.target.classList.contains('active')){
-              document.querySelectorAll('.product-card.active').forEach(c=>c.classList.remove('active'));
+            if (e.target.id === 'modalNoProductCard') {
+                e.target.classList.toggle('active');
+                if (e.target.classList.contains('active')) {
+                    document.querySelectorAll('.product-card.active').forEach(c => c.classList.remove('active'));
+                }
             }
-          }
         });
         // Modal events
         document.addEventListener('DOMContentLoaded', function () {
+            // 저장된 sort 가 있으면 적용
+            const savedSort = sessionStorage.getItem('planSort');
+            if (savedSort) {
+                filterState.sort = savedSort;
+                document.getElementById('mainSortSelect').value = savedSort;
+                // 연령 필터 노출/숨김도 동기화
+                document.getElementById('mainAgeSelect').style.display = (savedSort === 'POPULAR') ? 'block' : 'none';
+            }
+            
             // Initial load
             loadPlans(false);
 
@@ -510,7 +521,7 @@
             // Load more
             const loadMoreBtn = document.getElementById('loadMoreBtn');
             if (loadMoreBtn) {
-                loadMoreBtn.addEventListener('click', function(event) {
+                loadMoreBtn.addEventListener('click', function (event) {
                     event.preventDefault();
                     loadMorePlans();
                 });
@@ -522,16 +533,16 @@
             document.querySelector('#planFilterModal .modal-overlay').addEventListener('click', closeFilterModal);
 
             // 검색 버튼
-            document.getElementById('applyFilterBtn').addEventListener('click', function() {
+            document.getElementById('applyFilterBtn').addEventListener('click', function () {
                 // Collect filter values from modal
                 // 카테고리는 모달 외부에서 유지
                 const category = filterState.category;   // 카테고리는 모달 외부에서 유지
                 const ageGroup = document.querySelector('[data-target="ageGroup"] .filter-chip.active').dataset.value;
                 const dataType = document.querySelector('[data-target="dataType"] .filter-chip.active').dataset.value;
                 const priceRange = document.querySelector('[data-target="priceRange"] .filter-chip.active').dataset.value;
-                let productNames='';
-                if(!document.getElementById('modalNoProductCard').classList.contains('active')){
-                    productNames=[...document.querySelectorAll('.product-card.active')].map(c=>c.dataset.value).join(',');
+                let productNames = '';
+                if (!document.getElementById('modalNoProductCard').classList.contains('active')) {
+                    productNames = [...document.querySelectorAll('.product-card.active')].map(c => c.dataset.value).join(',');
                 }
                 // Use previous sort (main bar), or keep POPULAR
                 const sort = filterState.sort || 'POPULAR';
@@ -554,6 +565,28 @@
                 closeFilterModal();
             });
         });
+
+        // 1) 정렬 변경 핸들러 수정
+        async function sortPlans() {
+            const sortValue = document.getElementById('mainSortSelect').value;
+            filterState.sort = sortValue;
+            // sessionStorage 에 저장
+            sessionStorage.setItem('planSort', sortValue);
+
+            // (이전 코드)
+            document.getElementById('mainAgeSelect').style.display = (sortValue === 'POPULAR') ? 'block' : 'none';
+            if (sortValue !== 'POPULAR') {
+                filterState.ageGroup = 'ALL';
+                document.getElementById('mainAgeSelect').value = 'ALL';
+            }
+
+            resetState();
+            await loadPlans(false);
+        }
+
+        function startRecommendation() {
+            window.location.href = '/chatbot.html';
+        }
     </script>
 </body>
 
