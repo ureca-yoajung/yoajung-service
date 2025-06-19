@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,10 @@ public class LLMAsyncService {
         return CompletableFuture.completedFuture(
                 chatClient.prompt()
                         .system(prompt)
+                        .options(ChatOptions.builder()
+                                .model("gpt-4o")
+                                .temperature(0.5)
+                                .build())
                         .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
                         .user(input)
                         .call()
