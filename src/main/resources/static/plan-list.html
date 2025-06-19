@@ -13,7 +13,6 @@
 <body>
     <!-- Navigation -->
     <div id="navbar"></div>
-
     <div class="main-content">
         <!-- Filter Section -->
         <div class="filter-section">
@@ -126,16 +125,8 @@
 
     <button id="scrollTopBtn" title="맨 위로"><i class="fa-solid fa-caret-up" style="color: white"></i></button>
 
+    <script src="assets/js/login-navbar.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('/assets/navbar.html')
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('navbar').innerHTML = html;
-                })
-                .catch(err => console.error('navbar 로딩 실패:', err));
-        });
-
         // State management
         let currentPage = 0;
         let pageSize = 9;

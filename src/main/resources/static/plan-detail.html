@@ -170,14 +170,20 @@
             </div>
         </main>
 
-        <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
+        <div class="ai-container">
+            <img class="personal-ai" src="assets/image/recommendationAi.png" alt="recommendationAi"/>
+            <div class="speech-bubble" id="recommendationText">
+            </div>
+        </div>
 
+        <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
         <button id="scrollTopBtn" title="맨 위로"><i class="fa-solid fa-caret-up" style="color: white"></i></button>
 
 
         <script src="assets/js/plan-detail-common.js"></script>
         <script src="assets/js/plan-detail.js"></script>
         <script src="assets/js/plan-review.js"></script>
+        <script src="assets/js/login-navbar.js"></script>
     </body>
 
     </html>
