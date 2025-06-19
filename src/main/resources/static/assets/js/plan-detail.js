@@ -1,3 +1,25 @@
+/* ---------- AI REVIEW SUMMARY ---------- */
+async function loadSummaryData(planId) {
+    try {
+        const result = await apiRequest(`/api/plans/${planId}/summary`);
+        if (result && result.status === 'OK' && result.data) {
+            const container = document.getElementById('aiReviewSummary');
+            const textEl = document.getElementById('aiSummaryText');
+            textEl.textContent = result.data.summaryText || '요약 정보가 없습니다.';
+            container.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Summary data loading failed:', error);
+    }
+}
+
+// 호출: 상세 페이지 로드 시 planId 파라미터를 읽어 요약 요청
+document.addEventListener('DOMContentLoaded', () => {
+    const planId = new URLSearchParams(window.location.search).get('id');
+    if (planId) {
+        loadSummaryData(planId);
+    }
+});
 
 // Data loading functions
 async function loadPlanData(planId) {
