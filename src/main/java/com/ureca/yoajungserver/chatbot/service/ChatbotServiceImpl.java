@@ -14,6 +14,7 @@ import com.ureca.yoajungserver.chatbot.entity.ChatHistory;
 import com.ureca.yoajungserver.chatbot.entity.ChatType;
 import com.ureca.yoajungserver.chatbot.exception.KeywordExtractionFailedException;
 import com.ureca.yoajungserver.chatbot.repository.ChatHistoryRepository;
+import com.ureca.yoajungserver.chatbot.repository.ChatMemoryRepository;
 import com.ureca.yoajungserver.chatbot.repository.ChatbotRepository;
 import com.ureca.yoajungserver.plan.repository.PlanStatisticRepository;
 import com.ureca.yoajungserver.user.entity.Tendency;
@@ -50,6 +51,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService {
     private final ChatbotRepository chatbotRepository;
+    private final ChatMemoryRepository chatMemoryRepository;
     private final PlanStatisticRepository planStatisticRepository;
     private final LLMAsyncService llmAsyncService;
     private final UserRepository userRepository;
@@ -303,6 +305,12 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .user(responseInput)
                 .call()
                 .content();
+    }
+
+    @Transactional
+    @Override
+    public void deleteChatMemory(String userId) throws IOException {
+        chatMemoryRepository.deleteByConversationId(userId);
     }
 
     // 요금제 조회
