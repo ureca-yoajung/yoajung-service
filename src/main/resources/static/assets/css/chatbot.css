@@ -615,3 +615,46 @@ body {
     font-size: 14px;
     color: var(--text-secondary);
 }
+
+/* 추천 이유 영역 */
+.plan-reason {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.plan-reason-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.plan-reason-list {
+    list-style: inside disc;
+    margin: 0;
+    padding: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.plan-reason-list ul {
+    list-style: disc inside; /* 점 목록 스타일 */
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.plan-reason-list li {
+    margin-bottom: 8px;
+}
+
+.plan-reason-list strong {
+    color: var(--primary);
+}
+
+.plan-reason-list em {
+    color: var(--primary); /* 기본 primary 색상 사용 */
+    /* font-weight: 600;  원한다면 더 강하게 만들 수 있습니다. */
+}

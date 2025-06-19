@@ -235,7 +235,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         return chatClient.prompt()
                 .system(prompt4)
                 .options(ChatOptions.builder()
-                        .model("gpt-4.1-mini")
+                        .model("gpt-4o")
                         .temperature(0.5)
                         .build())
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))

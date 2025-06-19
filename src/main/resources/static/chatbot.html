@@ -7,6 +7,7 @@
     <title>AI 요금제 추천 - YOAJUNG</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/chatbot.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
@@ -113,6 +114,7 @@
         </div>
     </main>
 
+    <script src="/assets/js/alert.js" defer></script>
     <script>
         // 채팅 상태 관리
         let chatHistory = []
@@ -207,7 +209,8 @@
                 .addEventListener('click', e => {
                     if (!isLoggedIn) {
                         e.preventDefault();           // 토글 상태 변경 막기
-                        alert('로그인이 필요합니다.');
+                        // alert('로그인이 필요합니다.');
+                        showWarningAlert("사용자 성향 정보를 사용하기 위해서는 로그인이 필요합니다.");
                     }
                 });
         });
@@ -298,44 +301,46 @@
             }
         }
 
-
-        // 메시지 추가
         function addMessage(sender, content, isCard = false) {
-            const messageDiv = document.createElement("div")
-            messageDiv.className = `message ${sender}-message`
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${sender}-message`;
 
             const currentTime = new Date().toLocaleTimeString("ko-KR", {
                 hour: "2-digit",
                 minute: "2-digit",
-            })
+            });
 
             if (sender === "user") {
+                // 그대로
                 messageDiv.innerHTML = `
-            <div class="message-avatar">👤</div>
-            <div class="message-content">
-                <div class="message-bubble">
-                    <p>${content}</p>
-                </div>
-                <div class="message-time">${currentTime}</div>
-            </div>
-        `
+      <div class="message-avatar">👤</div>
+      <div class="message-content">
+        <div class="message-bubble">
+          <p>${content}</p>
+        </div>
+        <div class="message-time">${currentTime}</div>
+      </div>
+    `;
             } else {
+                // 마크다운 파싱
+                const html = marked.parse(content);  // <p>…</p> 포함된 HTML 리턴
+
                 messageDiv.innerHTML = `
-            <div class="message-avatar">
-                <span class="bot-icon">🤖</span>
-            </div>
-            <div class="message-content">
-                <div class="message-bubble">
-                    ${isCard ? content : `<p>${content}</p>`}
-                </div>
-                <div class="message-time">${currentTime}</div>
-            </div>
-        `
+      <div class="message-avatar">
+        <span class="bot-icon">🤖</span>
+      </div>
+      <div class="message-content">
+        <div class="message-bubble">
+          ${html}
+        </div>
+        <div class="message-time">${currentTime}</div>
+      </div>
+    `;
             }
 
-            chatMessages.appendChild(messageDiv)
-            chatHistory.push({sender, content, timestamp: currentTime})
-            scrollToBottom()
+            chatMessages.appendChild(messageDiv);
+            chatHistory.push({sender, content, timestamp: currentTime});
+            scrollToBottom();
         }
 
         // renderCards 함수 전체 (planText 인자 추가)
@@ -347,7 +352,8 @@
                 const dataText = p.dataAllowance === 9999 ? '무제한' : `${p.dataAllowance}GB`;
                 const callText = p2.callAllowance === 9999 ? '무제한' : `${p2.callAllowance}분`;
                 const smsText = p2.smsAllowance === 9999 ? '무제한' : `${p2.smsAllowance}건`;
-                const speedLimitText = p.speedAfterLimit === 9999 ? '속도 제한 없음' : `${p.speedAfterLimit}Mbps`;
+                const speedLimitText = p.speedAfterLimit === 9999 ? '속도 제한 없음' : (p.speedAfterLimit === 0 ? '-' : `${p.speedAfterLimit}Mbps`);
+                const tetheringSharing = p.tetheringSharing === 0 ? '-' : `${p.tetheringSharing}GB`;
 
                 return `
       <div class="plan-card">
@@ -358,7 +364,7 @@
         <div class="plan-body">
           <p>데이터: ${dataText}</p>
           <p>속도제한 후: ${speedLimitText}</p>
-          <p>테더링: ${p.tetheringSharing}GB</p>
+          <p>테더링: ${tetheringSharing}</p>
           <p>음성: ${callText}</p>
           <p>문자: ${smsText}</p>
         </div>
@@ -375,13 +381,9 @@
                 minute: '2-digit'
             });
 
-            const reasonHtml = planText
-                .split('\n')                         // 줄바꿈마다 배열로 쪼갬
-                .filter(line => line.trim())        // 혹시 빈 줄이 있으면 제거
-                .map(line => `<p>${line}</p>`)      // 각각 <p> 태그로 감싸기
-                .join('');
+// 추천 이유를 ul>li 구조로 변환
+            const reasonHtml = marked.parse(planText);
 
-            // 카드들 아래에 추천 문구(planText)를 추가
             msgDiv.innerHTML = `
     <div class="message-avatar"><span class="bot-icon">🤖</span></div>
     <div class="message-content">
@@ -389,12 +391,17 @@
         <div class="cards-container">
           ${cardsHtml}
         </div>
-        <div class="plan-reason" style="margin-top:12px; color:#555;">
-          ${reasonHtml}
+        <div class="plan-reason">
+          <div class="plan-reason-title">추천 이유</div>
+          <!-- Markdown이 UL/LI, 강조 등으로 변환되어 들어갑니다 -->
+          <div class="plan-reason-list">
+            ${reasonHtml}
+          </div>
         </div>
       </div>
       <div class="message-time">${time}</div>
-    </div>`;
+    </div>
+  `;
 
             chatMessages.appendChild(msgDiv);
             scrollToBottom();
