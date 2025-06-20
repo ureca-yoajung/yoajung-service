@@ -27,7 +27,7 @@ public class UserResponse {
                 .gender(user.getGender())
                 .ageGroup(user.getAgeGroup())
                 .familyCount(user.getFamilyCount())
-                .planName(user.getPlan() == null ? "" : user.getPlan().getName())
+                .planName(user.getPlan() == null ? null : user.getPlan().getName())
                 .build();
     }
 }

@@ -21,4 +21,5 @@ public class UserUpdateRequest {
     private Gender gender;
     private AgeGroup ageGroup;
     private Integer familyCount;
+    private Long planId;
 }

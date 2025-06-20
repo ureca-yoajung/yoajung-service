@@ -23,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -115,6 +117,10 @@ class UserServiceImplTest {
                 .thenReturn(java.util.Optional.of(entity));
 
         UserUpdateRequest req = UserUpdateRequestFixture.VALID.getRequest();
+        Plan plan = mock(Plan.class);
+
+        when(planRepository.findById(req.getPlanId()))
+                .thenReturn(Optional.of(plan));
 
         UserResponse resp = userService.updateUserInfo(UserFixture.EMAIL, req);
 
@@ -123,7 +129,8 @@ class UserServiceImplTest {
                 req.getPhoneNumber(),
                 req.getGender(),
                 req.getAgeGroup(),
-                req.getFamilyCount()
+                req.getFamilyCount(),
+                plan
         );
         assertThat(resp.getPhoneNumber()).isEqualTo(req.getPhoneNumber());
     }
@@ -137,5 +144,36 @@ class UserServiceImplTest {
         assertThatThrownBy(() ->
                 userService.updateUserInfo(UserFixture.EMAIL, UserUpdateRequestFixture.VALID.getRequest())
         ).isInstanceOf(UserNotFoundException.class);
+    }
+
+    @DisplayName("플랜 삭제")
+    @Test
+    void 내정보_수정_플랜삭제() {
+
+        Plan existingPlan = PlanFixture.PLAN;
+        User user = spy(UserFixture.createUserEntity("ENC", existingPlan));
+        when(userRepository.findByEmail(UserFixture.EMAIL))
+                .thenReturn(Optional.of(user));
+
+        UserUpdateRequest req = UserUpdateRequest.builder()
+                .name(UserFixture.NAME)
+                .phoneNumber("01099998888")
+                .gender(UserFixture.GENDER)
+                .ageGroup(UserFixture.AGE_GROUP)
+                .familyCount(UserFixture.FAMILY_COUNT)
+                .planId(null)
+                .build();
+
+        UserResponse resp = userService.updateUserInfo(UserFixture.EMAIL, req);
+
+        verify(user).updateInfo(
+                UserFixture.NAME,
+                "01099998888",
+                UserFixture.GENDER,
+                UserFixture.AGE_GROUP,
+                UserFixture.FAMILY_COUNT,
+                null
+        );
+        assertThat(resp.getPlanName()).isNullOrEmpty();
     }
 }
