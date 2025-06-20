@@ -719,7 +719,8 @@ body {
 .speech-bubble {
     display: inline-block;
     position: absolute;
-    bottom: 140px; /* 이미지 위에 띄움 */
+    /*bottom: 140px; !* 이미지 위에 띄움 *!*/
+    top: -110px;
     right: 0;
     width: clamp(150px, 30vw, 300px); /* 반응형 너비 */
     padding: 12px 16px;
