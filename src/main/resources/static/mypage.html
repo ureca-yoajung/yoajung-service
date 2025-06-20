@@ -143,22 +143,115 @@
             if (tendencyEditMode) {
                 // 수정 모드
                 el.innerHTML = `
-                <form id="tendency-edit-form">
-                    <div><span class="label">월평균 데이터(GB)</span><input name="avgMonthlyDataGB" type="number" value="${d ? d.avgMonthlyDataGB : ''}" required></div>
-                    <div><span class="label">월평균 통화량(분)</span><input name="avgMonthlyVoiceMin" type="number" value="${d ? d.avgMonthlyVoiceMin : ''}" required></div>
-                    <div><span class="label">희망 요금 가격(원)</span><input name="preferencePrice" type="number" value="${d ? d.preferencePrice : ''}" required></div>
-                    <div><span class="label">기타</span><input name="comment" value="${d ? d.comment : ''}" required></div>
-                    <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
-                </form>`;
-                document.getElementById('tendency-edit-form').onsubmit = handleTendencyUpdate;
+        <form id="tendency-edit-form">
+            <div class="form-group">
+                <label class="label-form">월평균 데이터 사용량(GB)</label>
+                <div class="slider-container">
+                    <div class="slider-value" id="dataValue">${d ? d.avgMonthlyDataGB : 0 }GB</div>
+                    <input type="range" min="0" max="202" value="${d ? d.avgMonthlyDataGB : 0}" class="slider" name="avgMonthlyDataGB" id="dataSlider">
+                    <div class="slider-labels">
+                        <span>없음</span>
+                        <span>적음</span>
+                        <span>보통</span>
+                        <span>많음</span>
+                        <span>무제한</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-form">월평균 통화량(분)</label>
+                <div class="slider-container">
+                    <div class="slider-value" id="voiceValue">${d ? d.avgMonthlyVoiceMin : 0 }분</div>
+                    <input type="range" min="0" max="202" value="${d ? d.avgMonthlyVoiceMin : 0}" class="slider" name="avgMonthlyVoiceMin" id="voiceSlider">
+                    <div class="slider-labels">
+                        <span>없음</span>
+                        <span>적음</span>
+                        <span>보통</span>
+                        <span>많음</span>
+                        <span>무제한</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <span class="label-form">희망 요금제 가격(원)</span>
+                <div class="slider-container">
+                    <div class="slider-value" id="priceValue">${d ? d.preferencePrice : 0 } 원</div>
+                    <input type="range" min="0" max="130000" step="1000" value="${d ? d.preferencePrice : 0}" class="slider" name="preferencePrice" id="priceSlider">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <span class="label-form">기타</span>
+                <textarea name="comment" required rows="4" placeholder="추가 요구사항이나 특별한 사항을 입력해주세요">${d ? d.comment : ''}</textarea>
+            </div>
+
+            <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
+        </form>
+        `;
+                const dataSlider = document.getElementById('dataSlider');
+                const voiceSlider = document.getElementById('voiceSlider');
+                const priceSlider = document.getElementById('priceSlider');
+                const dataValue = document.getElementById('dataValue');
+                const voiceValue = document.getElementById('voiceValue');
+                const priceValue = document.getElementById('priceValue');
+
+                // 데이터 슬라이더 이벤트
+                dataSlider.addEventListener('input', function() {
+                    updateSliderColor(this);
+                });
+
+                // 음성통화 슬라이더 이벤트
+                voiceSlider.addEventListener('input', function() {
+                    updateSliderColor(this);
+                });
+
+                priceSlider.addEventListener('input', function() {
+                    const value = this.value;
+                    priceValue.textContent = value + ' 원';
+                    updateSliderColor(this);
+                });
+
+                // 초기 슬라이더 색상 설정
+                updateSliderColor(dataSlider);
+                updateSliderColor(voiceSlider);
+                updateSliderColor(priceSlider);
+
+                document.getElementById('tendency-edit-form').onsubmit = function (e) {
+                    e.preventDefault();
+                    const obj = Object.fromEntries(new FormData(e.target));
+                    fetch('/api/tendency', {
+                        method: d ? 'PUT' : 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include',
+                        body: JSON.stringify(obj)
+                    }).then(r => r.json()).then(data => {
+                        if (data && data.data) {
+                            tendencyData = data.data;
+                            tendencyEditMode = false;
+                            renderTendency();
+                            alert(data.message || "저장 완료");
+                        } else alert(data.message || "실패");
+                    });
+                }
             } else if (d) {
                 // 조회 모드
                 el.innerHTML = `
-                    <div><span class="label">월평균 데이터(GB)</span><span class="view-value">${d.avgMonthlyDataGB} GB</span></div>
-                    <div><span class="label">월평균 통화량(분)</span><span class="view-value">${d.avgMonthlyVoiceMin} 분</span></div>
-                    <div><span class="label">희망 요금 가격(원)</span><span class="view-value">${d.preferencePrice} 원</span></div>
-                    <div><span class="label">기타</span><span class="view-value">${d.comment}</span></div>
-                    <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>`;
+                <div>
+                  <span class="label">월평균 데이터 사용량(GB)</span>
+                  ${d.avgMonthlyDataGB === 9999 ? '무제한' : d.avgMonthlyDataGB + ' GB'}
+                </div>
+
+                <div>
+                  <span class="label">월평균 통화량(분)</span>
+                  ${d.avgMonthlyVoiceMin === 9999 ? '무제한' : d.avgMonthlyVoiceMin + ' 분'}
+                </div>
+
+                <div><span class="label">희망 요금제 가격(원)</span> ${d.preferencePrice} 원</div>
+                <div><span class="label">기타</span> ${d.comment}</div>
+                <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>
+                 `;
+                 
                 document.getElementById('tendency-edit-btn').onclick = () => {
                     tendencyEditMode = true;
                     renderTendency();
@@ -166,7 +259,16 @@
             }
         }
 
-        // --- [최종 수정] 이벤트 핸들러 및 헬퍼 함수 ---
+        // 슬라이더 색상 업데이트 함수
+        function updateSliderColor(slider) {
+            const value = slider.value;
+            const max = slider.max;
+            const percentage = (value / max) * 100;
+
+            slider.style.background = `linear-gradient(to right, #e6007e ${percentage}%, #ddd ${percentage}%)`;
+        }
+
+        // 탭 전환 함수
         function setTab(tab) {
             // [핵심] 다른 탭으로 이동 시, 모든 수정 상태를 강제로 초기화합니다.
             userEditMode = false;

@@ -13,9 +13,15 @@ public class TendencyRequest {
     private Integer avgMonthlyDataGB;
     @Min(value = 0, message = "0 이상")
     private Integer avgMonthlyVoiceMin;
-
     private String comment;
-
     @Min(value = 0, message = "0 이상")
     private Integer preferencePrice;
+
+    public void setAvgMonthlyDataGB(Integer avgMonthlyDataGB) {
+        this.avgMonthlyDataGB = avgMonthlyDataGB;
+    }
+
+    public void setAvgMonthlyVoiceMin(Integer avgMonthlyVoiceMin) {
+        this.avgMonthlyVoiceMin = avgMonthlyVoiceMin;
+    }
 }

@@ -348,7 +348,114 @@ form::after {
     clear: both;
 }
 
-/* --- 반응형 --- */
+.form-group {
+    width: 100%;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px; /* 패딩 추가로 여백 확보 */
+    box-sizing: border-box;
+    align-items: start;
+}
+
+.label-form {
+    display: block;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px; /* 슬라이더 최대 너비 제한 */
+    margin: 0 auto;   /* 가운데 정렬 */
+    padding: 10px 0;
+    align-self: center;
+    align-items: center;
+}
+
+.slider {
+    width: 95%;
+    height: 16px; /* 슬라이더 두께 증가 */
+    border-radius: 6px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 10px 0;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gradient);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gradient);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-value {
+    display: none;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+#priceValue{
+    display: inline;
+}
+
+.slider-labels {
+    width: 110%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.slider-labels span {
+    flex: 1;
+    text-align: center;
+}
+
+input[type="number"], textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+input[type="number"]:focus, textarea:focus {
+    border-color: var(--gradient);
+    outline: none;
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+
 @media (max-width: 700px) {
     .mypage-container {
         max-width: 99vw;
