@@ -43,8 +43,8 @@ public class TendencyServiceImpl implements TendencyService {
 
         Tendency tendency = Tendency.builder()
                 .user(user)
-                .avgMonthlyDataGB(request.getAvgMonthlyDataGB())
-                .avgMonthlyVoiceMin(request.getAvgMonthlyVoiceMin())
+                .avgMonthlyDataGB(normalizeValue(request.getAvgMonthlyDataGB()))
+                .avgMonthlyVoiceMin(normalizeValue(request.getAvgMonthlyVoiceMin()))
                 .comment(request.getComment())
                 .preferencePrice(request.getPreferencePrice())
                 .build();
@@ -60,8 +60,16 @@ public class TendencyServiceImpl implements TendencyService {
         Tendency tendency = tendencyRepository.findByUser(user)
                 .orElseThrow(TendencyNotFoundException::new);
 
+        request.setAvgMonthlyDataGB(normalizeValue(request.getAvgMonthlyDataGB()));
+        request.setAvgMonthlyVoiceMin(normalizeValue(request.getAvgMonthlyVoiceMin()));
+
         tendency.updateTendency(request);
 
         return tendency;
+    }
+
+    private static Integer normalizeValue(Integer value) {
+        if (value == null) return null;
+        return value > 200 ? 9999 : value;
     }
 }

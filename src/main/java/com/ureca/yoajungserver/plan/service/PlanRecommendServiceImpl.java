@@ -100,7 +100,6 @@ public class PlanRecommendServiceImpl implements PlanRecommendService {
                 benefitsStr,
                 productsStr
         );
-        System.out.println(input);
 
         return chatClient.prompt()
                 .system(prompt)

@@ -108,18 +108,47 @@
     <div id="tendency-modal">
         <h3>성향 정보 입력</h3>
         <form id="tendency-form">
-            <label>월평균 데이터 사용량(GB)
-                <input name="avgMonthlyDataGB" type="number" required>
-            </label>
-            <label>월평균 통화량(분)
-                <input name="avgMonthlyVoiceMin" type="number" required>
-            </label>
-            <label>희망 요금제 가격(원)
-                <input name="preferencePrice" type="number" required>
-            </label>
-            <label>기타(주요 사용 목적 등)
-                <input name="comment" required>
-            </label>
+            <div class="form-group">
+                <label class="label-form">월평균 데이터 사용량(GB)</label>
+                <div class="slider-container">
+                    <div class="slider-value" id="dataValue"></div>
+                    <input type="range" min="0" max="202" value="0" class="slider" name="avgMonthlyDataGB" id="dataSlider">
+                    <div class="slider-labels">
+                        <span>없음</span>
+                        <span>적음</span>
+                        <span>보통</span>
+                        <span>많음</span>
+                        <span>무제한</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-form">월평균 통화량(분)</label>
+                <div class="slider-container">
+                    <div class="slider-value" id="voiceValue"></div>
+                    <input type="range" min="0" max="202" value="0" class="slider" name="avgMonthlyVoiceMin" id="voiceSlider">
+                    <div class="slider-labels">
+                        <span>없음</span>
+                        <span>적음</span>
+                        <span>보통</span>
+                        <span>많음</span>
+                        <span>무제한</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-form">희망 요금제 가격(원)</label>
+                <div class="slider-container">
+                    <div class="slider-value" id="priceValue"></div>
+                    <input type="range" min="0" max="130000" value="0" step="1000" class="slider" name="preferencePrice" id="priceSlider" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label-form">기타</label>
+                <textarea name="comment" required rows="4" placeholder="추가 요구사항이나 특별한 사항을 입력해주세요"></textarea>
+            </div>
+
             <button type="submit">등록</button>
             <button type="button" id="tendency-later">다음에 하기</button>
         </form>
@@ -132,6 +161,7 @@
     <!-- Chat Button -->
     <button class="chat-button" onclick="startRecommendation()" title="AI 추천 받기">💬</button>
 
+    <script src="assets/js/alert.js"></script>
     <script>
         async function renderNavButtons() {
             const navBtns = document.getElementById('nav-auth-buttons');
@@ -234,11 +264,54 @@
                     showErrorAlert("등록 실패");
                 })
         };
+
         document.getElementById('tendency-later').onclick = hideTendencyModal;
 
         function startRecommendation() {
             window.location.href = '/chatbot.html';
         }
+
+        const dataSlider = document.getElementById('dataSlider');
+        const voiceSlider = document.getElementById('voiceSlider');
+        const priceSlider = document.getElementById('priceSlider');
+        const dataValue = document.getElementById('dataValue');
+        const voiceValue = document.getElementById('voiceValue');
+        const priceValue = document.getElementById('priceValue');
+
+        // 슬라이더 색상 업데이트 함수
+        function updateSliderColor(slider) {
+            const value = slider.value;
+            const max = slider.max;
+            const percentage = (value / max) * 100;
+
+            slider.style.background = `linear-gradient(to right, #e6007e ${percentage}%, #ddd ${percentage}%)`;
+        }
+
+        // 데이터 슬라이더 이벤트
+        dataSlider.addEventListener('input', function() {
+            updateSliderColor(this);
+        });
+
+        // 음성통화 슬라이더 이벤트
+        voiceSlider.addEventListener('input', function() {
+            updateSliderColor(this);
+        });
+
+        priceSlider.addEventListener('input', function() {
+            const value = this.value;
+            priceValue.textContent = value + ' 원';
+            updateSliderColor(this);
+        });
+
+        // 초기값 설정
+        dataValue.textContent = '0 GB';
+        voiceValue.textContent = '0 분';
+        priceValue.textContent = '0 원';
+
+        // 초기 슬라이더 색상 설정
+        updateSliderColor(dataSlider);
+        updateSliderColor(voiceSlider);
+        updateSliderColor(priceSlider);
     </script>
 </body>
 </html>
