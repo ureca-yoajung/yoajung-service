@@ -48,7 +48,7 @@ public class EmailServiceImpl implements EmailService {
                     + "<a href=\"" + link + "\">비밀번호 재설정</a>";
             helper.setText(html, true);
             mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException | MailException e) {
             throw new EmailSendFailedException();
         }
     }

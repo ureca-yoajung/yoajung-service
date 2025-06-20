@@ -1,18 +1,7 @@
 package com.ureca.yoajungserver.plan.entity;
 
 import com.ureca.yoajungserver.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +9,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -76,10 +68,11 @@ public class Plan extends BaseTimeEntity {
     private List<PlanProduct> planProducts;
 
     @Builder
-    private Plan(String name, NetworkType networkType, PlanCategory planCategory, Integer basePrice, Integer dataAllowance, Integer tetheringSharingAllowance,
+    private Plan(String name, NetworkType networkType, PlanTarget planTarget, PlanCategory planCategory, Integer basePrice, Integer dataAllowance, Integer tetheringSharingAllowance,
                  Integer speedAfterLimit, String description) {
         this.name = name;
         this.networkType = networkType;
+        this.planTarget = planTarget;
         this.planCategory = planCategory;
         this.basePrice = basePrice;
         this.dataAllowance = dataAllowance;

@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: yoajung-server
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/testdb
+    username: root
+    password: testpw
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      database: 0
+      timeout: 2000ms
+
+  session:
+    timeout: 30m
+    redis:
+      namespace: spring:session
+
+server:
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID_USER
+        http-only: true
+
+kakao:
+  client-id: test-oauth-dummy
+  redirect-uri: http://localhost:8080/callback.html
