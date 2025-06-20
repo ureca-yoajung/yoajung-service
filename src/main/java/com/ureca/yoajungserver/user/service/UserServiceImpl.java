@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.user.service;
 
 import com.ureca.yoajungserver.plan.entity.Plan;
+import com.ureca.yoajungserver.plan.exception.PlanNotFoundException;
 import com.ureca.yoajungserver.plan.repository.PlanRepository;
 import com.ureca.yoajungserver.user.dto.reqeust.SignupRequest;
 import com.ureca.yoajungserver.user.dto.reqeust.UserUpdateRequest;
@@ -40,7 +41,8 @@ public class UserServiceImpl implements UserService {
 
         Plan plan = null;
         if (request.getPlanId() != null) {
-            plan = planRepository.findById(request.getPlanId()).orElse(null);
+            plan = planRepository.findById(request.getPlanId())
+                    .orElseThrow(PlanNotFoundException::new);
         }
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -74,12 +76,19 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(UserNotFoundException::new);
 
+        Plan plan = null;
+        if (request.getPlanId() != null) {
+            plan = planRepository.findById(request.getPlanId())
+                    .orElseThrow(PlanNotFoundException::new);
+        }
+
         user.updateInfo(
                 user.getName(),
                 request.getPhoneNumber(),
                 request.getGender(),
                 request.getAgeGroup(),
-                request.getFamilyCount()
+                request.getFamilyCount(),
+                plan
         );
         return UserResponse.fromEntity(user);
     }

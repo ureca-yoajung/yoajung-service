@@ -14,8 +14,10 @@ public enum UserUpdateRequestFixture {
             .gender(Gender.FEMALE)
             .ageGroup(AgeGroup.FORTY_S)
             .familyCount(2)
+            .planId(2L)
             .build()
-    );
+    ),
+    ;
 
     private final UserUpdateRequest request;
 
