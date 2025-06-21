@@ -8,83 +8,84 @@
     <link rel="stylesheet" href="assets/css/mypage.css">
 </head>
 <body>
-<div id="navbar"></div>
-<main class="main-content">
-    <div class="mypage-container">
-        <!-- 프로필 헤더 -->
-        <div class="profile-header">
-            <div class="profile-name" id="profile-name">이름</div>
-            <div class="profile-email" id="profile-email">이메일</div>
+    <div id="navbar"></div>
+    <main class="main-content">
+        <div class="mypage-container">
+            <!-- 프로필 헤더 -->
+            <div class="profile-header">
+                <div class="profile-name" id="profile-name">이름</div>
+                <div class="profile-email" id="profile-email">이메일</div>
+            </div>
+            <!-- 탭 -->
+            <div class="tab-row">
+                <button class="tab active" id="tab-info">내 정보</button>
+                <button class="tab" id="tab-tendency">내 성향</button>
+            </div>
+            <!-- 내 정보 -->
+            <div class="section active" id="section-info">
+                <div class="info-list" id="userinfo"></div>
+            </div>
+            <!-- 내 성향 -->
+            <div class="section" id="section-tendency">
+                <div class="tendency-list" id="tendency"></div>
+            </div>
         </div>
-        <!-- 탭 -->
-        <div class="tab-row">
-            <button class="tab active" id="tab-info">내 정보</button>
-            <button class="tab" id="tab-tendency">내 성향</button>
-        </div>
-        <!-- 내 정보 -->
-        <div class="section active" id="section-info">
-            <div class="info-list" id="userinfo"></div>
-        </div>
-        <!-- 내 성향 -->
-        <div class="section" id="section-tendency">
-            <div class="tendency-list" id="tendency"></div>
-        </div>
-    </div>
-</main>
+    </main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        // --- 상태 변수 ---
-        let userData = null, userEditMode = false;
-        let tendencyData = null, tendencyEditMode = false;
+    <script src="assets/js/alert.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // --- 상태 변수 ---
+            let userData = null, userEditMode = false;
+            let tendencyData = null, tendencyEditMode = false;
 
-        // --- 초기화 로직 ---
-        try {
-            const navRes = await fetch('/assets/navbar.html');
-            const html = await navRes.text();
-            document.getElementById('navbar').innerHTML = html;
+            // --- 초기화 로직 ---
+            try {
+                const navRes = await fetch('/assets/navbar.html');
+                const html = await navRes.text();
+                document.getElementById('navbar').innerHTML = html;
 
-            const meRes = await fetch('/api/user/me', {credentials: 'include'});
-            if (!meRes.ok) {
-                location.href = "login.html";
-                return;
-            }
-            const userResult = await meRes.json();
-            userData = userResult.data;
+                const meRes = await fetch('/api/user/me', {credentials: 'include'});
+                if (!meRes.ok) {
+                    location.href = "login.html";
+                    return;
+                }
+                const userResult = await meRes.json();
+                userData = userResult.data;
 
-            const navBtns = document.getElementById('nav-auth-buttons');
-            if (navBtns) {
-                navBtns.innerHTML = `
+                const navBtns = document.getElementById('nav-auth-buttons');
+                if (navBtns) {
+                    navBtns.innerHTML = `
                 <a href="index.html" class="btn btn-ghost">메인페이지</a>
                 <button id="logout-btn" class="btn btn-primary">로그아웃</button>
             `;
-                document.getElementById('logout-btn').onclick = async () => {
-                    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
-                    location.href = "login.html";
-                };
-            }
-        } catch (err) {
-            console.error('초기 로딩 실패:', err);
-        }
-
-        // --- [최종 수정] 탭 이벤트 등록 ---
-        document.getElementById('tab-info').onclick = () => setTab('info');
-        document.getElementById('tab-tendency').onclick = () => setTab('tendency');
-
-        // --- 내 정보 렌더링 함수 ---
-        function renderUserInfo() {
-            const d = userData;
-            const el = document.getElementById('userinfo');
-            document.getElementById('profile-name').textContent = d?.name || "";
-            document.getElementById('profile-email').textContent = d?.email || "";
-            if (!d) {
-                el.innerHTML = "정보 없음";
-                return;
+                    document.getElementById('logout-btn').onclick = async () => {
+                        await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+                        location.href = "login.html";
+                    };
+                }
+            } catch (err) {
+                console.error('초기 로딩 실패:', err);
             }
 
-            if (userEditMode) {
-                // 수정 모드
-                el.innerHTML = `
+            // --- [최종 수정] 탭 이벤트 등록 ---
+            document.getElementById('tab-info').onclick = () => setTab('info');
+            document.getElementById('tab-tendency').onclick = () => setTab('tendency');
+
+            // --- 내 정보 렌더링 함수 ---
+            function renderUserInfo() {
+                const d = userData;
+                const el = document.getElementById('userinfo');
+                document.getElementById('profile-name').textContent = d?.name || "";
+                document.getElementById('profile-email').textContent = d?.email || "";
+                if (!d) {
+                    el.innerHTML = "정보 없음";
+                    return;
+                }
+
+                if (userEditMode) {
+                    // 수정 모드
+                    el.innerHTML = `
                 <form id="user-edit-form">
                     <div><span class="label">이메일</span><input type="email" name="email" value="${d.email}" disabled></div>
                     <div><span class="label">이름</span><input type="text" name="name" value="${d.name}" disabled></div>
@@ -101,53 +102,53 @@
                     </div>
                     <button class="save-btn" type="submit">수정 완료</button>
                 </form>`;
-                setupPlanSearch();
-                document.getElementById('user-edit-form').onsubmit = handleUserUpdate;
-            } else {
-                // 조회 모드
-                el.innerHTML = `
+                    setupPlanSearch();
+                    document.getElementById('user-edit-form').onsubmit = handleUserUpdate;
+                } else {
+                    // 조회 모드
+                    el.innerHTML = `
                     <div><span class="label">이메일</span><span class="view-value">${d.email}</span></div>
                     <div><span class="label">이름</span><span class="view-value">${d.name}</span></div>
                     <div><span class="label">전화번호</span><span class="view-value">${d.phoneNumber || ''}</span></div>
                     <div><span class="label">성별</span><span class="view-value">${d.gender === 'MALE' ? '남자' : '여자'}</span></div>
                     <div><span class="label">연령대</span><span class="view-value">${{
-                    'TEN_S': '10대',
-                    'TWENTY_S': '20대',
-                    'THIRTY_S': '30대',
-                    'FORTY_S': '40대',
-                    'FIFTY_S': '50대',
-                    'SIXTY_S_PLUS': '60대 이상'
-                }[d.ageGroup] || ''}</span></div>
+                        'TEN_S': '10대',
+                        'TWENTY_S': '20대',
+                        'THIRTY_S': '30대',
+                        'FORTY_S': '40대',
+                        'FIFTY_S': '50대',
+                        'SIXTY_S_PLUS': '60대 이상'
+                    }[d.ageGroup] || ''}</span></div>
                     <div><span class="label">가족수</span><span class="view-value">${d.familyCount || ''}</span></div>
                     <div><span class="label">요금제</span><span class="view-value">${d.planName || ''}</span></div>
                     <button class="edit-btn" id="user-edit-btn">내 정보 수정</button>`;
-                document.getElementById('user-edit-btn').onclick = () => {
-                    userEditMode = true;
-                    renderUserInfo();
+                    document.getElementById('user-edit-btn').onclick = () => {
+                        userEditMode = true;
+                        renderUserInfo();
+                    }
                 }
             }
-        }
 
-        // --- 내 성향 렌더링 함수 ---
-        function renderTendency() {
-            const d = tendencyData;
-            const el = document.getElementById('tendency');
-            if (!d && !tendencyEditMode) {
-                el.innerHTML = `<div>성향 정보가 없습니다.</div><button class="edit-btn" id="tendency-reg-btn">성향 등록</button>`;
-                document.getElementById('tendency-reg-btn').onclick = () => {
-                    tendencyEditMode = true;
-                    renderTendency();
+            // --- 내 성향 렌더링 함수 ---
+            function renderTendency() {
+                const d = tendencyData;
+                const el = document.getElementById('tendency');
+                if (!d && !tendencyEditMode) {
+                    el.innerHTML = `<div>성향 정보가 없습니다.</div><button class="edit-btn" id="tendency-reg-btn">성향 등록</button>`;
+                    document.getElementById('tendency-reg-btn').onclick = () => {
+                        tendencyEditMode = true;
+                        renderTendency();
+                    }
+                    return;
                 }
-                return;
-            }
-            if (tendencyEditMode) {
-                // 수정 모드
-                el.innerHTML = `
+                if (tendencyEditMode) {
+                    // 수정 모드
+                    el.innerHTML = `
         <form id="tendency-edit-form">
             <div class="form-group">
                 <label class="label-form">월평균 데이터 사용량(GB)</label>
                 <div class="slider-container">
-                    <div class="slider-value" id="dataValue">${d ? d.avgMonthlyDataGB : 0 }GB</div>
+                    <div class="slider-value" id="dataValue">${d ? d.avgMonthlyDataGB : 0}GB</div>
                     <input type="range" min="0" max="202" value="${d ? d.avgMonthlyDataGB : 0}" class="slider" name="avgMonthlyDataGB" id="dataSlider">
                     <div class="slider-labels">
                         <span>없음</span>
@@ -161,7 +162,7 @@
             <div class="form-group">
                 <label class="label-form">월평균 통화량(분)</label>
                 <div class="slider-container">
-                    <div class="slider-value" id="voiceValue">${d ? d.avgMonthlyVoiceMin : 0 }분</div>
+                    <div class="slider-value" id="voiceValue">${d ? d.avgMonthlyVoiceMin : 0}분</div>
                     <input type="range" min="0" max="202" value="${d ? d.avgMonthlyVoiceMin : 0}" class="slider" name="avgMonthlyVoiceMin" id="voiceSlider">
                     <div class="slider-labels">
                         <span>없음</span>
@@ -176,7 +177,7 @@
             <div class="form-group">
                 <span class="label-form">희망 요금제 가격(원)</span>
                 <div class="slider-container">
-                    <div class="slider-value" id="priceValue">${d ? d.preferencePrice : 0 } 원</div>
+                    <div class="slider-value" id="priceValue">${d ? d.preferencePrice : 0} 원</div>
                     <input type="range" min="0" max="130000" step="1000" value="${d ? d.preferencePrice : 0}" class="slider" name="preferencePrice" id="priceSlider">
                 </div>
             </div>
@@ -189,54 +190,54 @@
             <button class="save-btn" type="submit">${d ? '수정 완료' : '등록 완료'}</button>
         </form>
         `;
-                const dataSlider = document.getElementById('dataSlider');
-                const voiceSlider = document.getElementById('voiceSlider');
-                const priceSlider = document.getElementById('priceSlider');
-                const dataValue = document.getElementById('dataValue');
-                const voiceValue = document.getElementById('voiceValue');
-                const priceValue = document.getElementById('priceValue');
+                    const dataSlider = document.getElementById('dataSlider');
+                    const voiceSlider = document.getElementById('voiceSlider');
+                    const priceSlider = document.getElementById('priceSlider');
+                    const dataValue = document.getElementById('dataValue');
+                    const voiceValue = document.getElementById('voiceValue');
+                    const priceValue = document.getElementById('priceValue');
 
-                // 데이터 슬라이더 이벤트
-                dataSlider.addEventListener('input', function() {
-                    updateSliderColor(this);
-                });
-
-                // 음성통화 슬라이더 이벤트
-                voiceSlider.addEventListener('input', function() {
-                    updateSliderColor(this);
-                });
-
-                priceSlider.addEventListener('input', function() {
-                    const value = this.value;
-                    priceValue.textContent = value + ' 원';
-                    updateSliderColor(this);
-                });
-
-                // 초기 슬라이더 색상 설정
-                updateSliderColor(dataSlider);
-                updateSliderColor(voiceSlider);
-                updateSliderColor(priceSlider);
-
-                document.getElementById('tendency-edit-form').onsubmit = function (e) {
-                    e.preventDefault();
-                    const obj = Object.fromEntries(new FormData(e.target));
-                    fetch('/api/tendency', {
-                        method: d ? 'PUT' : 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        credentials: 'include',
-                        body: JSON.stringify(obj)
-                    }).then(r => r.json()).then(data => {
-                        if (data && data.data) {
-                            tendencyData = data.data;
-                            tendencyEditMode = false;
-                            renderTendency();
-                            alert(data.message || "저장 완료");
-                        } else alert(data.message || "실패");
+                    // 데이터 슬라이더 이벤트
+                    dataSlider.addEventListener('input', function () {
+                        updateSliderColor(this);
                     });
-                }
-            } else if (d) {
-                // 조회 모드
-                el.innerHTML = `
+
+                    // 음성통화 슬라이더 이벤트
+                    voiceSlider.addEventListener('input', function () {
+                        updateSliderColor(this);
+                    });
+
+                    priceSlider.addEventListener('input', function () {
+                        const value = this.value;
+                        priceValue.textContent = value + ' 원';
+                        updateSliderColor(this);
+                    });
+
+                    // 초기 슬라이더 색상 설정
+                    updateSliderColor(dataSlider);
+                    updateSliderColor(voiceSlider);
+                    updateSliderColor(priceSlider);
+
+                    document.getElementById('tendency-edit-form').onsubmit = function (e) {
+                        e.preventDefault();
+                        const obj = Object.fromEntries(new FormData(e.target));
+                        fetch('/api/tendency', {
+                            method: d ? 'PUT' : 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            credentials: 'include',
+                            body: JSON.stringify(obj)
+                        }).then(r => r.json()).then(data => {
+                            if (data && data.data) {
+                                tendencyData = data.data;
+                                tendencyEditMode = false;
+                                renderTendency();
+                                showSuccessAlert(data.message || "저장 완료");
+                            } else showErrorAlert(data.message || "실패");
+                        });
+                    }
+                } else if (d) {
+                    // 조회 모드
+                    el.innerHTML = `
                 <div>
                   <span class="label">월평균 데이터 사용량(GB)</span>
                   ${d.avgMonthlyDataGB === 9999 ? '무제한' : d.avgMonthlyDataGB + ' GB'}
@@ -251,141 +252,141 @@
                 <div><span class="label">기타</span> ${d.comment}</div>
                 <button class="edit-btn" id="tendency-edit-btn">성향 수정</button>
                  `;
-                 
-                document.getElementById('tendency-edit-btn').onclick = () => {
-                    tendencyEditMode = true;
-                    renderTendency();
-                }
-            }
-        }
 
-        // 슬라이더 색상 업데이트 함수
-        function updateSliderColor(slider) {
-            const value = slider.value;
-            const max = slider.max;
-            const percentage = (value / max) * 100;
-
-            slider.style.background = `linear-gradient(to right, #e6007e ${percentage}%, #ddd ${percentage}%)`;
-        }
-
-        // 탭 전환 함수
-        function setTab(tab) {
-            // [핵심] 다른 탭으로 이동 시, 모든 수정 상태를 강제로 초기화합니다.
-            userEditMode = false;
-            tendencyEditMode = false;
-
-            // 탭 활성화/비활성화 클래스 토글
-            document.getElementById('tab-info').classList.toggle('active', tab === 'info');
-            document.getElementById('tab-tendency').classList.toggle('active', tab === 'tendency');
-            document.getElementById('section-info').classList.toggle('active', tab === 'info');
-            document.getElementById('section-tendency').classList.toggle('active', tab === 'tendency');
-
-            // [핵심] 초기화된 상태를 화면에 즉시 반영하기 위해, 두 섹션을 모두 다시 렌더링합니다.
-            renderUserInfo();
-            renderTendency();
-        }
-
-        async function loadTendency() {
-            try {
-                const res = await fetch('/api/tendency', {credentials: 'include'});
-                tendencyData = res.ok ? (await res.json()).data : null;
-            } catch (e) {
-                console.error("성향 정보 로드 실패", e);
-                tendencyData = null;
-            }
-            renderTendency();
-        }
-
-        function setupPlanSearch() {
-            const planSearch = document.getElementById('plan-search'), planList = document.getElementById('plan-list'),
-                planIdInput = document.getElementById('planId');
-            if (!planSearch) return;
-            planSearch.addEventListener('input', async function () {
-                const keyword = this.value.trim();
-                planList.style.display = 'none';
-                if (!keyword) {
-                    planIdInput.value = "";
-                    return;
-                }
-                try {
-                    const res = await fetch(`/api/plan/names?keyword=${encodeURIComponent(keyword)}`);
-                    const {data} = await res.json();
-                    planList.innerHTML = '';
-                    if (Array.isArray(data) && data.length > 0) {
-                        data.forEach(plan => {
-                            const div = document.createElement('div');
-                            div.textContent = plan.name;
-                            div.onclick = () => {
-                                planSearch.value = plan.name;
-                                planIdInput.value = plan.planId;
-                                planList.style.display = 'none';
-                            };
-                            planList.appendChild(div);
-                        });
-                        planList.style.display = 'block';
+                    document.getElementById('tendency-edit-btn').onclick = () => {
+                        tendencyEditMode = true;
+                        renderTendency();
                     }
-                } catch (e) {
-                    console.error("요금제 로딩 실패:", e);
                 }
-            });
-            planSearch.addEventListener('blur', () => setTimeout(() => {
-                planList.style.display = 'none';
-            }, 200));
-            planSearch.addEventListener('change', function () {
-                if (!this.value) {
-                    planIdInput.value = "";
-                }
-            });
-        }
-
-        async function handleUserUpdate(e) {
-            e.preventDefault();
-            const obj = Object.fromEntries(new FormData(e.target));
-            if (obj.planId === "") obj.planId = null;
-            if (obj.planId === null) {
-                userData.planId = null;
-                userData.planName = null;
             }
-            const res = await fetch('/api/user/me', {
-                method: 'PATCH',
-                headers: {'Content-Type': 'application/json'},
-                credentials: 'include',
-                body: JSON.stringify(obj)
-            });
-            const data = await res.json();
-            if (res.ok) {
-                userData = data.data;
+
+            // 슬라이더 색상 업데이트 함수
+            function updateSliderColor(slider) {
+                const value = slider.value;
+                const max = slider.max;
+                const percentage = (value / max) * 100;
+
+                slider.style.background = `linear-gradient(to right, #e6007e ${percentage}%, #ddd ${percentage}%)`;
+            }
+
+            // 탭 전환 함수
+            function setTab(tab) {
+                // [핵심] 다른 탭으로 이동 시, 모든 수정 상태를 강제로 초기화합니다.
                 userEditMode = false;
-                renderUserInfo();
-                alert(data.message || "수정 완료");
-            } else {
-                alert(data.message || "실패");
-            }
-        }
-
-        async function handleTendencyUpdate(e) {
-            e.preventDefault();
-            const res = await fetch('/api/tendency', {
-                method: tendencyData ? 'PUT' : 'POST',
-                headers: {'Content-Type': 'application/json'},
-                credentials: 'include',
-                body: JSON.stringify(Object.fromEntries(new FormData(e.target)))
-            });
-            const data = await res.json();
-            if (res.ok) {
-                tendencyData = data.data;
                 tendencyEditMode = false;
-                renderTendency();
-                alert(data.message || "저장 완료");
-            } else {
-                alert(data.message || "실패");
-            }
-        }
 
-        // --- 최초 실행 ---
-        renderUserInfo();
-        await loadTendency();
-    });
-</script>
+                // 탭 활성화/비활성화 클래스 토글
+                document.getElementById('tab-info').classList.toggle('active', tab === 'info');
+                document.getElementById('tab-tendency').classList.toggle('active', tab === 'tendency');
+                document.getElementById('section-info').classList.toggle('active', tab === 'info');
+                document.getElementById('section-tendency').classList.toggle('active', tab === 'tendency');
+
+                // [핵심] 초기화된 상태를 화면에 즉시 반영하기 위해, 두 섹션을 모두 다시 렌더링합니다.
+                renderUserInfo();
+                renderTendency();
+            }
+
+            async function loadTendency() {
+                try {
+                    const res = await fetch('/api/tendency', {credentials: 'include'});
+                    tendencyData = res.ok ? (await res.json()).data : null;
+                } catch (e) {
+                    console.error("성향 정보 로드 실패", e);
+                    tendencyData = null;
+                }
+                renderTendency();
+            }
+
+            function setupPlanSearch() {
+                const planSearch = document.getElementById('plan-search'), planList = document.getElementById('plan-list'),
+                    planIdInput = document.getElementById('planId');
+                if (!planSearch) return;
+                planSearch.addEventListener('input', async function () {
+                    const keyword = this.value.trim();
+                    planList.style.display = 'none';
+                    if (!keyword) {
+                        planIdInput.value = "";
+                        return;
+                    }
+                    try {
+                        const res = await fetch(`/api/plan/names?keyword=${encodeURIComponent(keyword)}`);
+                        const {data} = await res.json();
+                        planList.innerHTML = '';
+                        if (Array.isArray(data) && data.length > 0) {
+                            data.forEach(plan => {
+                                const div = document.createElement('div');
+                                div.textContent = plan.name;
+                                div.onclick = () => {
+                                    planSearch.value = plan.name;
+                                    planIdInput.value = plan.planId;
+                                    planList.style.display = 'none';
+                                };
+                                planList.appendChild(div);
+                            });
+                            planList.style.display = 'block';
+                        }
+                    } catch (e) {
+                        console.error("요금제 로딩 실패:", e);
+                    }
+                });
+                planSearch.addEventListener('blur', () => setTimeout(() => {
+                    planList.style.display = 'none';
+                }, 200));
+                planSearch.addEventListener('change', function () {
+                    if (!this.value) {
+                        planIdInput.value = "";
+                    }
+                });
+            }
+
+            async function handleUserUpdate(e) {
+                e.preventDefault();
+                const obj = Object.fromEntries(new FormData(e.target));
+                if (obj.planId === "") obj.planId = null;
+                if (obj.planId === null) {
+                    userData.planId = null;
+                    userData.planName = null;
+                }
+                const res = await fetch('/api/user/me', {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify(obj)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    userData = data.data;
+                    userEditMode = false;
+                    renderUserInfo();
+                    showSuccessAlert(data.message || "수정 완료");
+                } else {
+                    showErrorAlert(data.message || "실패");
+                }
+            }
+
+            async function handleTendencyUpdate(e) {
+                e.preventDefault();
+                const res = await fetch('/api/tendency', {
+                    method: tendencyData ? 'PUT' : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify(Object.fromEntries(new FormData(e.target)))
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    tendencyData = data.data;
+                    tendencyEditMode = false;
+                    renderTendency();
+                    showSuccessAlert(data.message || "저장 완료");
+                } else {
+                    showErrorAlert(data.message || "실패");
+                }
+            }
+
+            // --- 최초 실행 ---
+            renderUserInfo();
+            await loadTendency();
+        });
+    </script>
 </body>
 </html>
