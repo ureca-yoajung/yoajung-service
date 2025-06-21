@@ -60,9 +60,9 @@
                     </div>
                     <div class="message-content">
                         <div class="message-bubble">
-                            <p>안녕하세요! 요아정 AI입니다. 🎉</p>
-                            <p>당신에게 딱 맞는 요금제를 찾아드릴게요!</p>
-                            <p>먼저 몇 가지 질문을 통해 사용 패턴을 알려주세요.</p>
+                            <p>안녕하세요! 당신에게 딱 맞는 요금제를 찾아주는 AI 상담 봇 요정입니다! 🧚🏻</p>
+                            <p>먼저 사용 패턴을 알려주세요. ex) 예산 , 데이터 사용량, 나이대 등</p>
+                            <p></p>
                         </div>
                         <div class="message-time" id="welcomeTime">오전 12:00</div>
                     </div>
@@ -220,7 +220,7 @@
         toggle.addEventListener('change', () => {
             const isLoggedIn = Boolean(localStorage.getItem('userId'));
             if (!isLoggedIn && toggle.checked) {
-                alert('로그인이 필요합니다.');
+                showWarningAlert('로그인이 필요합니다.');
                 toggle.checked = false;
             }
         });
@@ -442,7 +442,7 @@
 
         // 채팅 초기화
         async function clearChat() {
-            if (confirm("대화 내용을 모두 삭제하시겠습니까?")) {
+            if (await showConfirm("대화 내용을 모두 삭제하시겠습니까?", "대화 내용 삭제", "네", "아니요")) {
                 const userId = getOrCreateUserId();
 
                 try {
@@ -452,10 +452,15 @@
 
                     const result = await response.json();
                     if (!response.ok) {
-                        alert(result.message || '채팅 삭제 중 오류가 발생했습니다.');
+                        showErrorAlert(result.message || '채팅 삭제 중 오류가 발생했습니다.');
                         return;
                     }
 
+
+                    const currentTime = new Date().toLocaleTimeString("ko-KR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    });
 
                     chatMessages.innerHTML = `
             <div class="message bot-message">
@@ -464,11 +469,10 @@
                 </div>
                 <div class="message-content">
                     <div class="message-bubble">
-                        <p>안녕하세요! 요아정 AI입니다. 🎉</p>
-                        <p>당신에게 딱 맞는 요금제를 찾아드릴게요!</p>
-                        <p>먼저 몇 가지 질문을 통해 사용 패턴을 알려주세요.</p>
+                            <p>안녕하세요! 당신에게 딱 맞는 요금제를 찾아주는 AI 상담 봇 요정입니다! 🧚🏻</p>
+                            <p>먼저 사용 패턴을 알려주세요. ex) 예산 , 데이터 사용량, 나이대 등</p>
                     </div>
-                    <div class="message-time">오후 2:30</div>
+                    <div class="message-time" id="welcomeTime">${currentTime}</div>
                 </div>
             </div>
         `
