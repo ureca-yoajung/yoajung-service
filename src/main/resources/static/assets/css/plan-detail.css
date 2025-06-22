@@ -691,8 +691,8 @@ body {
 
 .ai-container {
     position: fixed;
-    top: 255px;
-    right: 200px;
+    top: 245px;
+    right: 70px;
     z-index: 50;
 
     /* 추가: 이미지·말풍선·요약을 세로로 쌓고 우측 정렬 */
@@ -721,7 +721,7 @@ body {
     display: inline-block;
     position: absolute;
     /*bottom: 140px; !* 이미지 위에 띄움 *!*/
-    top: -110px;
+    top: -130px;
     right: 0;
     width: clamp(150px, 30vw, 300px); /* 반응형 너비 */
     padding: 12px 16px;
