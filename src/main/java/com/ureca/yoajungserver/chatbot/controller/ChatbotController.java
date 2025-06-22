@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ureca.yoajungserver.chatbot.dto.ChatResponse;
 import com.ureca.yoajungserver.chatbot.service.ChatbotService;
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.swagger.api.ChatbotControllerSwagger;
 import com.ureca.yoajungserver.user.security.CustomUserDetails;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.ureca.yoajungserver.common.BaseCode.*;
+import java.io.IOException;
+
+import static com.ureca.yoajungserver.common.BaseCode.CHAT_DELETE_SUCCESS;
+import static com.ureca.yoajungserver.common.BaseCode.KEYWORD_MAPPING_SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
-public class ChatbotController {
+public class ChatbotController implements ChatbotControllerSwagger {
 
     private final ChatbotService chatbotService;
 
