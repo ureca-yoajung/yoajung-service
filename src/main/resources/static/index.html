@@ -55,54 +55,6 @@
         </div>
     </section>
 
-    <!-- Plans Section -->
-    <section class="plans" id="plans">
-        <div class="plans-container">
-            <h2 class="section-title">인기 요금제</h2>
-            <div class="plans-grid">
-                <div class="plan-card">
-                    <h3 class="plan-name">라이트</h3>
-                    <div class="plan-price">35,000원</div>
-                    <ul class="plan-features">
-                        <li>데이터 8GB</li>
-                        <li>음성통화 기본</li>
-                        <li>문자 기본</li>
-                        <li>5G 지원</li>
-                    </ul>
-                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
-                </div>
-                <div class="plan-card popular">
-                    <div class="popular-badge">인기</div>
-                    <h3 class="plan-name">스탠다드</h3>
-                    <div class="plan-price">55,000원</div>
-                    <ul class="plan-features">
-                        <li>데이터 100GB</li>
-                        <li>음성통화 무제한</li>
-                        <li>문자 무제한</li>
-                        <li>5G 지원</li>
-                        <li>테더링 10GB</li>
-                    </ul>
-                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
-                </div>
-                <div class="plan-card">
-                    <h3 class="plan-name">프리미엄</h3>
-                    <div class="plan-price">75,000원</div>
-                    <ul class="plan-features">
-                        <li>데이터 무제한</li>
-                        <li>음성통화 무제한</li>
-                        <li>문자 무제한</li>
-                        <li>5G 지원</li>
-                        <li>테더링 무제한</li>
-                        <li>해외로밍 할인</li>
-                    </ul>
-                    <button class="btn btn-primary" style="width: 100%;">선택하기</button>
-                </div>
-            </div>
-            <div style="text-align: center;">
-                <button class="btn btn-ghost btn-large">모든 요금제 보기</button>
-            </div>
-        </div>
-    </section>
     <!-- 성향 입력 모달 -->
     <div id="modal-bg"></div>
     <div id="tendency-modal">
@@ -288,16 +240,16 @@
         }
 
         // 데이터 슬라이더 이벤트
-        dataSlider.addEventListener('input', function() {
+        dataSlider.addEventListener('input', function () {
             updateSliderColor(this);
         });
 
         // 음성통화 슬라이더 이벤트
-        voiceSlider.addEventListener('input', function() {
+        voiceSlider.addEventListener('input', function () {
             updateSliderColor(this);
         });
 
-        priceSlider.addEventListener('input', function() {
+        priceSlider.addEventListener('input', function () {
             const value = this.value;
             priceValue.textContent = value + ' 원';
             updateSliderColor(this);
