@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.user.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.swagger.api.AuthControllerSwagger;
 import com.ureca.yoajungserver.user.dto.reqeust.*;
 import com.ureca.yoajungserver.user.service.AuthService;
 import com.ureca.yoajungserver.user.service.PasswordResetService;
@@ -24,7 +25,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerSwagger {
 
     private static final String PENDING_EMAIL = "pendingEmail";
     private static final String VERIFIED_EMAIL = "verifiedEmail";
