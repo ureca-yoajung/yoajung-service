@@ -16,6 +16,7 @@
 | 홍석준 | AI, 백엔드           | 요금제 비즈니스 로직, 리뷰 요약 AI             | <a href="https://github.com/seokjuun"><img src="https://avatars.githubusercontent.com/u/45346977?v=4" width="100" height="100" alt="seokjuun" /></a>           |
 
 ## 아키텍처
+![architecture](https://github.com/user-attachments/assets/5d28c56e-7006-4546-a160-9e44f8805464)
 
 ## 챗봇 흐름도
 ![chatbot](https://github.com/user-attachments/assets/1ea7ca53-a415-4d7c-96f7-bc2ed17a7522)
