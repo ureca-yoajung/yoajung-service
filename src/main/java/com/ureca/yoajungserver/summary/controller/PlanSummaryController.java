@@ -2,6 +2,7 @@ package com.ureca.yoajungserver.summary.controller;
 
 import com.ureca.yoajungserver.summary.dto.PlanSummaryDto;
 import com.ureca.yoajungserver.summary.service.PlanSummaryService;
+import com.ureca.yoajungserver.swagger.api.PlanSummaryControllerSwagger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,7 @@ import org.springframework.http.HttpStatus;
 @RestController
 @RequestMapping("/api/plans/{id}/summary")
 @RequiredArgsConstructor
-public class PlanSummaryController {
+public class PlanSummaryController implements PlanSummaryControllerSwagger {
 
     private final PlanSummaryService planSummaryService;
 

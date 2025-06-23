@@ -1,12 +1,12 @@
 package com.ureca.yoajungserver.plan.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
-import com.ureca.yoajungserver.plan.dto.response.*;
-import com.ureca.yoajungserver.plan.entity.PlanCategory;
-import com.ureca.yoajungserver.plan.entity.PlanSortType;
-import com.ureca.yoajungserver.plan.exception.InvalidPlanCategoryException;
-import com.ureca.yoajungserver.plan.exception.InvalidPlanSortTypeException;
+import com.ureca.yoajungserver.plan.dto.response.DetailPlanBenefitResponse;
+import com.ureca.yoajungserver.plan.dto.response.DetailPlanProductResponse;
+import com.ureca.yoajungserver.plan.dto.response.DetailPlanResponse;
+import com.ureca.yoajungserver.plan.dto.response.PlanNameResponse;
 import com.ureca.yoajungserver.plan.service.PlanService;
+import com.ureca.yoajungserver.swagger.api.PlanControllerSwagger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RestController
 @RequestMapping("api/plan")
 @RequiredArgsConstructor
-public class PlanController {
+public class PlanController implements PlanControllerSwagger {
 
     private final PlanService planService;
 

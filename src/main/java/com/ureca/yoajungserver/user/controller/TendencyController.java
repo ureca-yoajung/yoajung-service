@@ -1,6 +1,7 @@
 package com.ureca.yoajungserver.user.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.swagger.api.TendencyControllerSwagger;
 import com.ureca.yoajungserver.user.dto.reqeust.TendencyRequest;
 import com.ureca.yoajungserver.user.dto.response.TendencyResponse;
 import com.ureca.yoajungserver.user.entity.Tendency;
@@ -19,7 +20,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RestController
 @RequestMapping("/api/tendency")
 @RequiredArgsConstructor
-public class TendencyController {
+public class TendencyController implements TendencyControllerSwagger {
 
     private final TendencyService tendencyService;
 

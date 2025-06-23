@@ -1,21 +1,22 @@
 package com.ureca.yoajungserver.product.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.common.BaseCode;
 import com.ureca.yoajungserver.product.dto.ProductResponse;
 import com.ureca.yoajungserver.product.service.ProductService;
-import com.ureca.yoajungserver.product.service.ProductServiceImpl;
+import com.ureca.yoajungserver.swagger.api.ProductControllerSwagger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
-import com.ureca.yoajungserver.common.BaseCode;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
-public class ProductController {
+public class ProductController implements ProductControllerSwagger {
     private final ProductService productService;
 
     @GetMapping

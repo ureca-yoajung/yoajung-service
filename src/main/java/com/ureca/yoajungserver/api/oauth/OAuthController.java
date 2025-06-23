@@ -3,6 +3,7 @@ package com.ureca.yoajungserver.api.oauth;
 import com.ureca.yoajungserver.common.ApiResponse;
 import com.ureca.yoajungserver.external.kakao.KakaoSignupRequest;
 import com.ureca.yoajungserver.external.kakao.KakaoTokenResponse;
+import com.ureca.yoajungserver.swagger.api.OAuthControllerSwagger;
 import com.ureca.yoajungserver.user.dto.response.UserResponse;
 import com.ureca.yoajungserver.user.entity.User;
 import com.ureca.yoajungserver.user.security.CustomUserDetails;
@@ -24,7 +25,7 @@ import static com.ureca.yoajungserver.common.BaseCode.USER_LOGIN_SUCCESS;
 @RestController
 @RequestMapping("/api/oauth/kakao")
 @RequiredArgsConstructor
-public class OAuthController {
+public class OAuthController implements OAuthControllerSwagger {
     private final OAuthService oAuthService;
 
     // 인가 코드 -> 토큰 변환

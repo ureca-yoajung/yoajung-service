@@ -5,9 +5,9 @@ import com.ureca.yoajungserver.review.dto.request.ReviewCreateRequest;
 import com.ureca.yoajungserver.review.dto.request.ReviewUpdateRequest;
 import com.ureca.yoajungserver.review.dto.response.*;
 import com.ureca.yoajungserver.review.service.ReviewService;
+import com.ureca.yoajungserver.swagger.api.ReviewControllerSwagger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/review")
-public class ReviewController {
+public class ReviewController implements ReviewControllerSwagger {
     private final ReviewService reviewService;
 
     // 리뷰 조회
@@ -66,9 +66,9 @@ public class ReviewController {
         ReviewLikeResponse response = reviewService.reviewLike(reviewId);
 
         // 좋아요 취소
-        if(response.isDeleted()){
+        if (response.isDeleted()) {
             return ResponseEntity.status(REVIEW_LIKE_CANCELED.getStatus())
-                .body(ApiResponse.ok(REVIEW_LIKE_CANCELED));
+                    .body(ApiResponse.ok(REVIEW_LIKE_CANCELED));
         }
 
         // 좋아요 등록

@@ -86,4 +86,10 @@ kakao:
 
 dify:
   base-url: https://api.dify.ai/v1
-  api-key : ${DIFY_KEY}
+  api-key: ${DIFY_KEY}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    with-credentials: true
+    oauth2-redirect-url: /swagger-ui/oauth2-redirect.html

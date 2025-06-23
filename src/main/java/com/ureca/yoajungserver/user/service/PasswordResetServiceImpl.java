@@ -45,7 +45,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 }
             }
         }
-        User user = userRepository.findByEmail(email)
+        userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         String token = UUID.randomUUID().toString();
 

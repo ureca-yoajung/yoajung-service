@@ -2,6 +2,7 @@
 package com.ureca.yoajungserver.user.controller;
 
 import com.ureca.yoajungserver.common.ApiResponse;
+import com.ureca.yoajungserver.swagger.api.UserControllerSwagger;
 import com.ureca.yoajungserver.user.dto.reqeust.SignupRequest;
 import com.ureca.yoajungserver.user.dto.reqeust.UserUpdateRequest;
 import com.ureca.yoajungserver.user.dto.response.UserResponse;
@@ -20,7 +21,7 @@ import static com.ureca.yoajungserver.common.BaseCode.*;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserControllerSwagger {
 
     private final UserService userService;
 
