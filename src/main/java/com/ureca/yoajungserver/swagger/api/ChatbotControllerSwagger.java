@@ -24,8 +24,8 @@ import java.io.IOException;
 public interface ChatbotControllerSwagger {
 
     @Operation(
-            summary = "챗봇 질문",
-            description = "질문과 게스트 또는 로그인 세션으로 챗봇 응답 반환"
+            summary = "챗봇 질문 전송 및 응답 반환",
+            description = "사용자 ID를 구분하여 챗봇에게 질문 전달 및 응답 반환, 대화 기록 저장"
     )
     @ApiSuccessResponse(description = "챗봇 응답 성공")
     @ErrorCode400(description = "잘못된 요청 파라미터")
@@ -38,8 +38,8 @@ public interface ChatbotControllerSwagger {
     ) throws IOException;
 
     @Operation(
-            summary = "선호도 기반 챗봇 질문",
-            description = "선호 반영 챗봇 응답 반환",
+            summary = "성향 기반 챗봇 질문 및 응답 반환",
+            description = "사용자 ID를 구분하여 성향을 반영한 챗봇 응답 반환 및 대화 기록 저장",
             security = @SecurityRequirement(name = "SessionCookie")
     )
     @ApiSuccessResponse(description = "챗봇 응답 성공")
@@ -52,8 +52,8 @@ public interface ChatbotControllerSwagger {
     ) throws JsonProcessingException;
 
     @Operation(
-            summary = "챗봇 데화 내역 삭제",
-            description = "게스트 또는 사용자의 세션으로 저장된 챗봇 대화 내역 삭제"
+            summary = "챗봇 대화 내역 삭제",
+            description = "사용자 ID로 저장된 챗봇 대화 내역 삭제"
     )
     @ApiSuccessResponse(description = "챗봇 히스토리 삭제 성공")
     @ErrorCode400(description = "잘못된 요청 파라미터")
