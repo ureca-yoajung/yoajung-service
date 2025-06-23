@@ -217,13 +217,30 @@
             localStorage.setItem("userId", "");
         });
 
-        toggle.addEventListener('change', () => {
-            const isLoggedIn = Boolean(localStorage.getItem('userId'));
-            if (!isLoggedIn && toggle.checked) {
-                showWarningAlert('로그인이 필요합니다.');
+        toggle.addEventListener('change', async (e) => {
+            const wantsOn = toggle.checked;  // 변경 후 상태
+
+            if (!wantsOn) {
+                // OFF로 바꾸려는 거면 언제나 허용
+                return;
+            }
+
+            // ON으로 바꾸려는 거면 로그인 체크
+            try {
+                const res = await fetch('/api/user/me', {credentials: 'include'});
+                if (!res.ok) {
+                    // 비로그인 → 토글 원상복구 + 경고
+                    toggle.checked = false;
+                    showWarningAlert('로그인이 필요합니다.');
+                }
+                // res.ok 이면 toggle.checked = true 그대로 유지
+            } catch (err) {
+                console.error('로그인 상태 확인 에러:', err);
                 toggle.checked = false;
+                showWarningAlert('로그인 확인 중 오류가 발생했습니다.');
             }
         });
+
 
         // 메시지 입력 이벤트
         messageInput.addEventListener('input', updateSendButtonState);
