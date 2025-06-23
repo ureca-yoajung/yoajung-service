@@ -19,7 +19,7 @@
 ![architecture](https://github.com/user-attachments/assets/5d28c56e-7006-4546-a160-9e44f8805464)
 
 ## 챗봇 흐름도
-![chatbot](https://github.com/user-attachments/assets/1ea7ca53-a415-4d7c-96f7-bc2ed17a7522)
+![chatbot](https://github.com/user-attachments/assets/3bdca1ca-fa58-4408-8719-574b9cf17d93)
 
 ## 주요 기능
 | 구분       | 기능 설명                                                                 |
