@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
             message.setFrom(fromEmail);
             message.setTo(email);
             message.setSubject("요아정 이메일 인증 코드 ");
-            message.setText("인증 코드는 : " + code + "다");
+            message.setText("인증 코드 : " + code);
             mailSender.send(message);
         } catch (MailException e) {
             throw new EmailSendFailedException();

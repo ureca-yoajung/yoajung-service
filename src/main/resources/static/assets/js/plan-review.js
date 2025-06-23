@@ -173,11 +173,12 @@ function updateRatingDisplay() {
 }
 
 // Review form functions
-function toggleReviewForm() {
+async function toggleReviewForm() {
     if (!isLogined) {
         // 로그인하지 않은 상태면 로그인 페이지로 이동
-        alert("로그인 페이지로 이동합니다.");
-        window.location.href = "/login.html";
+        if (await showConfirm("리뷰 작성은 로그인이 필요합니다. 로그인 하시겠습니까?", "리뷰 작성")) {
+            window.location.href = "/login.html";
+        }
         return;
     }
     const form = document.getElementById('reviewForm');
@@ -190,12 +191,12 @@ function submitReview(event) {
     const content = document.getElementById('reviewContent').value;
 
     if (selectedRating === 0) {
-        alert('평점을 선택해주세요.');
+        showWarningAlert('평점을 선택해주세요.');
         return;
     }
 
     if (!content.trim()) {
-        alert('리뷰 내용을 입력해주세요.');
+        showWarningAlert('리뷰 내용을 입력해주세요.');
         return;
     }
 
@@ -228,18 +229,18 @@ async function insertReview(newReview) {
         });
 
         if (result) {
-            alert("리뷰가 등록되었습니다.");
+            showSuccessAlert("리뷰가 등록되었습니다.");
             // Reset to first page to show new review
             currentPage = 0;
             await loadReviewsData(planId);
         }
     } catch (error) {
-        alert(error.message || "리뷰 등록에 실패했습니다.");
+        showErrorAlert(error.message || "리뷰 등록에 실패했습니다.");
     }
 }
 
 async function deleteReview(reviewId) {
-    if (!confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
+    if (!await showConfirm("정말로 이 리뷰를 삭제하시겠습니까?", "리뷰 삭제")) {
         return;
     }
 
@@ -248,7 +249,7 @@ async function deleteReview(reviewId) {
             method: 'DELETE'
         });
 
-        alert("리뷰가 삭제되었습니다.");
+        showSuccessAlert("리뷰가 삭제되었습니다.");
 
         // Update local data
         reviewsData = reviewsData.filter(review => review.id !== reviewId);
@@ -260,7 +261,7 @@ async function deleteReview(reviewId) {
 
         await loadReviewsData(planId);
     } catch (error) {
-        alert(error.message || "리뷰 삭제에 실패했습니다.");
+        showErrorAlert(error.message || "리뷰 삭제에 실패했습니다.");
     }
 }
 
@@ -319,13 +320,13 @@ function createEditForm(reviewId, currentRating, currentContent) {
     // Add rating star event listeners
     const ratingStars = editDiv.querySelectorAll('.edit-rating-star');
     ratingStars.forEach(star => {
-        star.addEventListener('click', function() {
+        star.addEventListener('click', function () {
             const rating = parseInt(this.dataset.rating);
             updateEditRatingDisplay(reviewId, rating);
         });
     });
 
-    editDiv.addEventListener('mouseleave', function() {
+    editDiv.addEventListener('mouseleave', function () {
         const currentRating = getCurrentEditRating(reviewId);
         updateEditRatingDisplay(reviewId, currentRating);
     });
@@ -354,12 +355,12 @@ async function saveEdit(reviewId) {
     const newRating = getCurrentEditRating(reviewId);
 
     if (!newContent) {
-        alert('리뷰 내용을 입력해주세요.');
+        showWarningAlert('리뷰 내용을 입력해주세요.');
         return;
     }
 
     if (newRating === 0) {
-        alert('평점을 선택해주세요.');
+        showWarningAlert('평점을 선택해주세요.');
         return;
     }
 
@@ -369,7 +370,7 @@ async function saveEdit(reviewId) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ content: newContent, star: newRating })
+            body: JSON.stringify({content: newContent, star: newRating})
         });
 
         // Update local data
@@ -382,12 +383,12 @@ async function saveEdit(reviewId) {
         updateReviewDisplay(reviewId, newRating, newContent);
         exitEditMode(reviewId);
 
-        alert('리뷰가 수정되었습니다.');
+        showSuccessAlert('리뷰가 수정되었습니다.');
 
         // Refresh to ensure data consistency
         await loadReviewsData(planId);
     } catch (error) {
-        alert(error.message || '리뷰 수정에 실패했습니다.');
+        showErrorAlert(error.message || '리뷰 수정에 실패했습니다.');
     }
 }
 
@@ -461,7 +462,7 @@ async function handleLikeClick(reviewId, isAdd) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ isAdd })
+            body: JSON.stringify({isAdd})
         });
     } catch (error) {
         console.error('좋아요 처리 실패:', error);

@@ -4,7 +4,7 @@
     border: 2px solid #e5e5e5;
     border-radius: 16px;
     padding: 16px;
-    margin-top: 16px;             /* AI 이미지 바로 아래 여백 */
+    margin-top: 16px; /* AI 이미지 바로 아래 여백 */
     width: clamp(180px, 28vw, 260px);
     box-shadow: var(--shadow);
     text-align: center;
@@ -23,6 +23,7 @@
     line-height: 1.6;
     white-space: pre-line; /* preserve line breaks */
 }
+
 :root {
     --primary: #e6007e;
     --primary-dark: #d10070;
@@ -478,7 +479,7 @@ body {
     padding: 16px;
     width: 260px;
     transition: transform 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     position: relative;
     flex-shrink: 0;
     cursor: pointer;
@@ -690,8 +691,8 @@ body {
 
 .ai-container {
     position: fixed;
-    top: 250px;
-    right: 200px;
+    top: 245px;
+    right: 70px;
     z-index: 50;
 
     /* 추가: 이미지·말풍선·요약을 세로로 쌓고 우측 정렬 */
@@ -720,7 +721,7 @@ body {
     display: inline-block;
     position: absolute;
     /*bottom: 140px; !* 이미지 위에 띄움 *!*/
-    top: -110px;
+    top: -130px;
     right: 0;
     width: clamp(150px, 30vw, 300px); /* 반응형 너비 */
     padding: 12px 16px;
@@ -737,7 +738,7 @@ body {
 .speech-bubble::after {
     content: "";
     position: absolute;
-    top: 100%;            /* top 기준으로 화살표 재정렬 */
+    top: 100%; /* top 기준으로 화살표 재정렬 */
     right: 20px;
     border-width: 10px;
     border-style: solid;

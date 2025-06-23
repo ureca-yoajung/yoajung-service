@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import com.ureca.yoajungserver.plan.entity.PlanTarget;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -172,9 +170,9 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
         }
 
         // 사잇값 처리
-        if(price.contains("사이")){
+        if (price.contains("사이")) {
             Optional<int[]> opt = safeParseRange(price);
-            if(opt.isPresent()){
+            if (opt.isPresent()) {
                 int min = opt.get()[0];
                 int max = opt.get()[1];
                 return plan.basePrice.between(min, max);
@@ -191,7 +189,7 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
 
         if (price.contains("이상")) {
             return plan.basePrice.goe(priceInt);
-        }else if (price.contains("정확")) {
+        } else if (price.contains("정확")) {
             return plan.basePrice.eq(priceInt);
         } else if (price.contains("이하")) {
             return plan.basePrice.loe(priceInt);
@@ -277,9 +275,9 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
         }
 
         // 사잇값 처리
-        if(data.contains("사이")){
+        if (data.contains("사이")) {
             Optional<int[]> opt = safeParseRange(data);
-            if(opt.isPresent()){
+            if (opt.isPresent()) {
                 int min = opt.get()[0];
                 int max = opt.get()[1];
                 return plan.dataAllowance.between(min, max);
@@ -295,8 +293,14 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
             return null;
         }
 
-        if (data.contains("이상") || data.contains("평균")) {
+        if (data.contains("이상")) {
             return plan.dataAllowance.goe(dataInt);
+        } else if (data.contains("평균")) {
+            int min = (dataInt / 10) * 10 - 20;
+            int max = min + 40;
+            System.out.println("min : " + min);
+            System.out.println("max : " + max);
+            return plan.dataAllowance.between(min, max - 1);
         } else if (data.contains("이하")) {
             return plan.dataAllowance.loe(dataInt);
         } else if (data.contains("초과")) {
@@ -317,9 +321,9 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
         }
 
         // 사잇값 처리
-        if(afterLimit.contains("사이")){
+        if (afterLimit.contains("사이")) {
             Optional<int[]> opt = safeParseRange(afterLimit);
-            if(opt.isPresent()){
+            if (opt.isPresent()) {
                 int min = opt.get()[0];
                 int max = opt.get()[1];
                 return plan.speedAfterLimit.between(min, max);
@@ -361,9 +365,9 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
         }
 
         // 사잇값 처리
-        if(tethering.contains("사이")){
+        if (tethering.contains("사이")) {
             Optional<int[]> opt = safeParseRange(tethering);
-            if(opt.isPresent()){
+            if (opt.isPresent()) {
                 int min = opt.get()[0];
                 int max = opt.get()[1];
                 return plan.tetheringSharingAllowance.between(min, max);
@@ -426,17 +430,23 @@ public class ChatbotRepositoryImpl implements ChatbotRepository {
     private Optional<int[]> safeParseRange(String input) {
         String[] parse = input.split(",");
 
-        if(parse[0].contains("무제한")) parse[0] = "9999";
-        if(parse[1].contains("무제한")) parse[1] = "9999";
+        if (parse[0].contains("무제한")) {
+            parse[0] = "9999";
+        }
+        if (parse[1].contains("무제한")) {
+            parse[1] = "9999";
+        }
 
-        if(parse.length != 2)
+        if (parse.length != 2) {
             return Optional.empty();
+        }
 
         Optional<Integer> min = safeParse(parse[0]);
         Optional<Integer> max = safeParse(parse[1]);
 
-        if(min.isPresent() && max.isPresent())
+        if (min.isPresent() && max.isPresent()) {
             return Optional.of(new int[]{min.get(), max.get()});
+        }
 
         return Optional.empty();
     }

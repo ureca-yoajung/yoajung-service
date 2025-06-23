@@ -474,3 +474,30 @@ body {
         flex-direction: column;
     }
 }
+
+/* 인증코드 발송/확인 메시지를 버튼 높이에 맞춤 */
+#send-code-result,
+#verify-code-result {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px; /* .btn 과 동일한 패딩 */
+    margin-left: 8px; /* 버튼 옆 여백 */
+    margin-bottom: 0; /* 아래 여백 제거 */
+    font-size: 14px; /* 버튼 폰트 크기와 동일 */
+    border-radius: 8px; /* .btn 과 동일한 둥근 모서리 */
+    box-sizing: border-box;
+}
+
+#send-code-result.error-message,
+#verify-code-result.error-message {
+    border: 1px solid #fecaca;
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+#send-code-result.success-message,
+#verify-code-result.success-message {
+    border: 1px solid #bbf7d0;
+    background: #dcfce7;
+    color: #15803d;
+}
